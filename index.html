@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ArcadeHQ - Advanced Dark Billing Hub</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        [x-cloak] { display: none !important; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+    </style>
+</head>
+<body class="bg-[#090d16] text-slate-200 font-sans min-h-screen dynamic-billing-app" 
+      x-data="advancedParlorHub()" 
+      x-init="initEngine()">
+
+    <header class="bg-[#0f1626] border-b border-slate-800/80 px-6 py-3 sticky top-0 z-40 shadow-xl shadow-black/40">
+        <div class="max-w-[1700px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            
+            <div class="flex items-center space-x-4">
+                <div class="relative flex h-3 w-3">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                </div>
+                <div>
+                    <h1 class="text-lg font-black tracking-wider text-white uppercase flex items-center gap-2">
+                        CRIMSON DESK <span class="text-xs font-mono font-bold text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/50">v4.2 PRO</span>
+                    </h1>
+                    <p class="text-[11px] text-slate-400 font-mono tracking-tight">Active Shift Supervisor: <span class="text-slate-200 font-medium">Staff Account #1</span></p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3 md:gap-6 bg-[#070a10] px-4 py-2 rounded-xl border border-slate-800/60">
+                <div class="text-center md:text-left">
+                    <span class="text-[10px] uppercase font-mono block text-slate-500 tracking-wider">Shift Revenue</span>
+                    <span class="text-sm font-mono font-bold text-emerald-400" x-text="'$' + shiftStats.revenue.toFixed(2)"></span>
+                </div>
+                <div class="text-center md:text-left border-x border-slate-800/80 px-3 md:px-6">
+                    <span class="text-[10px] uppercase font-mono block text-slate-500 tracking-wider">Slots Closed</span>
+                    <span class="text-sm font-mono font-bold text-purple-400" x-text="shiftStats.slotsClosed"></span>
+                </div>
+                <div class="text-center md:text-left">
+                    <span class="text-[10px] uppercase font-mono block text-slate-500 tracking-wider">Utilization</span>
+                    <span class="text-sm font-mono font-bold text-sky-400" x-text="calculateUtilization() + '%'"></span>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-3">
+                <button @click="showHistory = true" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/60 text-xs px-4 py-2.5 rounded-lg font-mono font-medium transition duration-200 shadow-md cursor-pointer">
+                    📊 AUDIT LOGS & SHIFT SUMMARY
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="p-6 max-w-[1700px] mx-auto space-y-6">
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
+            <template x-for="station in stations" :key="station.id">
+                <div class="bg-[#0e1422] rounded-xl border transition-all duration-300 flex flex-col justify-between h-[300px] overflow-hidden group shadow-lg"
+                     :class="{
+                        'border-slate-800 hover:border-slate-700/80 hover:bg-[#11192a] shadow-black/50': station.status === 'Available',
+                        'border-emerald-600/40 bg-[#0e1925] shadow-emerald-950/10': station.status === 'In Use',
+                        'border-rose-600/60 bg-[#1a0f18] animate-pulse': station.status === 'Time Over'
+                     }">
+                    
+                    <div class="p-4 bg-[#090d16]/60 border-b border-slate-800/60 flex justify-between items-start">
+                        <div>
+                            <div class="flex items-center space-x-2">
+                                <h2 class="font-mono font-bold text-base tracking-wide text-white" x-text="'STATION ' + String(station.id).padStart(2, '0')"></h2>
+                                <span class="text-[9px] font-mono px-1.5 py-0.2 rounded font-bold"
+                                      :class="{
+                                        'bg-slate-800 text-slate-400': station.status === 'Available',
+                                        'bg-emerald-950 text-emerald-400 border border-emerald-800/30': station.status === 'In Use',
+                                        'bg-rose-950 text-rose-400 border border-rose-800/30': station.status === 'Time Over'
+                                      }" x-text="station.status.toUpperCase()"></span>
+                            </div>
+                            <div class="text-[10px] text-slate-500 font-mono mt-0.5" x-text="station.status !== 'Available' ? `${station.hardware} [ID: ${station.hardwareId}]` : 'System Standby'"></div>
+                        </div>
+                        <div class="text-right" x-show="station.status !== 'Available'">
+                            <div class="text-[10px] text-slate-400 font-mono tracking-tight truncate max-w-[90px]" x-text="station.customerName || 'Walk-in Guest'"></div>
+                            <div class="text-emerald-400 font-mono font-bold text-xs mt-0.5" x-text="'$' + calculateGrossLiveTotal(station).toFixed(2)"></div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 flex-grow flex flex-col justify-center">
+                        
+                        <template x-if="station.status === 'Available'">
+                            <div class="text-center space-y-3">
+                                <div class="text-slate-600 text-xs font-mono">Terminal Empty</div>
+                                <button @click="openBookingModal(station)" class="bg-slate-800 hover:bg-emerald-600 hover:text-white border border-slate-700 text-slate-300 font-mono text-xs font-bold px-4 py-2.5 rounded-lg transition-all duration-200 cursor-pointer w-full tracking-wider shadow-inner">
+                                    INITIALIZE TERMINAL
+                                </button>
+                            </div>
+                        </template>
+
+                        <template x-if="station.status === 'In Use'">
+                            <div class="space-y-4">
+                                <div class="text-center">
+                                    <div class="font-mono text-3xl font-black tracking-widest text-slate-100" x-text="formatTime(station.timeLeft)"></div>
+                                    <div class="flex justify-center items-center gap-2 mt-1 text-[10px] font-mono text-slate-400">
+                                        <span x-text="'Game: ' + (station.gameTitle || 'Unassigned')"></span>
+                                        <span>•</span>
+                                        <span x-text="'Ends: ' + station.endTime"></span>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <button @click="addExtraTime(station, 5)" class="bg-[#161f30] hover:bg-[#1d2b42] text-slate-300 border border-slate-700/60 font-mono text-[11px] py-1.5 rounded transition cursor-pointer text-center">+5 Min Extend</button>
+                                    <button @click="addExtraTime(station, 10)" class="bg-[#161f30] hover:bg-[#1d2b42] text-slate-300 border border-slate-700/60 font-mono text-[11px] py-1.5 rounded transition cursor-pointer text-center">+10 Min Extend</button>
+                                </div>
+                            </div>
+                        </template>
+
+                        <template x-if="station.status === 'Time Over'">
+                            <div class="text-center space-y-2">
+                                <div class="font-mono text-3xl font-black tracking-widest text-rose-500 animate-pulse">00:00</div>
+                                <div class="bg-rose-950/40 border border-rose-900/40 rounded py-1 px-2 text-[10px] font-mono text-rose-300 inline-block">
+                                    SESSION CAP OVERDUE
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                    <div class="px-4 py-2 bg-[#090d16]/30 border-t border-slate-800/40 text-[11px] font-mono flex justify-between text-slate-400" x-show="station.status !== 'Available'">
+                        <span class="truncate max-w-[140px]" x-text="describeAddonsShort(station)"></span>
+                        <span class="text-purple-400" x-text="station.players + ' Player(s)'"></span>
+                    </div>
+
+                    <div class="p-3 bg-[#0a0f1a] border-t border-slate-800/80 flex gap-2" x-show="station.status !== 'Available'">
+                        <button @click="openAddonsModal(station)" class="flex-1 bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/50 font-mono text-xs py-2 rounded-md transition cursor-pointer">
+                            🛒 ADDONS
+                        </button>
+                        <button @click="openCheckoutModal(station)" class="flex-1 font-mono text-xs py-2 rounded-md font-bold transition duration-150 cursor-pointer text-white shadow-md"
+                                :class="station.status === 'Time Over' ? 'bg-rose-600 hover:bg-rose-500 shadow-rose-950/40' : 'bg-amber-600 hover:bg-amber-500 shadow-amber-950/40'">
+                            💵 BILL DESK
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </main>
+
+    <div class="fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 z-50" x-show="modals.booking" x-cloak x-transition>
+        <div class="bg-[#0f1626] border border-slate-800 rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl" @click.outside="modals.booking = false">
+            <div class="bg-[#141d31] px-6 py-4 flex justify-between items-center border-b border-slate-800">
+                <div>
+                    <h3 class="font-mono font-bold text-base text-white" x-text="'INITIALIZE TERMINAL AREA: STATION ' + String(activeStation?.id).padStart(2, '0')"></h3>
+                    <p class="text-xs text-slate-400 font-mono">Fill peripheral hardware details below</p>
+                </div>
+                <button @click="modals.booking = false" class="text-slate-400 hover:text-white text-xl cursor-pointer font-mono">&times;</button>
+            </div>
+            <div class="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1.5">Primary Player Name</label>
+                        <input type="text" x-model="form.customerName" placeholder="Guest Surname/ID" class="bg-[#070a10] border border-slate-700 rounded-lg px-3 py-2 w-full text-xs text-white focus:outline-none focus:border-emerald-500 font-mono">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1.5">Contact Reference</label>
+                        <input type="text" x-model="form.customerPhone" placeholder="Mobile / Core Profile" class="bg-[#070a10] border border-slate-700 rounded-lg px-3 py-2 w-full text-xs text-white focus:outline-none focus:border-emerald-500 font-mono">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3 bg-[#090d16] p-3 rounded-xl border border-slate-800/80">
+                    <div>
+                        <label class="block text-[9px] font-mono uppercase tracking-wider text-slate-500 mb-1">Hardware Ecosystem</label>
+                        <select x-model="form.hardware" class="bg-[#131b2e] border border-slate-700 rounded text-[11px] p-1.5 w-full text-slate-300 focus:outline-none font-mono">
+                            <option value="PS5 Pro">PlayStation 5 Pro</option>
+                            <option value="Xbox Series X">Xbox Series X</option>
+                            <option value="PC Rig Ultra">High-End PC Rig</option>
+                            <option value="Nintendo Switch">Nintendo Switch</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[9px] font-mono uppercase tracking-wider text-slate-500 mb-1">Controller Assigned</label>
+                        <input type="text" x-model="form.hardwareId" placeholder="e.g., CTRL-A4" class="bg-[#131b2e] border border-slate-700 rounded text-[11px] p-1.5 w-full text-white focus:outline-none font-mono">
+                    </div>
+                    <div>
+                        <label class="block text-[9px] font-mono uppercase tracking-wider text-slate-500 mb-1">Active Software Game</label>
+                        <input type="text" x-model="form.gameTitle" placeholder="e.g., FIFA 26 / CoD" class="bg-[#131b2e] border border-slate-700 rounded text-[11px] p-1.5 w-full text-white focus:outline-none font-mono">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1.5">Density Multiplier</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button @click="form.players = 1" :class="form.players === 1 ? 'bg-emerald-950 border-emerald-500 text-emerald-400 font-bold' : 'bg-[#070a10] border-slate-800 text-slate-400'" class="border p-2.5 rounded-lg text-xs transition font-mono cursor-pointer text-center">1 Player ($3/h)</button>
+                            <button @click="form.players = 2" :class="form.players === 2 ? 'bg-emerald-950 border-emerald-500 text-emerald-400 font-bold' : 'bg-[#070a10] border-slate-800 text-slate-400'" class="border p-2.5 rounded-lg text-xs transition font-mono cursor-pointer text-center">2 Player ($5/h)</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1.5">Time Frame Structure</label>
+                        <div class="grid grid-cols-3 gap-1.5">
+                            <template x-for="t in [30, 60, 120]">
+                                <button @click="form.duration = t" :class="form.duration === t ? 'bg-emerald-950 border-emerald-500 text-emerald-400 font-bold' : 'bg-[#070a10] border-slate-800 text-slate-400'" class="border py-2.5 rounded text-[10px] transition font-mono cursor-pointer text-center" x-text="t + ' MIN'"></button>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-slate-800 flex justify-between items-center text-xs font-mono">
+                    <span class="text-slate-400">Projected Base Frame Rent:</span>
+                    <span class="text-base font-bold text-emerald-400" x-text="'$' + calculateInitialCost().toFixed(2)"></span>
+                </div>
+
+                <button @click="confirmBooking()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold py-3.5 rounded-xl transition tracking-wider cursor-pointer shadow-lg shadow-emerald-950/50">
+                    BOOT UP ALLOCATION SEQUENCE
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 z-50" x-show="modals.addons" x-cloak x-transition>
+        <div class="bg-[#0f1626] border border-slate-800 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl" @click.outside="modals.addons = false">
+            <div class="bg-[#141d31] px-6 py-4 flex justify-between items-center border-b border-slate-800">
+                <div>
+                    <h3 class="font-mono font-bold text-base text-white" x-text="'STATION ' + String(activeStation?.id).padStart(2, '0') + ' POS CONSOLE ITEMS'"></h3>
+                    <p class="text-xs text-slate-400 font-mono">Track orders and manage miscellaneous fees</p>
+                </div>
+                <button @click="modals.addons = false" class="text-slate-400 hover:text-white text-xl cursor-pointer font-mono">&times;</button>
+            </div>
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[75vh] overflow-y-auto">
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-2">Inventory Stock Matrix</label>
+                        <div class="space-y-2 max-h-[250px] overflow-y-auto pr-1">
+                            <template x-for="item in menu" :key="item.name">
+                                <button @click="addItemToStation(item)" class="w-full bg-[#070a10] hover:bg-[#121a2b] p-2.5 rounded-lg border border-slate-800 hover:border-slate-700 transition flex justify-between items-center text-left font-mono cursor-pointer">
+                                    <div class="text-xs">
+                                        <span class="text-white block" x-text="item.name"></span>
+                                        <span class="text-[9px] text-slate-500" x-text="'Cat: ' + item.cat"></span>
+                                    </div>
+                                    <span class="bg-[#0f1626] border border-slate-800 px-2 py-1 rounded text-xs text-amber-400 font-bold" x-text="'$' + item.price.toFixed(2)"></span>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-800 space-y-2">
+                        <label class="block text-[10px] font-mono uppercase tracking-wider text-slate-400">Manual Surcharge / Custom Service Fee</label>
+                        <div class="flex gap-2">
+                            <input type="number" step="0.01" placeholder="$0.00" x-model.number="form.extraAmount" class="bg-[#070a10] border border-slate-700 rounded-lg px-2 py-2 w-1/3 text-xs text-white font-mono focus:outline-none">
+                            <input type="text" placeholder="Reason (e.g. Damage fee, printouts)" x-model="form.extraReason" class="bg-[#070a10] border border-slate-700 rounded-lg px-3 py-2 flex-1 text-xs text-white font-mono focus:outline-none">
+                        </div>
+                        <button @click="addSpecialService()" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 font-mono text-[11px] py-2 rounded-lg transition cursor-pointer">
+                            Inject Custom Fee Line Item
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-[#070a10] rounded-xl p-4 border border-slate-800/80 flex flex-col justify-between">
+                    <div>
+                        <h4 class="text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-3 pb-1 border-b border-slate-800">Current Station Statement Tab</h4>
+                        <div class="space-y-2 text-xs font-mono max-h-[260px] overflow-y-auto pr-1">
+                            <template x-if="activeStation?.addons.length === 0">
+                                <p class="text-slate-600 italic text-center py-8">Cart is currently pristine.</p>
+                            </template>
+                            <template x-for="(addon, idx) in activeStation?.addons" :key="idx">
+                                <div class="flex justify-between items-center bg-[#0e1422] p-2 rounded border border-slate-800/60">
+                                    <div>
+                                        <span class="text-slate-200 block" x-text="addon.name"></span>
+                                        <span class="text-[9px] text-slate-500" x-text="addon.qty + ' units @ $' + addon.price.toFixed(2)"></span+>
+                                    </div>
+                                    <div class="flex items-center space-x-3">
+                                        <span class="text-amber-400 font-bold" x-text="'$' + (addon.price * addon.qty).toFixed(2)"></span>
+                                        <button @click="removeAddonItem(idx)" class="text-rose-500 hover:text-rose-400 font-bold px-1 cursor-pointer">&times;</button>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-800 mt-4 flex justify-between items-center text-xs font-mono">
+                        <span class="text-slate-400">Addons Dynamic Summation:</span>
+                        <span class="text-base font-bold text-amber-400" x-text="'$' + calculateAddonsSum(activeStation).toFixed(2)"></span>
+                    </div>
+                </div>
+
+            </div>
+            <div class="bg-[#090d16] p-4 border-t border-slate-800 flex justify-end">
+                <button @click="modals.addons = false" class="bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold px-6 py-2.5 rounded-lg transition cursor-pointer">
+                    SAVE OPERATIONS & CLOSE
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 z-50" x-show="modals.checkout" x-cloak x-transition>
+        <div class="bg-[#0f1626] border border-slate-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl" @click.outside="modals.checkout = false">
+            <div class="bg-[#19111c] px-6 py-4 border-b border-slate-800 text-center">
+                <h3 class="font-mono font-bold text-base tracking-widest text-white">TAX INVOICE & SESSION CLOSURE</h3>
+                <p class="text-[11px] text-slate-400 font-mono mt-0.5" x-text="'TERMINAL SEQUENCE ST-' + String(activeStation?.id).padStart(2, '0')"></p>
+            </div>
+            <div class="p-6 space-y-4">
+                
+                <div class="bg-[#070a10] rounded-xl p-4 border border-slate-800 font-mono text-xs space-y-2.5">
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Base Time Charge (<span x-text="activeStation?.initialDuration"></span>m)</span>
+                        <span class="text-slate-200" x-text="'$' + activeStation?.initialCost.toFixed(2)"></span>
+                    </div>
+                    <div class="flex justify-between" x-show="activeStation?.extraTime > 0">
+                        <span class="text-slate-500">Extended Runtime (<span x-text="activeStation?.extraTime"></span>m)</span>
+                        <span class="text-amber-400" x-text="'$' + activeStation?.extraTimeCost.toFixed(2)"></span>
+                    </div>
+                    
+                    <template x-for="addon in activeStation?.addons">
+                        <div class="flex justify-between text-[11px]">
+                            <span class="text-slate-500" x-text="addon.qty + 'x ' + addon.name"></span>
+                            <span class="text-slate-300" x-text="'$' + (addon.price * addon.qty).toFixed(2)"></span>
+                        </div>
+                    </template>
+
+                    <div class="border-t border-slate-800 pt-2 flex justify-between font-bold text-slate-400">
+                        <span>Subtotal Gross:</span>
+                        <span x-text="'$' + (activeStation ? calculateGrossLiveTotal(activeStation) : 0).toFixed(2)"></span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 bg-[#0a0f1a] p-3 rounded-xl border border-slate-800/60 font-mono">
+                    <div>
+                        <label class="block text-[9px] uppercase tracking-wider text-slate-400 mb-1">Manual Flat Discount ($)</label>
+                        <input type="number" step="0.01" x-model.number="form.discount" @input="recalculateNetFinal()" class="bg-[#070a10] border border-slate-700 rounded p-1.5 w-full text-xs text-rose-400 focus:outline-none font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-[9px] uppercase tracking-wider text-slate-400 mb-1">Tax / Facility Fee ($)</label>
+                        <input type="number" step="0.01" x-model.number="form.tax" @input="recalculateNetFinal()" class="bg-[#070a10] border border-slate-700 rounded p-1.5 w-full text-xs text-emerald-400 focus:outline-none font-bold">
+                    </div>
+                </div>
+
+                <div class="font-mono">
+                    <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1.5">Payment Classification</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <template x-for="method in ['Cash', 'Card', 'UPI/Crypto']">
+                            <button @click="form.paymentMethod = method" :class="form.paymentMethod === method ? 'bg-purple-950 border-purple-500 text-purple-400 font-bold' : 'bg-[#070a10] border-slate-800 text-slate-400'" class="border py-2 rounded text-[11px] transition cursor-pointer text-center" x-text="method"></button>
+                        </template>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center bg-[#070a10] p-4 rounded-xl border border-emerald-950/60">
+                    <span class="font-mono font-bold tracking-wider text-xs text-slate-400">NET MATURED RECEIVABLE:</span>
+                    <span class="text-3xl font-mono font-black text-emerald-400" x-text="'$' + finalNetSettlement.toFixed(2)"></span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 font-mono">
+                    <button @click="modals.checkout = false" class="bg-slate-800 hover:bg-slate-700 py-3 rounded-lg text-xs font-medium transition cursor-pointer text-slate-300">ABORT PROCESS</button>
+                    <button @click="closeAndAuditSession()" class="bg-emerald-600 hover:bg-emerald-500 py-3 rounded-lg text-xs font-bold transition cursor-pointer text-white tracking-wider shadow-lg shadow-emerald-950/40">Settle & Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 z-50" x-show="showHistory" x-cloak x-transition>
+        <div class="bg-[#0f1626] border border-slate-800 rounded-2xl w-full max-w-6xl overflow-hidden shadow-2xl" @click.outside="showHistory = false">
+            <div class="bg-[#141d31] px-6 py-4 flex justify-between items-center border-b border-slate-800">
+                <div>
+                    <h3 class="font-mono font-bold text-base text-white">MANAGEMENT CONTROL MATRIX & TRANSACTION JOURNAL</h3>
+                    <p class="text-xs text-slate-400 font-mono">Real-time ledger entries generated during this system uptime shift</p>
+                </div>
+                <button @click="showHistory = false" class="text-slate-400 hover:text-white text-xl cursor-pointer font-mono">&times;</button>
+            </div>
+            <div class="p-6 space-y-6">
+                
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div class="bg-[#070a10] p-3 rounded-xl border border-slate-800">
+                        <span class="text-[10px] font-mono block text-slate-500 uppercase">Gross Terminal Vol</span>
+                        <span class="text-lg font-mono font-black text-white" x-text="'$' + shiftStats.revenue.toFixed(2)"></span>
+                    </div>
+                    <div class="bg-[#070a10] p-3 rounded-xl border border-slate-800">
+                        <span class="text-[10px] font-mono block text-slate-500 uppercase">Total Surcharges Applied</span>
+                        <span class="text-lg font-mono font-black text-emerald-400" x-text="'$' + shiftStats.totalTax.toFixed(2)"></span>
+                    </div>
+                    <div class="bg-[#070a10] p-3 rounded-xl border border-slate-800">
+                        <span class="text-[10px] font-mono block text-slate-500 uppercase">Total Allowances Given</span>
+                        <span class="text-lg font-mono font-black text-rose-400" x-text="'$' + shiftStats.totalDiscount.toFixed(2)"></span>
+                    </div>
+                    <div class="bg-[#070a10] p-3 rounded-xl border border-slate-800">
+                        <span class="text-[10px] font-mono block text-slate-500 uppercase">Active Units Connected</span>
+                        <span class="text-lg font-mono font-black text-purple-400" x-text="getActiveUnitsCount() + ' / 15'"></span>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto rounded-xl border border-slate-800 bg-[#070a10]">
+                    <table class="w-full text-left font-mono text-xs text-slate-300">
+                        <thead class="bg-[#0f1626] text-[10px] uppercase tracking-wider text-slate-400 border-b border-slate-800">
+                            <tr>
+                                <th class="p-3">Time</th>
+                                <th class="p-3">Station</th>
+                                <th class="p-3">Client Profile</th>
+                                <th class="p-3">Hardware Array Set</th>
+                                <th class="p-3">Mins Logged</th>
+                                <th class="p-3">Consumables / Operations Notes</th>
+                                <th class="p-3 text-center">Type</th>
+                                <th class="p-3 text-right">Settled Final</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800/60">
+                            <template x-if="history.length === 0">
+                                <tr>
+                                    <td colspan="8" class="p-8 text-center text-slate-600 italic">No closed ledger sequences on record for current cycle.</td>
+                                </tr>
+                            </template>
+                            <template x-for="log in history">
+                                <tr class="hover:bg-[#0e1422] transition">
+                                    <td class="p-3 text-slate-500 text-[11px]" x-text="log.timestamp"></td>
+                                    <td class="p-3 font-bold text-white" x-text="'ST-' + String(log.stationId).padStart(2, '0')"></td>
+                                    <td class="p-3">
+                                        <span class="block text-slate-200" x-text="log.customerName"></span>
+                                        <span class="block text-[10px] text-slate-500" x-text="log.customerPhone"></span>
+                                    </td>
+                                    <td class="p-3 text-slate-400">
+                                        <span class="block text-[11px]" x-text="log.hardware"></span>
+                                        <span class="block text-[9px] text-slate-600" x-text="'Game: ' + log.gameTitle"></span>
+                                    </td>
+                                    <td class="p-3 font-semibold text-slate-400" x-text="log.totalTime + ' m'"></td>
+                                    <td class="p-3 text-[11px] text-slate-500 max-w-xs truncate" :title="log.summary" x-text="log.summary"></td>
+                                    <td class="p-3 text-center">
+                                        <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-purple-400 border border-slate-700" x-text="log.paymentMethod"></span>
+                                    </td>
+                                    <td class="p-3 text-right font-bold text-emerald-400" x-text="'$' + log.totalAmount.toFixed(2)"></td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function advancedParlorHub() {
+            return {
+                // Initialize 15 custom enterprise models
+                stations: Array.from({ length: 15 }, (_, i) => ({
+                    id: i + 1,
+                    status: 'Available', 
+                    players: 1,
+                    initialDuration: 0,
+                    timeLeft: 0, 
+                    endTime: '',
+                    initialCost: 0,
+                    extraTime: 0,
+                    extraTimeCost: 0,
+                    addons: [],
+                    totalAmount: 0,
+                    // Advanced Fields
+                    customerName: '',
+                    customerPhone: '',
+                    hardware: 'PS5 Pro',
+                    hardwareId: '',
+                    gameTitle: ''
+                })),
+                
+                // Advanced Segmented Inventory
+                menu: [
+                    { name: 'Coca-Cola Zero', price: 1.75, cat: 'Drink' },
+                    { name: 'Red Bull Energy', price: 3.50, cat: 'Drink' },
+                    { name: 'Monster Energy', price: 3.50, cat: 'Drink' },
+                    { name: 'Classic Nachos Box', price: 2.50, cat: 'Snack' },
+                    { name: 'Peri Peri Fries', price: 3.00, cat: 'Snack' },
+                    { name: 'Cigarette Premium', price: 0.75, cat: 'Tobacco' },
+                    { name: 'Vape Pod Hookah', price: 8.00, cat: 'Tobacco' }
+                ],
+                
+                // State tracking structures
+                history: [],
+                activeStation: null,
+                showHistory: false,
+                finalNetSettlement: 0,
+                
+                shiftStats: {
+                    revenue: 0,
+                    slotsClosed: 0,
+                    totalTax: 0,
+                    totalDiscount: 0
+                },
+                
+                modals: {
+                    booking: false,
+                    addons: false,
+                    checkout: false
+                },
+                
+                // Complex Multi-field Form structures
+                form: {
+                    players: 1,
+                    duration: 60,
+                    extraAmount: '',
+                    extraReason: '',
+                    customerName: '',
+                    customerPhone: '',
+                    hardware: 'PS5 Pro',
+                    hardwareId: '',
+                    gameTitle: '',
+                    discount: 0,
+                    tax: 0,
+                    paymentMethod: 'Cash'
+                },
+
+                calculateInitialCost() {
+                    const rate = this.form.players === 1 ? 3.00 : 5.00;
+                    return (rate / 60) * this.form.duration;
+                },
+
+                calculateGrossLiveTotal(station) {
+                    const addonsTotal = station.addons.reduce((sum, item) => sum + (item.price * item.qty), 0);
+                    return station.initialCost + station.extraTimeCost + addonsTotal;
+                },
+
+                calculateAddonsSum(station) {
+                    if (!station) return 0;
+                    return station.addons.reduce((sum, item) => sum + (item.price * item.qty), 0);
+                },
+
+                describeAddonsShort(station) {
+                    if(station.addons.length === 0) return "No addons charged";
+                    return station.addons.map(a => `${a.qty}x ${a.name.split(' ')[0]}`).join(', ');
+                },
+
+                calculateUtilization() {
+                    const activeCount = this.stations.filter(s => s.status !== 'Available').length;
+                    return Math.round((activeCount / 15) * 100);
+                },
+
+                getActiveUnitsCount() {
+                    return this.stations.filter(s => s.status !== 'Available').length;
+                },
+
+                formatTime(seconds) {
+                    const m = Math.floor(seconds / 60);
+                    const s = seconds % 60;
+                    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+                },
+
+                // Open clean instantiation forms
+                openBookingModal(station) {
+                    this.activeStation = station;
+                    this.form.players = 1;
+                    this.form.duration = 60;
+                    this.form.customerName = '';
+                    this.form.customerPhone = '';
+                    this.form.hardware = station.id % 3 === 0 ? 'PC Rig Ultra' : (station.id % 2 === 0 ? 'Xbox Series X' : 'PS5 Pro');
+                    this.form.hardwareId = 'CTRL-' + station.id + 'A';
+                    this.form.gameTitle = '';
+                    this.modals.booking = true;
+                },
+
+                confirmBooking() {
+                    const cost = this.calculateInitialCost();
+                    const now = new Date();
+                    now.setMinutes(now.getMinutes() + this.form.duration);
+                    
+                    // Flush structure map data variables onto chosen components array index
+                    this.activeStation.status = 'In Use';
+                    this.activeStation.players = this.form.players;
+                    this.activeStation.initialDuration = this.form.duration;
+                    this.activeStation.timeLeft = this.form.duration * 60;
+                    this.activeStation.endTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    this.activeStation.initialCost = cost;
+                    this.activeStation.extraTime = 0;
+                    this.activeStation.extraTimeCost = 0;
+                    this.activeStation.addons = [];
+                    
+                    // Advanced Metadata parameters inject
+                    this.activeStation.customerName = this.form.customerName.trim() || 'Walk-in Guest';
+                    this.activeStation.customerPhone = this.form.customerPhone.trim() || 'N/A';
+                    this.activeStation.hardware = this.form.hardware;
+                    this.activeStation.hardwareId = this.form.hardwareId.trim() || 'SYS-ID';
+                    this.activeStation.gameTitle = this.form.gameTitle.trim() || 'Unassigned UI';
+                    
+                    this.modals.booking = false;
+                },
+
+                addExtraTime(station, minutes) {
+                    station.timeLeft += minutes * 60;
+                    station.extraTime += minutes;
+                    
+                    const rate = station.players === 1 ? 3.00 : 5.00;
+                    station.extraTimeCost += (rate / 60) * minutes;
+                    
+                    let timeParts = station.endTime.split(/:| /);
+                    let endRef = new Date();
+                    endRef.setHours(parseInt(timeParts[0]) + (station.endTime.includes('PM') && timeParts[0] !== '12' ? 12 : 0));
+                    endRef.setMinutes(parseInt(timeParts[1]) + minutes);
+                    station.endTime = endRef.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                    if(station.status === 'Time Over') {
+                        station.status = 'In Use';
+                    }
+                },
+
+                openAddonsModal(station) {
+                    this.activeStation = station;
+                    this.form.extraAmount = '';
+                    this.form.extraReason = '';
+                    this.modals.addons = true;
+                },
+
+                addItemToStation(menuItem) {
+                    const existing = this.activeStation.addons.find(i => i.name === menuItem.name);
+                    if (existing) {
+                        existing.qty++;
+                    } else {
+                        this.activeStation.addons.push({ ...menuItem, qty: 1 });
+                    }
+                },
+
+                removeAddonItem(index) {
+                    this.activeStation.addons.splice(index, 1);
+                },
+
+                addSpecialService() {
+                    if (this.form.extraAmount > 0) {
+                        const reasonText = this.form.extraReason.trim() || 'Misc Facility Surcharge';
+                        this.activeStation.addons.push({
+                            name: reasonText,
+                            price: this.form.extraAmount,
+                            qty: 1,
+                            cat: 'Custom'
+                        });
+                        this.form.extraAmount = '';
+                        this.form.extraReason = '';
+                    }
+                },
+
+                openCheckoutModal(station) {
+                    this.activeStation = station;
+                    this.form.discount = 0;
+                    this.form.tax = 0;
+                    this.form.paymentMethod = 'Cash';
+                    this.recalculateNetFinal();
+                    this.modals.checkout = true;
+                },
+
+                recalculateNetFinal() {
+                    const gross = this.calculateGrossLiveTotal(this.activeStation);
+                    const calculated = gross - (this.form.discount || 0) + (this.form.tax || 0);
+                    this.finalNetSettlement = calculated > 0 ? calculated : 0;
+                },
+
+                closeAndAuditSession() {
+                    let summaryItems = [];
+                    this.activeStation.addons.forEach(a => summaryItems.push(`${a.qty}x ${a.name}`));
+                    if(this.activeStation.extraTime > 0) summaryItems.push(`Ext (+${this.activeStation.extraTime}m)`);
+                    
+                    // Save to historical audit records array object structural context
+                    this.history.unshift({
+                        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+                        stationId: this.activeStation.id,
+                        customerName: this.activeStation.customerName,
+                        customerPhone: this.activeStation.customerPhone,
+                        hardware: this.activeStation.hardware,
+                        gameTitle: this.activeStation.gameTitle,
+                        totalTime: this.activeStation.initialDuration + this.activeStation.extraTime,
+                        summary: summaryItems.join(', ') || 'Standard Base Timing Session.',
+                        paymentMethod: this.form.paymentMethod,
+                        totalAmount: this.finalNetSettlement
+                    });
+
+                    // Collate dynamic performance shift parameters metrics metrics
+                    this.shiftStats.revenue += this.finalNetSettlement;
+                    this.shiftStats.slotsClosed += 1;
+                    this.shiftStats.totalTax += (this.form.tax || 0);
+                    this.shiftStats.totalDiscount += (this.form.discount || 0);
+
+                    // Revert chosen structure variables block down back cleanly to initialization structures
+                    this.activeStation.status = 'Available';
+                    this.activeStation.customerName = '';
+                    this.activeStation.customerPhone = '';
+                    this.activeStation.addons = [];
+                    this.activeStation.initialCost = 0;
+                    this.activeStation.extraTimeCost = 0;
+                    
+                    this.modals.checkout = false;
+                },
+
+                initEngine() {
+                    setInterval(() => {
+                        this.stations.forEach(station => {
+                            if (station.status === 'In Use') {
+                                if (station.timeLeft > 0) {
+                                    station.timeLeft--;
+                                } else {
+                                    station.status = 'Time Over';
+                                }
+                            }
+                        });
+                    }, 1000);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
