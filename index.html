@@ -3,698 +3,826 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ArcadeHQ - Advanced Dark Billing Hub</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <title>Wonder Gamezone - Master Administration System</title>
     <style>
-        [x-cloak] { display: none !important; }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        /* --- Core Reset Framework --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #0d0d0d;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .dashboard-wrapper {
+            width: 100%;
+            max-width: 1300px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* --- Global Header Space --- */
+        .header-panel {
+            background: linear-gradient(135deg, #1f1f1f 0%, #141414 100%);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 40px;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo-placeholder {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #ff6a00, #ee0979);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 0 15px rgba(238, 9, 121, 0.4);
+        }
+
+        .header-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: linear-gradient(to right, #ff7b00, #ffae00, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* --- Primary Action System Buttons --- */
+        .log-trigger-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 10px 24px;
+            border-radius: 30px;
+            color: #fff;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .log-trigger-btn:hover {
+            background: #ff9100;
+            border-color: #ff9100;
+            box-shadow: 0 0 15px rgba(255, 145, 0, 0.4);
+        }
+
+        /* --- Workspace Configurations --- */
+        .main-content {
+            background: linear-gradient(135deg, #1a1a1a 0%, #111111 100%);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 40px;
+            padding: 40px;
+            display: grid;
+            grid-template-columns: 2.2fr 1fr;
+            gap: 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+            position: relative;
+        }
+
+        .stations-side {
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 35px;
+        }
+
+        .section-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #ffffff;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title::after {
+            content: "";
+            flex-grow: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .stations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 20px;
+        }
+
+        /* --- Interactive System Cards --- */
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.2s ease, border 0.2s ease;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.07);
+            border-color: rgba(255, 153, 0, 0.4);
+        }
+
+        .card-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(180deg, #ff9100 0%, #e25c00 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .card-status {
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #888;
+        }
+
+        .card-timer {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            transition: color 0.3s ease;
+        }
+
+        /* --- Adaptive Time Color States --- */
+        .timer-safe { color: #00ff66; text-shadow: 0 0 10px rgba(0, 255, 102, 0.2); }
+        .timer-warning { color: #ffae00; text-shadow: 0 0 10px rgba(255, 174, 0, 0.2); }
+        .timer-critical { color: #ff3333; text-shadow: 0 0 15px rgba(255, 51, 51, 0.5); animation: blinker 1s linear infinite; }
+
+        @keyframes blinker { 50% { opacity: 0.4; } }
+
+        /* --- Right-hand Panel Layout --- */
+        .members-side { z-index: 2; }
+        .members-panel {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(16px);
+             border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 24px;
+            padding: 25px;
+            height: 100%;
+        }
+
+        .members-title {
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 800;
+            letter-spacing: 3px;
+            color: #ffffff;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .members-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+        .member-item {
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding-bottom: 4px;
+            background: linear-gradient(to right, #ff6a00, #ffb300);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
+        /* --- Modal Layout Layering Configuration --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-container {
+            background: #161616;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            width: 90%;
+            max-width: 550px;
+            padding: 30px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: translateY(-20px);
+            transition: transform 0.2s ease;
+        }
+
+        .modal-overlay.active .modal-container { transform: translateY(0); }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 10px;
+        }
+
+        .modal-header h2 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            background: linear-gradient(to right, #ff9100, #ffea00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .close-btn { background: none; border: none; color: #888; font-size: 1.6rem; cursor: pointer; }
+        .close-btn:hover { color: #fff; }
+
+        /* --- Form & Parameter Control Blocks --- */
+        .form-group { margin-bottom: 16px; display: flex; flex-direction: column; gap: 6px; }
+        .form-group label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #aaa; }
+        .form-group input, .form-group select {
+            background: #222;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: #fff;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .form-group input:focus { border-color: #ff9100; }
+        .nested-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; align-items: flex-end; }
+
+        /* --- Session Telemetry Elements --- */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            background: rgba(255,255,255,0.02);
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.03);
+            margin-bottom: 16px;
+        }
+
+        .metric-item { display: flex; flex-direction: column; gap: 2px; }
+        .metric-label { font-size: 0.65rem; color: #666; text-transform: uppercase; font-weight: 700; }
+        .metric-value { font-size: 0.85rem; font-weight: 700; color: #ddd; word-break: break-all; }
+
+        /* --- Dynamic Ledger / History Lists --- */
+        .history-list-box {
+            background: rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 10px;
+            max-height: 120px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            padding: 10px;
+        }
+
+        .history-item {
+            font-size: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            color: #bbb;
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+        }
+
+        .summary-total-strip {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px dashed rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .total-label { font-size: 0.9rem; font-weight: 800; text-transform: uppercase; color: #ff9100; }
+        .total-price { font-size: 1.4rem; font-weight: 800; color: #00ff66; }
+
+        .action-button {
+            width: 100%;
+            background: linear-gradient(90deg, #ff6a00, #ff9100);
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            color: white;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .release-button { background: linear-gradient(90deg, #d32f2f, #f44336); }
+
+        /* --- Settlement Invoice Layout View --- */
+        .invoice-block { text-align: center; padding: 10px 0; }
+        .invoice-line { display: flex; justify-content: space-between; margin: 10px 0; font-size: 0.9rem; border-bottom: 1px dashed #333; padding-bottom: 5px; }
+
+        /* --- System Management Audit Logs Layout --- */
+        .log-table-wrapper { width: 100%; overflow-x: auto; margin-top: 10px; }
+        .log-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.8rem; }
+        .log-table th { background: #222; color: #ff9100; padding: 10px; font-weight: 700; text-transform: uppercase; }
+        .log-table td { padding: 10px; border-bottom: 1px solid #222; color: #ccc; }
+
+        @media (max-width: 850px) {
+            .main-content { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
-<body class="bg-[#090d16] text-slate-200 font-sans min-h-screen dynamic-billing-app" 
-      x-data="advancedParlorHub()" 
-      x-init="initEngine()">
+<body>
 
-    <header class="bg-[#0f1626] border-b border-slate-800/80 px-6 py-3 sticky top-0 z-40 shadow-xl shadow-black/40">
-        <div class="max-w-[1700px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            
-            <div class="flex items-center space-x-4">
-                <div class="relative flex h-3 w-3">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+    <div class="dashboard-wrapper">
+        <header class="header-panel">
+            <div class="header-left">
+                <div class="logo-placeholder">GZ</div>
+                <h1 class="header-title">Wonder Gamezone</h1>
+            </div>
+            <button class="log-trigger-btn" onclick="openSystemLogsModal()">
+                📊 System Audit Logs
+            </button>
+        </header>
+
+        <main class="main-content">
+            <div class="stations-side">
+                <div>
+                    <div class="section-title">In Use</div>
+                    <div class="stations-grid" id="in-use-grid"></div>
                 </div>
                 <div>
-                    <h1 class="text-lg font-black tracking-wider text-white uppercase flex items-center gap-2">
-                        CRIMSON DESK <span class="text-xs font-mono font-bold text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/50">v4.2 PRO</span>
-                    </h1>
-                    <p class="text-[11px] text-slate-400 font-mono tracking-tight">Active Shift Supervisor: <span class="text-slate-200 font-medium">Staff Account #1</span></p>
+                    <div class="section-title">Available</div>
+                    <div class="stations-grid" id="available-grid"></div>
                 </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-3 md:gap-6 bg-[#070a10] px-4 py-2 rounded-xl border border-slate-800/60">
-                <div class="text-center md:text-left">
-                    <span class="text-[10px] uppercase font-mono block text-slate-500 tracking-wider">Shift Revenue</span>
-                    <span class="text-sm font-mono font-bold text-emerald-400" x-text="'$' + shiftStats.revenue.toFixed(2)"></span>
-                </div>
-                <div class="text-center md:text-left border-x border-slate-800/80 px-3 md:px-6">
-                    <span class="text-[10px] uppercase font-mono block text-slate-500 tracking-wider">Slots Closed</span>
-                    <span class="text-sm font-mono font-bold text-purple-400" x-text="shiftStats.slotsClosed"></span>
-                </div>
-                <div class="text-center md:text-left">
-                    <span class="text-[10px] uppercase font-mono block text-slate-500 tracking-wider">Utilization</span>
-                    <span class="text-sm font-mono font-bold text-sky-400" x-text="calculateUtilization() + '%'"></span>
+            <div class="members-side">
+                <div class="members-panel">
+                    <div class="members-title">Members</div>
+                    <ul class="members-list" id="members-container"></ul>
                 </div>
             </div>
-
-            <div class="flex items-center space-x-3">
-                <button @click="showHistory = true" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/60 text-xs px-4 py-2.5 rounded-lg font-mono font-medium transition duration-200 shadow-md cursor-pointer">
-                    📊 AUDIT LOGS & SHIFT SUMMARY
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <main class="p-6 max-w-[1700px] mx-auto space-y-6">
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
-            <template x-for="station in stations" :key="station.id">
-                <div class="bg-[#0e1422] rounded-xl border transition-all duration-300 flex flex-col justify-between h-[300px] overflow-hidden group shadow-lg"
-                     :class="{
-                        'border-slate-800 hover:border-slate-700/80 hover:bg-[#11192a] shadow-black/50': station.status === 'Available',
-                        'border-emerald-600/40 bg-[#0e1925] shadow-emerald-950/10': station.status === 'In Use',
-                        'border-rose-600/60 bg-[#1a0f18] animate-pulse': station.status === 'Time Over'
-                     }">
-                    
-                    <div class="p-4 bg-[#090d16]/60 border-b border-slate-800/60 flex justify-between items-start">
-                        <div>
-                            <div class="flex items-center space-x-2">
-                                <h2 class="font-mono font-bold text-base tracking-wide text-white" x-text="'STATION ' + String(station.id).padStart(2, '0')"></h2>
-                                <span class="text-[9px] font-mono px-1.5 py-0.2 rounded font-bold"
-                                      :class="{
-                                        'bg-slate-800 text-slate-400': station.status === 'Available',
-                                        'bg-emerald-950 text-emerald-400 border border-emerald-800/30': station.status === 'In Use',
-                                        'bg-rose-950 text-rose-400 border border-rose-800/30': station.status === 'Time Over'
-                                      }" x-text="station.status.toUpperCase()"></span>
-                            </div>
-                            <div class="text-[10px] text-slate-500 font-mono mt-0.5" x-text="station.status !== 'Available' ? `${station.hardware} [ID: ${station.hardwareId}]` : 'System Standby'"></div>
-                        </div>
-                        <div class="text-right" x-show="station.status !== 'Available'">
-                            <div class="text-[10px] text-slate-400 font-mono tracking-tight truncate max-w-[90px]" x-text="station.customerName || 'Walk-in Guest'"></div>
-                            <div class="text-emerald-400 font-mono font-bold text-xs mt-0.5" x-text="'$' + calculateGrossLiveTotal(station).toFixed(2)"></div>
-                        </div>
-                    </div>
-
-                    <div class="p-4 flex-grow flex flex-col justify-center">
-                        
-                        <template x-if="station.status === 'Available'">
-                            <div class="text-center space-y-3">
-                                <div class="text-slate-600 text-xs font-mono">Terminal Empty</div>
-                                <button @click="openBookingModal(station)" class="bg-slate-800 hover:bg-emerald-600 hover:text-white border border-slate-700 text-slate-300 font-mono text-xs font-bold px-4 py-2.5 rounded-lg transition-all duration-200 cursor-pointer w-full tracking-wider shadow-inner">
-                                    INITIALIZE TERMINAL
-                                </button>
-                            </div>
-                        </template>
-
-                        <template x-if="station.status === 'In Use'">
-                            <div class="space-y-4">
-                                <div class="text-center">
-                                    <div class="font-mono text-3xl font-black tracking-widest text-slate-100" x-text="formatTime(station.timeLeft)"></div>
-                                    <div class="flex justify-center items-center gap-2 mt-1 text-[10px] font-mono text-slate-400">
-                                        <span x-text="'Game: ' + (station.gameTitle || 'Unassigned')"></span>
-                                        <span>•</span>
-                                        <span x-text="'Ends: ' + station.endTime"></span>
-                                    </div>
-                                </div>
-                                <div class="grid grid-cols-2 gap-2">
-                                    <button @click="addExtraTime(station, 5)" class="bg-[#161f30] hover:bg-[#1d2b42] text-slate-300 border border-slate-700/60 font-mono text-[11px] py-1.5 rounded transition cursor-pointer text-center">+5 Min Extend</button>
-                                    <button @click="addExtraTime(station, 10)" class="bg-[#161f30] hover:bg-[#1d2b42] text-slate-300 border border-slate-700/60 font-mono text-[11px] py-1.5 rounded transition cursor-pointer text-center">+10 Min Extend</button>
-                                </div>
-                            </div>
-                        </template>
-
-                        <template x-if="station.status === 'Time Over'">
-                            <div class="text-center space-y-2">
-                                <div class="font-mono text-3xl font-black tracking-widest text-rose-500 animate-pulse">00:00</div>
-                                <div class="bg-rose-950/40 border border-rose-900/40 rounded py-1 px-2 text-[10px] font-mono text-rose-300 inline-block">
-                                    SESSION CAP OVERDUE
-                                </div>
-                            </div>
-                        </template>
-                    </div>
-
-                    <div class="px-4 py-2 bg-[#090d16]/30 border-t border-slate-800/40 text-[11px] font-mono flex justify-between text-slate-400" x-show="station.status !== 'Available'">
-                        <span class="truncate max-w-[140px]" x-text="describeAddonsShort(station)"></span>
-                        <span class="text-purple-400" x-text="station.players + ' Player(s)'"></span>
-                    </div>
-
-                    <div class="p-3 bg-[#0a0f1a] border-t border-slate-800/80 flex gap-2" x-show="station.status !== 'Available'">
-                        <button @click="openAddonsModal(station)" class="flex-1 bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/50 font-mono text-xs py-2 rounded-md transition cursor-pointer">
-                            🛒 ADDONS
-                        </button>
-                        <button @click="openCheckoutModal(station)" class="flex-1 font-mono text-xs py-2 rounded-md font-bold transition duration-150 cursor-pointer text-white shadow-md"
-                                :class="station.status === 'Time Over' ? 'bg-rose-600 hover:bg-rose-500 shadow-rose-950/40' : 'bg-amber-600 hover:bg-amber-500 shadow-amber-950/40'">
-                            💵 BILL DESK
-                        </button>
-                    </div>
-                </div>
-            </template>
-        </div>
-    </main>
-
-    <div class="fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 z-50" x-show="modals.booking" x-cloak x-transition>
-        <div class="bg-[#0f1626] border border-slate-800 rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl" @click.outside="modals.booking = false">
-            <div class="bg-[#141d31] px-6 py-4 flex justify-between items-center border-b border-slate-800">
-                <div>
-                    <h3 class="font-mono font-bold text-base text-white" x-text="'INITIALIZE TERMINAL AREA: STATION ' + String(activeStation?.id).padStart(2, '0')"></h3>
-                    <p class="text-xs text-slate-400 font-mono">Fill peripheral hardware details below</p>
-                </div>
-                <button @click="modals.booking = false" class="text-slate-400 hover:text-white text-xl cursor-pointer font-mono">&times;</button>
-            </div>
-            <div class="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
-                
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1.5">Primary Player Name</label>
-                        <input type="text" x-model="form.customerName" placeholder="Guest Surname/ID" class="bg-[#070a10] border border-slate-700 rounded-lg px-3 py-2 w-full text-xs text-white focus:outline-none focus:border-emerald-500 font-mono">
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1.5">Contact Reference</label>
-                        <input type="text" x-model="form.customerPhone" placeholder="Mobile / Core Profile" class="bg-[#070a10] border border-slate-700 rounded-lg px-3 py-2 w-full text-xs text-white focus:outline-none focus:border-emerald-500 font-mono">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-3 gap-3 bg-[#090d16] p-3 rounded-xl border border-slate-800/80">
-                    <div>
-                        <label class="block text-[9px] font-mono uppercase tracking-wider text-slate-500 mb-1">Hardware Ecosystem</label>
-                        <select x-model="form.hardware" class="bg-[#131b2e] border border-slate-700 rounded text-[11px] p-1.5 w-full text-slate-300 focus:outline-none font-mono">
-                            <option value="PS5 Pro">PlayStation 5 Pro</option>
-                            <option value="Xbox Series X">Xbox Series X</option>
-                            <option value="PC Rig Ultra">High-End PC Rig</option>
-                            <option value="Nintendo Switch">Nintendo Switch</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[9px] font-mono uppercase tracking-wider text-slate-500 mb-1">Controller Assigned</label>
-                        <input type="text" x-model="form.hardwareId" placeholder="e.g., CTRL-A4" class="bg-[#131b2e] border border-slate-700 rounded text-[11px] p-1.5 w-full text-white focus:outline-none font-mono">
-                    </div>
-                    <div>
-                        <label class="block text-[9px] font-mono uppercase tracking-wider text-slate-500 mb-1">Active Software Game</label>
-                        <input type="text" x-model="form.gameTitle" placeholder="e.g., FIFA 26 / CoD" class="bg-[#131b2e] border border-slate-700 rounded text-[11px] p-1.5 w-full text-white focus:outline-none font-mono">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1.5">Density Multiplier</label>
-                        <div class="grid grid-cols-2 gap-2">
-                            <button @click="form.players = 1" :class="form.players === 1 ? 'bg-emerald-950 border-emerald-500 text-emerald-400 font-bold' : 'bg-[#070a10] border-slate-800 text-slate-400'" class="border p-2.5 rounded-lg text-xs transition font-mono cursor-pointer text-center">1 Player ($3/h)</button>
-                            <button @click="form.players = 2" :class="form.players === 2 ? 'bg-emerald-950 border-emerald-500 text-emerald-400 font-bold' : 'bg-[#070a10] border-slate-800 text-slate-400'" class="border p-2.5 rounded-lg text-xs transition font-mono cursor-pointer text-center">2 Player ($5/h)</button>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-1.5">Time Frame Structure</label>
-                        <div class="grid grid-cols-3 gap-1.5">
-                            <template x-for="t in [30, 60, 120]">
-                                <button @click="form.duration = t" :class="form.duration === t ? 'bg-emerald-950 border-emerald-500 text-emerald-400 font-bold' : 'bg-[#070a10] border-slate-800 text-slate-400'" class="border py-2.5 rounded text-[10px] transition font-mono cursor-pointer text-center" x-text="t + ' MIN'"></button>
-                            </template>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="pt-4 border-t border-slate-800 flex justify-between items-center text-xs font-mono">
-                    <span class="text-slate-400">Projected Base Frame Rent:</span>
-                    <span class="text-base font-bold text-emerald-400" x-text="'$' + calculateInitialCost().toFixed(2)"></span>
-                </div>
-
-                <button @click="confirmBooking()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold py-3.5 rounded-xl transition tracking-wider cursor-pointer shadow-lg shadow-emerald-950/50">
-                    BOOT UP ALLOCATION SEQUENCE
-                </button>
-            </div>
-        </div>
+        </main>
     </div>
 
-    <div class="fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 z-50" x-show="modals.addons" x-cloak x-transition>
-        <div class="bg-[#0f1626] border border-slate-800 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl" @click.outside="modals.addons = false">
-            <div class="bg-[#141d31] px-6 py-4 flex justify-between items-center border-b border-slate-800">
-                <div>
-                    <h3 class="font-mono font-bold text-base text-white" x-text="'STATION ' + String(activeStation?.id).padStart(2, '0') + ' POS CONSOLE ITEMS'"></h3>
-                    <p class="text-xs text-slate-400 font-mono">Track orders and manage miscellaneous fees</p>
-                </div>
-                <button @click="modals.addons = false" class="text-slate-400 hover:text-white text-xl cursor-pointer font-mono">&times;</button>
+    <div class="modal-overlay" id="modal-overlay" onclick="hideActiveModal(event)">
+        <div class="modal-container" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2 id="modal-title-field">Control Terminal</h2>
+                <button class="close-btn" onclick="closeTopModal()">&times;</button>
             </div>
-            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[75vh] overflow-y-auto">
-                
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-2">Inventory Stock Matrix</label>
-                        <div class="space-y-2 max-h-[250px] overflow-y-auto pr-1">
-                            <template x-for="item in menu" :key="item.name">
-                                <button @click="addItemToStation(item)" class="w-full bg-[#070a10] hover:bg-[#121a2b] p-2.5 rounded-lg border border-slate-800 hover:border-slate-700 transition flex justify-between items-center text-left font-mono cursor-pointer">
-                                    <div class="text-xs">
-                                        <span class="text-white block" x-text="item.name"></span>
-                                        <span class="text-[9px] text-slate-500" x-text="'Cat: ' + item.cat"></span>
-                                    </div>
-                                    <span class="bg-[#0f1626] border border-slate-800 px-2 py-1 rounded text-xs text-amber-400 font-bold" x-text="'$' + item.price.toFixed(2)"></span>
-                                </button>
-                            </template>
-                        </div>
-                    </div>
-
-                    <div class="pt-4 border-t border-slate-800 space-y-2">
-                        <label class="block text-[10px] font-mono uppercase tracking-wider text-slate-400">Manual Surcharge / Custom Service Fee</label>
-                        <div class="flex gap-2">
-                            <input type="number" step="0.01" placeholder="$0.00" x-model.number="form.extraAmount" class="bg-[#070a10] border border-slate-700 rounded-lg px-2 py-2 w-1/3 text-xs text-white font-mono focus:outline-none">
-                            <input type="text" placeholder="Reason (e.g. Damage fee, printouts)" x-model="form.extraReason" class="bg-[#070a10] border border-slate-700 rounded-lg px-3 py-2 flex-1 text-xs text-white font-mono focus:outline-none">
-                        </div>
-                        <button @click="addSpecialService()" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 font-mono text-[11px] py-2 rounded-lg transition cursor-pointer">
-                            Inject Custom Fee Line Item
-                        </button>
-                    </div>
-                </div>
-
-                <div class="bg-[#070a10] rounded-xl p-4 border border-slate-800/80 flex flex-col justify-between">
-                    <div>
-                        <h4 class="text-[10px] font-mono uppercase tracking-wider text-slate-400 mb-3 pb-1 border-b border-slate-800">Current Station Statement Tab</h4>
-                        <div class="space-y-2 text-xs font-mono max-h-[260px] overflow-y-auto pr-1">
-                            <template x-if="activeStation?.addons.length === 0">
-                                <p class="text-slate-600 italic text-center py-8">Cart is currently pristine.</p>
-                            </template>
-                            <template x-for="(addon, idx) in activeStation?.addons" :key="idx">
-                                <div class="flex justify-between items-center bg-[#0e1422] p-2 rounded border border-slate-800/60">
-                                    <div>
-                                        <span class="text-slate-200 block" x-text="addon.name"></span>
-                                        <span class="text-[9px] text-slate-500" x-text="addon.qty + ' units @ $' + addon.price.toFixed(2)"></span+>
-                                    </div>
-                                    <div class="flex items-center space-x-3">
-                                        <span class="text-amber-400 font-bold" x-text="'$' + (addon.price * addon.qty).toFixed(2)"></span>
-                                        <button @click="removeAddonItem(idx)" class="text-rose-500 hover:text-rose-400 font-bold px-1 cursor-pointer">&times;</button>
-                                    </div>
-                                </div>
-                            </template>
-                        </div>
-                    </div>
-
-                    <div class="pt-4 border-t border-slate-800 mt-4 flex justify-between items-center text-xs font-mono">
-                        <span class="text-slate-400">Addons Dynamic Summation:</span>
-                        <span class="text-base font-bold text-amber-400" x-text="'$' + calculateAddonsSum(activeStation).toFixed(2)"></span>
-                    </div>
-                </div>
-
-            </div>
-            <div class="bg-[#090d16] p-4 border-t border-slate-800 flex justify-end">
-                <button @click="modals.addons = false" class="bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold px-6 py-2.5 rounded-lg transition cursor-pointer">
-                    SAVE OPERATIONS & CLOSE
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div class="fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 z-50" x-show="modals.checkout" x-cloak x-transition>
-        <div class="bg-[#0f1626] border border-slate-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl" @click.outside="modals.checkout = false">
-            <div class="bg-[#19111c] px-6 py-4 border-b border-slate-800 text-center">
-                <h3 class="font-mono font-bold text-base tracking-widest text-white">TAX INVOICE & SESSION CLOSURE</h3>
-                <p class="text-[11px] text-slate-400 font-mono mt-0.5" x-text="'TERMINAL SEQUENCE ST-' + String(activeStation?.id).padStart(2, '0')"></p>
-            </div>
-            <div class="p-6 space-y-4">
-                
-                <div class="bg-[#070a10] rounded-xl p-4 border border-slate-800 font-mono text-xs space-y-2.5">
-                    <div class="flex justify-between">
-                        <span class="text-slate-500">Base Time Charge (<span x-text="activeStation?.initialDuration"></span>m)</span>
-                        <span class="text-slate-200" x-text="'$' + activeStation?.initialCost.toFixed(2)"></span>
-                    </div>
-                    <div class="flex justify-between" x-show="activeStation?.extraTime > 0">
-                        <span class="text-slate-500">Extended Runtime (<span x-text="activeStation?.extraTime"></span>m)</span>
-                        <span class="text-amber-400" x-text="'$' + activeStation?.extraTimeCost.toFixed(2)"></span>
-                    </div>
-                    
-                    <template x-for="addon in activeStation?.addons">
-                        <div class="flex justify-between text-[11px]">
-                            <span class="text-slate-500" x-text="addon.qty + 'x ' + addon.name"></span>
-                            <span class="text-slate-300" x-text="'$' + (addon.price * addon.qty).toFixed(2)"></span>
-                        </div>
-                    </template>
-
-                    <div class="border-t border-slate-800 pt-2 flex justify-between font-bold text-slate-400">
-                        <span>Subtotal Gross:</span>
-                        <span x-text="'$' + (activeStation ? calculateGrossLiveTotal(activeStation) : 0).toFixed(2)"></span>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3 bg-[#0a0f1a] p-3 rounded-xl border border-slate-800/60 font-mono">
-                    <div>
-                        <label class="block text-[9px] uppercase tracking-wider text-slate-400 mb-1">Manual Flat Discount ($)</label>
-                        <input type="number" step="0.01" x-model.number="form.discount" @input="recalculateNetFinal()" class="bg-[#070a10] border border-slate-700 rounded p-1.5 w-full text-xs text-rose-400 focus:outline-none font-bold">
-                    </div>
-                    <div>
-                        <label class="block text-[9px] uppercase tracking-wider text-slate-400 mb-1">Tax / Facility Fee ($)</label>
-                        <input type="number" step="0.01" x-model.number="form.tax" @input="recalculateNetFinal()" class="bg-[#070a10] border border-slate-700 rounded p-1.5 w-full text-xs text-emerald-400 focus:outline-none font-bold">
-                    </div>
-                </div>
-
-                <div class="font-mono">
-                    <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1.5">Payment Classification</label>
-                    <div class="grid grid-cols-3 gap-2">
-                        <template x-for="method in ['Cash', 'Card', 'UPI/Crypto']">
-                            <button @click="form.paymentMethod = method" :class="form.paymentMethod === method ? 'bg-purple-950 border-purple-500 text-purple-400 font-bold' : 'bg-[#070a10] border-slate-800 text-slate-400'" class="border py-2 rounded text-[11px] transition cursor-pointer text-center" x-text="method"></button>
-                        </template>
-                    </div>
-                </div>
-
-                <div class="flex justify-between items-center bg-[#070a10] p-4 rounded-xl border border-emerald-950/60">
-                    <span class="font-mono font-bold tracking-wider text-xs text-slate-400">NET MATURED RECEIVABLE:</span>
-                    <span class="text-3xl font-mono font-black text-emerald-400" x-text="'$' + finalNetSettlement.toFixed(2)"></span>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3 font-mono">
-                    <button @click="modals.checkout = false" class="bg-slate-800 hover:bg-slate-700 py-3 rounded-lg text-xs font-medium transition cursor-pointer text-slate-300">ABORT PROCESS</button>
-                    <button @click="closeAndAuditSession()" class="bg-emerald-600 hover:bg-emerald-500 py-3 rounded-lg text-xs font-bold transition cursor-pointer text-white tracking-wider shadow-lg shadow-emerald-950/40">Settle & Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 z-50" x-show="showHistory" x-cloak x-transition>
-        <div class="bg-[#0f1626] border border-slate-800 rounded-2xl w-full max-w-6xl overflow-hidden shadow-2xl" @click.outside="showHistory = false">
-            <div class="bg-[#141d31] px-6 py-4 flex justify-between items-center border-b border-slate-800">
-                <div>
-                    <h3 class="font-mono font-bold text-base text-white">MANAGEMENT CONTROL MATRIX & TRANSACTION JOURNAL</h3>
-                    <p class="text-xs text-slate-400 font-mono">Real-time ledger entries generated during this system uptime shift</p>
-                </div>
-                <button @click="showHistory = false" class="text-slate-400 hover:text-white text-xl cursor-pointer font-mono">&times;</button>
-            </div>
-            <div class="p-6 space-y-6">
-                
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    <div class="bg-[#070a10] p-3 rounded-xl border border-slate-800">
-                        <span class="text-[10px] font-mono block text-slate-500 uppercase">Gross Terminal Vol</span>
-                        <span class="text-lg font-mono font-black text-white" x-text="'$' + shiftStats.revenue.toFixed(2)"></span>
-                    </div>
-                    <div class="bg-[#070a10] p-3 rounded-xl border border-slate-800">
-                        <span class="text-[10px] font-mono block text-slate-500 uppercase">Total Surcharges Applied</span>
-                        <span class="text-lg font-mono font-black text-emerald-400" x-text="'$' + shiftStats.totalTax.toFixed(2)"></span>
-                    </div>
-                    <div class="bg-[#070a10] p-3 rounded-xl border border-slate-800">
-                        <span class="text-[10px] font-mono block text-slate-500 uppercase">Total Allowances Given</span>
-                        <span class="text-lg font-mono font-black text-rose-400" x-text="'$' + shiftStats.totalDiscount.toFixed(2)"></span>
-                    </div>
-                    <div class="bg-[#070a10] p-3 rounded-xl border border-slate-800">
-                        <span class="text-[10px] font-mono block text-slate-500 uppercase">Active Units Connected</span>
-                        <span class="text-lg font-mono font-black text-purple-400" x-text="getActiveUnitsCount() + ' / 15'"></span>
-                    </div>
-                </div>
-
-                <div class="overflow-x-auto rounded-xl border border-slate-800 bg-[#070a10]">
-                    <table class="w-full text-left font-mono text-xs text-slate-300">
-                        <thead class="bg-[#0f1626] text-[10px] uppercase tracking-wider text-slate-400 border-b border-slate-800">
-                            <tr>
-                                <th class="p-3">Time</th>
-                                <th class="p-3">Station</th>
-                                <th class="p-3">Client Profile</th>
-                                <th class="p-3">Hardware Array Set</th>
-                                <th class="p-3">Mins Logged</th>
-                                <th class="p-3">Consumables / Operations Notes</th>
-                                <th class="p-3 text-center">Type</th>
-                                <th class="p-3 text-right">Settled Final</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-800/60">
-                            <template x-if="history.length === 0">
-                                <tr>
-                                    <td colspan="8" class="p-8 text-center text-slate-600 italic">No closed ledger sequences on record for current cycle.</td>
-                                </tr>
-                            </template>
-                            <template x-for="log in history">
-                                <tr class="hover:bg-[#0e1422] transition">
-                                    <td class="p-3 text-slate-500 text-[11px]" x-text="log.timestamp"></td>
-                                    <td class="p-3 font-bold text-white" x-text="'ST-' + String(log.stationId).padStart(2, '0')"></td>
-                                    <td class="p-3">
-                                        <span class="block text-slate-200" x-text="log.customerName"></span>
-                                        <span class="block text-[10px] text-slate-500" x-text="log.customerPhone"></span>
-                                    </td>
-                                    <td class="p-3 text-slate-400">
-                                        <span class="block text-[11px]" x-text="log.hardware"></span>
-                                        <span class="block text-[9px] text-slate-600" x-text="'Game: ' + log.gameTitle"></span>
-                                    </td>
-                                    <td class="p-3 font-semibold text-slate-400" x-text="log.totalTime + ' m'"></td>
-                                    <td class="p-3 text-[11px] text-slate-500 max-w-xs truncate" :title="log.summary" x-text="log.summary"></td>
-                                    <td class="p-3 text-center">
-                                        <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-purple-400 border border-slate-700" x-text="log.paymentMethod"></span>
-                                    </td>
-                                    <td class="p-3 text-right font-bold text-emerald-400" x-text="'$' + log.totalAmount.toFixed(2)"></td>
-                                </tr>
-                            </template>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <div id="modal-injected-body"></div>
         </div>
     </div>
 
     <script>
-        function advancedParlorHub() {
-            return {
-                // Initialize 15 custom enterprise models
-                stations: Array.from({ length: 15 }, (_, i) => ({
-                    id: i + 1,
-                    status: 'Available', 
-                    players: 1,
-                    initialDuration: 0,
-                    timeLeft: 0, 
-                    endTime: '',
-                    initialCost: 0,
-                    extraTime: 0,
-                    extraTimeCost: 0,
-                    addons: [],
-                    totalAmount: 0,
-                    // Advanced Fields
-                    customerName: '',
-                    customerPhone: '',
-                    hardware: 'PS5 Pro',
-                    hardwareId: '',
-                    gameTitle: ''
-                })),
-                
-                // Advanced Segmented Inventory
-                menu: [
-                    { name: 'Coca-Cola Zero', price: 1.75, cat: 'Drink' },
-                    { name: 'Red Bull Energy', price: 3.50, cat: 'Drink' },
-                    { name: 'Monster Energy', price: 3.50, cat: 'Drink' },
-                    { name: 'Classic Nachos Box', price: 2.50, cat: 'Snack' },
-                    { name: 'Peri Peri Fries', price: 3.00, cat: 'Snack' },
-                    { name: 'Cigarette Premium', price: 0.75, cat: 'Tobacco' },
-                    { name: 'Vape Pod Hookah', price: 8.00, cat: 'Tobacco' }
-                ],
-                
-                // State tracking structures
-                history: [],
-                activeStation: null,
-                showHistory: false,
-                finalNetSettlement: 0,
-                
-                shiftStats: {
-                    revenue: 0,
-                    slotsClosed: 0,
-                    totalTax: 0,
-                    totalDiscount: 0
-                },
-                
-                modals: {
-                    booking: false,
-                    addons: false,
-                    checkout: false
-                },
-                
-                // Complex Multi-field Form structures
-                form: {
-                    players: 1,
-                    duration: 60,
-                    extraAmount: '',
-                    extraReason: '',
-                    customerName: '',
-                    customerPhone: '',
-                    hardware: 'PS5 Pro',
-                    hardwareId: '',
-                    gameTitle: '',
-                    discount: 0,
-                    tax: 0,
-                    paymentMethod: 'Cash'
-                },
+        // System Config Variables 
+        const HOURLY_RATE = 15.00;
 
-                calculateInitialCost() {
-                    const rate = this.form.players === 1 ? 3.00 : 5.00;
-                    return (rate / 60) * this.form.duration;
-                },
+        // Core Live Storage Matrices
+        const stationsData = Array.from({ length: 9 }, (_, idx) => ({
+            id: idx + 1,
+            status: 'AVAILABLE',
+            uid: '',
+            timeRemaining: 0,
+            durationMinutes: 0,
+            startTime: '',
+            endTime: '',
+            playersCount: 1,
+            foodHistory: [], // Structure array tracking historical item entries
+            miscServiceFee: 0
+        }));
 
-                calculateGrossLiveTotal(station) {
-                    const addonsTotal = station.addons.reduce((sum, item) => sum + (item.price * item.qty), 0);
-                    return station.initialCost + station.extraTimeCost + addonsTotal;
-                },
+        // System Transaction Ledger Architecture 
+        const systemAuditLogs = [];
 
-                calculateAddonsSum(station) {
-                    if (!station) return 0;
-                    return station.addons.reduce((sum, item) => sum + (item.price * item.qty), 0);
-                },
+        const membersData = ["Member1 Name", "Member2 Name", "Member3 Name", "Member4 Name", "Member5 Name", "Member6 Name", "Member7 Name", "Member8 Name", "Member9 Name", "Member10 Name"];
+        let targetedActiveStationId = null;
 
-                describeAddonsShort(station) {
-                    if(station.addons.length === 0) return "No addons charged";
-                    return station.addons.map(a => `${a.qty}x ${a.name.split(' ')[0]}`).join(', ');
-                },
-
-                calculateUtilization() {
-                    const activeCount = this.stations.filter(s => s.status !== 'Available').length;
-                    return Math.round((activeCount / 15) * 100);
-                },
-
-                getActiveUnitsCount() {
-                    return this.stations.filter(s => s.status !== 'Available').length;
-                },
-
-                formatTime(seconds) {
-                    const m = Math.floor(seconds / 60);
-                    const s = seconds % 60;
-                    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-                },
-
-                // Open clean instantiation forms
-                openBookingModal(station) {
-                    this.activeStation = station;
-                    this.form.players = 1;
-                    this.form.duration = 60;
-                    this.form.customerName = '';
-                    this.form.customerPhone = '';
-                    this.form.hardware = station.id % 3 === 0 ? 'PC Rig Ultra' : (station.id % 2 === 0 ? 'Xbox Series X' : 'PS5 Pro');
-                    this.form.hardwareId = 'CTRL-' + station.id + 'A';
-                    this.form.gameTitle = '';
-                    this.modals.booking = true;
-                },
-
-                confirmBooking() {
-                    const cost = this.calculateInitialCost();
-                    const now = new Date();
-                    now.setMinutes(now.getMinutes() + this.form.duration);
-                    
-                    // Flush structure map data variables onto chosen components array index
-                    this.activeStation.status = 'In Use';
-                    this.activeStation.players = this.form.players;
-                    this.activeStation.initialDuration = this.form.duration;
-                    this.activeStation.timeLeft = this.form.duration * 60;
-                    this.activeStation.endTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    this.activeStation.initialCost = cost;
-                    this.activeStation.extraTime = 0;
-                    this.activeStation.extraTimeCost = 0;
-                    this.activeStation.addons = [];
-                    
-                    // Advanced Metadata parameters inject
-                    this.activeStation.customerName = this.form.customerName.trim() || 'Walk-in Guest';
-                    this.activeStation.customerPhone = this.form.customerPhone.trim() || 'N/A';
-                    this.activeStation.hardware = this.form.hardware;
-                    this.activeStation.hardwareId = this.form.hardwareId.trim() || 'SYS-ID';
-                    this.activeStation.gameTitle = this.form.gameTitle.trim() || 'Unassigned UI';
-                    
-                    this.modals.booking = false;
-                },
-
-                addExtraTime(station, minutes) {
-                    station.timeLeft += minutes * 60;
-                    station.extraTime += minutes;
-                    
-                    const rate = station.players === 1 ? 3.00 : 5.00;
-                    station.extraTimeCost += (rate / 60) * minutes;
-                    
-                    let timeParts = station.endTime.split(/:| /);
-                    let endRef = new Date();
-                    endRef.setHours(parseInt(timeParts[0]) + (station.endTime.includes('PM') && timeParts[0] !== '12' ? 12 : 0));
-                    endRef.setMinutes(parseInt(timeParts[1]) + minutes);
-                    station.endTime = endRef.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-                    if(station.status === 'Time Over') {
-                        station.status = 'In Use';
-                    }
-                },
-
-                openAddonsModal(station) {
-                    this.activeStation = station;
-                    this.form.extraAmount = '';
-                    this.form.extraReason = '';
-                    this.modals.addons = true;
-                },
-
-                addItemToStation(menuItem) {
-                    const existing = this.activeStation.addons.find(i => i.name === menuItem.name);
-                    if (existing) {
-                        existing.qty++;
-                    } else {
-                        this.activeStation.addons.push({ ...menuItem, qty: 1 });
-                    }
-                },
-
-                removeAddonItem(index) {
-                    this.activeStation.addons.splice(index, 1);
-                },
-
-                addSpecialService() {
-                    if (this.form.extraAmount > 0) {
-                        const reasonText = this.form.extraReason.trim() || 'Misc Facility Surcharge';
-                        this.activeStation.addons.push({
-                            name: reasonText,
-                            price: this.form.extraAmount,
-                            qty: 1,
-                            cat: 'Custom'
-                        });
-                        this.form.extraAmount = '';
-                        this.form.extraReason = '';
-                    }
-                },
-
-                openCheckoutModal(station) {
-                    this.activeStation = station;
-                    this.form.discount = 0;
-                    this.form.tax = 0;
-                    this.form.paymentMethod = 'Cash';
-                    this.recalculateNetFinal();
-                    this.modals.checkout = true;
-                },
-
-                recalculateNetFinal() {
-                    const gross = this.calculateGrossLiveTotal(this.activeStation);
-                    const calculated = gross - (this.form.discount || 0) + (this.form.tax || 0);
-                    this.finalNetSettlement = calculated > 0 ? calculated : 0;
-                },
-
-                closeAndAuditSession() {
-                    let summaryItems = [];
-                    this.activeStation.addons.forEach(a => summaryItems.push(`${a.qty}x ${a.name}`));
-                    if(this.activeStation.extraTime > 0) summaryItems.push(`Ext (+${this.activeStation.extraTime}m)`);
-                    
-                    // Save to historical audit records array object structural context
-                    this.history.unshift({
-                        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-                        stationId: this.activeStation.id,
-                        customerName: this.activeStation.customerName,
-                        customerPhone: this.activeStation.customerPhone,
-                        hardware: this.activeStation.hardware,
-                        gameTitle: this.activeStation.gameTitle,
-                        totalTime: this.activeStation.initialDuration + this.activeStation.extraTime,
-                        summary: summaryItems.join(', ') || 'Standard Base Timing Session.',
-                        paymentMethod: this.form.paymentMethod,
-                        totalAmount: this.finalNetSettlement
-                    });
-
-                    // Collate dynamic performance shift parameters metrics metrics
-                    this.shiftStats.revenue += this.finalNetSettlement;
-                    this.shiftStats.slotsClosed += 1;
-                    this.shiftStats.totalTax += (this.form.tax || 0);
-                    this.shiftStats.totalDiscount += (this.form.discount || 0);
-
-                    // Revert chosen structure variables block down back cleanly to initialization structures
-                    this.activeStation.status = 'Available';
-                    this.activeStation.customerName = '';
-                    this.activeStation.customerPhone = '';
-                    this.activeStation.addons = [];
-                    this.activeStation.initialCost = 0;
-                    this.activeStation.extraTimeCost = 0;
-                    
-                    this.modals.checkout = false;
-                },
-
-                initEngine() {
-                    setInterval(() => {
-                        this.stations.forEach(station => {
-                            if (station.status === 'In Use') {
-                                if (station.timeLeft > 0) {
-                                    station.timeLeft--;
-                                } else {
-                                    station.status = 'Time Over';
-                                }
-                            }
-                        });
-                    }, 1000);
-                }
-            }
+        // Formats seconds directly to time tokens
+        function formatTime(totalSeconds) {
+            const hrs = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
+            const mins = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
+            const secs = (totalSeconds % 60).toString().padStart(2, '0');
+            return `${hrs}:${mins}:${secs}`;
         }
+
+        // Returns dynamic critical timing status classes
+        function getTimerColorClass(secondsLeft, totalDurationSeconds) {
+            if (secondsLeft <= 0) return 'timer-critical';
+            const executionPercentage = (secondsLeft / totalDurationSeconds);
+            if (executionPercentage <= 0.20) return 'timer-critical'; // under 20% remaining
+            if (executionPercentage <= 0.50) return 'timer-warning';  // under 50% remaining
+            return 'timer-safe';
+        }
+
+        // Render Loop Core Engine
+        function refreshDashboardVisuals() {
+            const inUseGrid = document.getElementById('in-use-grid');
+            const availableGrid = document.getElementById('available-grid');
+            inUseGrid.innerHTML = '';
+            availableGrid.innerHTML = '';
+
+            stationsData.forEach(station => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.onclick = () => launchStationConsole(station.id);
+
+                if (station.status === 'IN_USE') {
+                    const colorStateClass = getTimerColorClass(station.timeRemaining, station.durationMinutes * 60);
+                    card.innerHTML = `
+                        <div class="card-number">${station.id}</div>
+                        <div class="card-timer ${colorStateClass}" id="grid-timer-${station.id}">${formatTime(station.timeRemaining)}</div>
+                    `;
+                    inUseGrid.appendChild(card);
+                } else {
+                    card.innerHTML = `
+                        <div class="card-number">${station.id}</div>
+                        <div class="card-status">Available</div>
+                    `;
+                    availableGrid.appendChild(card);
+                }
+            });
+        }
+
+        // Dynamic Router: Launches active modal properties
+        function launchStationConsole(stationId) {
+            targetedActiveStationId = stationId;
+            const station = stationsData.find(s => s.id === stationId);
+            const titleField = document.getElementById('modal-title-field');
+            const bodyField = document.getElementById('modal-injected-body');
+
+            titleField.textContent = `Playstation ${station.id} Configurations`;
+
+            if (station.status === 'AVAILABLE') {
+                bodyField.innerHTML = `
+                    <div class="form-group">
+                        <label>Session Playing Duration (Minutes)</label>
+                        <input type="number" id="setup-duration" min="1" value="60" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Occupancy Count (Persons)</label>
+                        <select id="setup-players">
+                            <option value="1">1 Person</option><option value="2">2 Persons</option>
+                            <option value="3">3 Persons</option><option value="4">4 Persons</option>
+                        </select>
+                    </div>
+                    <button class="action-button" onclick="commitNewSession()">Initialize Station</button>
+                `;
+            } else {
+                renderActiveStationPanel(station);
+            }
+            document.getElementById('modal-overlay').classList.add('active');
+        }
+
+        // Compiles Active Control View Metrics and Add-on Trackers
+        function renderActiveStationPanel(station) {
+            const bodyField = document.getElementById('modal-injected-body');
+            
+            // Build out structural food log block markup lines
+            let foodRowsHtml = station.foodHistory.length === 0 
+                ? '<div class="history-item">No food items added yet.</div>'
+                : station.foodHistory.map(f => `<div class="history-item"><span>${f.name} (x${f.qty})</span><span>$${(f.price * f.qty).toFixed(2)}</span></div>`).join('');
+
+            bodyField.innerHTML = `
+                <div class="metrics-grid">
+                    <div class="metric-item"><div class="metric-label">Session Unique ID</div><div class="metric-value">${station.uid}</div></div>
+                    <div class="metric-item"><div class="metric-label">Timeline Boundary</div><div class="metric-value">${station.startTime} - ${station.endTime}</div></div>
+                    <div class="metric-item"><div class="metric-label">Remaining Countdown</div><div class="metric-value" id="modal-live-timer">${formatTime(station.timeRemaining)}</div></div>
+                    <div class="metric-item"><div class="metric-label">Occupants</div><div class="metric-value">${station.playersCount} Person(s)</div></div>
+                </div>
+
+                <div class="form-group"><label>Food Order History Ledger</label><div class="history-list-box">${foodRowsHtml}</div></div>
+
+                <div class="form-group nested-row">
+                    <div>
+                        <label>Add Catering Add-on</label>
+                        <select id="catering-select">
+                            <option value="none">-- Select Refreshment --</option>
+                            <option value="Burger|7.00">Classic Burger ($7.00)</option>
+                            <option value="Soda|3.00">Energy Soda ($3.00)</option>
+                            <option value="Fries|5.00">Salted Fries ($5.00)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Quantity</label>
+                        <input type="number" id="catering-qty" min="1" value="1">
+                    </div>
+                    <button class="action-button" style="margin:0; padding:10px;" onclick="appendFoodToSession()">Add</button>
+                </div>
+
+                <div class="form-group">
+                    <label>Manual Misc Service Surcharge Fee ($)</label>
+                    <input type="number" id="surcharge-fee" min="0" value="${station.miscServiceFee}" oninput="recalculateLivePanelBill()">
+                </div>
+
+                <div class="summary-total-strip">
+                    <span class="total-label">Accrued Operational Balance:</span>
+                    <span class="total-price" id="panel-bill-display">$0.00</span>
+                </div>
+
+                <button class="action-button" onclick="saveActivePanelState()">Save Station Changes</button>
+                <button class="action-button release-button" onclick="processSessionSettlement()">End Session & Generate Invoice</button>
+            `;
+            recalculateLivePanelBill();
+        }
+
+        function closeTopModal() {
+            document.getElementById('modal-overlay').classList.remove('active');
+            targetedActiveStationId = null;
+        }
+
+        function hideActiveModal(e) { if (e.target.id === 'modal-overlay') closeTopModal(); }
+
+        // Builds dynamic unique IDs based on your specific requirements
+        function generateUniqueIdString(stationId, players) {
+            const dateObj = new Date();
+            const yyyy = dateObj.getFullYear();
+            const mm = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+            const dd = dateObj.getDate().toString().padStart(2, '0');
+            const hh = dateObj.getHours().toString().padStart(2, '0');
+            const min = dateObj.getMinutes().toString().padStart(2, '0');
+            
+            return `ST${stationId}-${yyyy}${mm}${dd}-${hh}${min}-${players}P`;
+        }
+
+        // Activates Station Standby Slots
+        function commitNewSession() {
+            const station = stationsData.find(s => s.id === targetedActiveStationId);
+            const duration = parseInt(document.getElementById('setup-duration').value) || 60;
+            const players = parseInt(document.getElementById('setup-players').value);
+
+            const now = new Date();
+            const end = new Date(now.getTime() + duration * 60000);
+
+            station.status = 'IN_USE';
+            station.timeRemaining = duration * 60;
+            station.durationMinutes = duration;
+            station.playersCount = players;
+            station.startTime = now.toTimeString().split(' ')[0].substring(0, 5);
+            station.endTime = end.toTimeString().split(' ')[0].substring(0, 5);
+            station.uid = generateUniqueIdString(station.id, players);
+            
+            // Clean dynamic history variables
+            station.foodHistory = [];
+            station.miscServiceFee = 0;
+
+            refreshDashboardVisuals();
+            closeTopModal();
+        }
+
+        // Adds food items to history without clearing previous counts
+        function appendFoodToSession() {
+            const station = stationsData.find(s => s.id === targetedActiveStationId);
+            const menuSelection = document.getElementById('catering-select').value;
+            const quantity = parseInt(document.getElementById('catering-qty').value) || 0;
+
+            if (menuSelection === 'none' || quantity <= 0) return;
+
+            const [itemName, itemCostStr] = menuSelection.split('|');
+            const baseCost = parseFloat(itemCostStr);
+
+            // If the item has already been added, increment its quantity; otherwise, create a new row
+            const matchingFoodItem = station.foodHistory.find(f => f.name === itemName);
+            if (matchingFoodItem) {
+                matchingFoodItem.qty += quantity;
+            } else {
+                station.foodHistory.push({ name: itemName, price: baseCost, qty: quantity });
+            }
+
+            renderActiveStationPanel(station);
+        }
+
+        function saveActivePanelState() {
+            const station = stationsData.find(s => s.id === targetedActiveStationId);
+            const surchargeField = document.getElementById('surcharge-fee');
+            if (surchargeField) {
+                station.miscServiceFee = parseFloat(surchargeField.value) || 0;
+            }
+            closeTopModal();
+        }
+
+        // Computes financial balance sheets in real-time
+        function calculateTotalBalanceSheet(station) {
+            const structuralPlayCost = (station.durationMinutes / 60) * HOURLY_RATE;
+            const cateringCostTotal = station.foodHistory.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const manualFees = parseFloat(station.miscServiceFee) || 0;
+            
+            return {
+                playCost: structuralPlayCost,
+                foodCost: cateringCostTotal,
+                miscCost: manualFees,
+                grandTotal: structuralPlayCost + cateringCostTotal + manualFees
+            };
+        }
+
+        function recalculateLivePanelBill() {
+            if (!targetedActiveStationId) return;
+            const station = stationsData.find(s => s.id === targetedActiveStationId);
+            const surchargeField = document.getElementById('surcharge-fee');
+            
+            let tempMisc = station.miscServiceFee;
+            if(surchargeField) tempMisc = parseFloat(surchargeField.value) || 0;
+
+            const baseCost = (station.durationMinutes / 60) * HOURLY_RATE;
+            const foodCost = station.foodHistory.reduce((sum, f) => sum + (f.price * f.qty), 0);
+            
+            document.getElementById('panel-bill-display').textContent = `$${(baseCost + foodCost + tempMisc).toFixed(2)}`;
+        }
+
+        // Displays final billing details upon session ending
+        function processSessionSettlement() {
+            const station = stationsData.find(s => s.id === targetedActiveStationId);
+            const finalSurchargeField = document.getElementById('surcharge-fee');
+            if (finalSurchargeField) {
+                station.miscServiceFee = parseFloat(finalSurchargeField.value) || 0;
+            }
+
+            const statements = calculateTotalBalanceSheet(station);
+
+            // Format dynamic food item breakdown for the invoice display
+            let foodBreakdownText = station.foodHistory.length === 0
+                ? 'None'
+                : station.foodHistory.map(f => `${f.name} (x${f.qty})`).join(', ');
+
+            // Commit record to internal audit log ledger
+            const completedLogEntry = {
+                uid: station.uid,
+                stationId: station.id,
+                duration: station.durationMinutes,
+                players: station.playersCount,
+                foodDetails: foodBreakdownText,
+                totalCollected: statements.grandTotal.toFixed(2),
+                timestamp: new Date().toLocaleTimeString().substring(0, 5)
+            };
+            systemAuditLogs.push(completedLogEntry);
+
+            // Re-render modal to show the final receipt invoice layout view
+            const titleField = document.getElementById('modal-title-field');
+            const bodyField = document.getElementById('modal-injected-body');
+
+            titleField.textContent = `Station ${station.id} Final Settlement`;
+            bodyField.innerHTML = `
+                <div class="invoice-block">
+                    <p style="color:#888; font-size:0.75rem; margin-bottom:15px;">INVOICE ID: ${station.uid}</p>
+                    <div class="invoice-line"><span>Console Usage Fee (${station.durationMinutes} Mins)</span><span>$${statements.playCost.toFixed(2)}</span></div>
+                    <div class="invoice-line"><span>Catering Order Fees</span><span>$${statements.foodCost.toFixed(2)}</span></div>
+                    <div class="invoice-line"><span>Miscellaneous Service Fees</span><span>$${statements.miscCost.toFixed(2)}</span></div>
+                    <div class="summary-total-strip" style="margin-bottom:20px;">
+                        <span class="total-label">Total Amount Paid:</span>
+                        <span class="total-price" style="font-size:1.8rem;">$${statements.grandTotal.toFixed(2)}</span>
+                    </div>
+                    <button class="action-button" onclick="flushStationSlot(${station.id})">Clear Console & Complete Order</button>
+                </div>
+            `;
+        }
+
+        function flushStationSlot(stationId) {
+            const station = stationsData.find(s => s.id === stationId);
+            station.status = 'AVAILABLE';
+            station.timeRemaining = 0;
+            station.uid = '';
+            station.foodHistory = [];
+            station.miscServiceFee = 0;
+
+            refreshDashboardVisuals();
+            closeTopModal();
+        }
+
+        // Renders the historical records system log panel view
+        function openSystemLogsModal() {
+            targetedActiveStationId = null; // Detach active hooks
+            const titleField = document.getElementById('modal-title-field');
+            const bodyField = document.getElementById('modal-injected-body');
+
+            titleField.textContent = "System Transaction Logs";
+
+            if (systemAuditLogs.length === 0) {
+                bodyField.innerHTML = `<p style="text-align:center; padding:30px; color:#666;">No historical session entries found in this runtime environment.</p>`;
+            } else {
+                let logRowsHtml = systemAuditLogs.map(log => `
+                    <tr>
+                        <td>${log.uid}</td>
+                        <td>P${log.stationId}</td>
+                        <td>${log.duration}m</td>
+                        <td>${log.players}</td>
+                        <td style="max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${log.foodDetails}">${log.foodDetails}</td>
+                        <td style="color:#00ff66; font-weight:700;">$${log.totalCollected}</td>
+                    </tr>
+                `).join('');
+
+                bodyField.innerHTML = `
+                    <div class="log-table-wrapper">
+                        <table class="log-table">
+                            <thead>
+                                <tr>
+                                    <th>Session ID</th>
+                                    <th>Stn</th>
+                                    <th>Time</th>
+                                    <th>Pax</th>
+                                    <th>Items Ordered</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>${logRowsHtml}</tbody>
+                        </table>
+                    </div>
+                `;
+            }
+            document.getElementById('modal-overlay').classList.add('active');
+        }
+
+        // Global Loop Engine
+        setInterval(() => {
+            stationsData.forEach(station => {
+                if (station.status === 'IN_USE' && station.timeRemaining > 0) {
+                    station.timeRemaining--;
+
+                    // Real-time grid interface injection updates
+                    const gridTimer = document.getElementById(`grid-timer-${station.id}`);
+                    if (gridTimer) {
+                        gridTimer.textContent = formatTime(station.timeRemaining);
+                        
+                        // Update color dynamically based on threshold checks
+                        gridTimer.className = `card-timer ${getTimerColorClass(station.timeRemaining, station.durationMinutes * 60)}`;
+                    }
+
+                    // Active open panel runtime text synchronization updates
+                    if (targetedActiveStationId === station.id) {
+                        const modalTimer = document.getElementById('modal-live-timer');
+                        if (modalTimer) modalTimer.textContent = formatTime(station.timeRemaining);
+                    }
+                } else if (station.status === 'IN_USE' && station.timeRemaining <= 0) {
+                    // System naturally lapsed -> Automatically force processing settlement invoice view layout
+                    if (targetedActiveStationId === station.id) {
+                        processSessionSettlement();
+                    } else {
+                        // Silent auto logs generation loop fallback sequence for closed panels
+                        const statements = calculateTotalBalanceSheet(station);
+                        let foodDetails = station.foodHistory.length === 0 ? 'None' : station.foodHistory.map(f => `${f.name} (x${f.qty})`).join(', ');
+                        systemAuditLogs.push({
+                            uid: station.uid, stationId: station.id, duration: station.durationMinutes, players: station.playersCount,
+                            foodDetails: foodDetails, totalCollected: statements.grandTotal.toFixed(2), timestamp: new Date().toLocaleTimeString().substring(0, 5)
+                        });
+                        station.status = 'AVAILABLE';
+                        station.uid = '';
+                        station.foodHistory = [];
+                        station.miscServiceFee = 0;
+                        refreshDashboardVisuals();
+                    }
+                }
+            });
+        }, 1000);
+
+        // Core Init Routines
+        document.getElementById('members-container').innerHTML = membersData.map(name => `<li class="member-item">${name}</li>`).join('');
+        refreshDashboardVisuals();
     </script>
 </body>
 </html>
