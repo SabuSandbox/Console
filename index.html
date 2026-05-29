@@ -53,13 +53,10 @@
         .logo-placeholder {
             width: 50px;
             height: 50px;
-            background: linear-gradient(135deg, #ff6a00, #ee0979);
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-weight: bold;
-            font-size: 1.2rem;
             box-shadow: 0 0 15px rgba(238, 9, 121, 0.4);
         }
 
@@ -382,7 +379,21 @@
     <div class="dashboard-wrapper">
         <header class="header-panel">
             <div class="header-left">
-                <div class="logo-placeholder">GZ</div>
+                <div class="logo-placeholder">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="45" height="45">
+                        <defs>
+                            <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#ff6a00" />
+                                <stop offset="100%" stop-color="#ee0979" />
+                            </linearGradient>
+                        </defs>
+                        <circle cx="50" cy="50" r="45" fill="none" stroke="url(#logoGrad)" stroke-width="5"/>
+                        <path d="M35 45 L45 45 M40 40 L40 50" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
+                        <circle cx="65" cy="42" r="3.5" fill="#ffffff" />
+                        <circle cx="57" cy="49" r="3.5" fill="#ffffff" />
+                        <path d="M 32 66 Q 50 80 68 66" fill="none" stroke="url(#logoGrad)" stroke-width="4" stroke-linecap="round" />
+                    </svg>
+                </div>
                 <h1 class="header-title">Wonder Gamezone</h1>
             </div>
             <button class="log-trigger-btn" onclick="openSystemLogsModal()">
@@ -422,8 +433,11 @@
     </div>
 
     <script>
-        // System Config Variables 
+        // System Config Variables (Updated to INR Rates)
         const HOURLY_RATE = 15.00;
+
+        // Vector SVG String configuration used for background watermark rendering inside printing process
+        const rawLogoSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="none" stroke="%23ff9100" stroke-width="4" opacity="0.1"/><path d="M35 42 L45 42 M40 37 L40 47" stroke="%23ff9100" stroke-width="4" opacity="0.1"/><circle cx="65" cy="40" r="3.5" fill="%23ff9100" opacity="0.1"/><circle cx="57" cy="47" r="3.5" fill="%23ff9100" opacity="0.1"/><path d="M 30 65 Q 50 80 70 65" fill="none" stroke="%23ff9100" stroke-width="4" opacity="0.1"/></svg>`;
 
         // Core Live Storage Matrices
         const stationsData = Array.from({ length: 9 }, (_, idx) => ({
@@ -435,7 +449,7 @@
             startTime: '',
             endTime: '',
             playersCount: 1,
-            foodHistory: [], // Structure array tracking historical item entries
+            foodHistory: [], 
             miscServiceFee: 0
         }));
 
@@ -445,7 +459,6 @@
         const membersData = ["Member1 Name", "Member2 Name", "Member3 Name", "Member4 Name", "Member5 Name", "Member6 Name", "Member7 Name", "Member8 Name", "Member9 Name", "Member10 Name"];
         let targetedActiveStationId = null;
 
-        // Formats seconds directly to time tokens
         function formatTime(totalSeconds) {
             const hrs = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
             const mins = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
@@ -453,16 +466,14 @@
             return `${hrs}:${mins}:${secs}`;
         }
 
-        // Returns dynamic critical timing status classes
         function getTimerColorClass(secondsLeft, totalDurationSeconds) {
             if (secondsLeft <= 0) return 'timer-critical';
             const executionPercentage = (secondsLeft / totalDurationSeconds);
-            if (executionPercentage <= 0.20) return 'timer-critical'; // under 20% remaining
-            if (executionPercentage <= 0.50) return 'timer-warning';  // under 50% remaining
+            if (executionPercentage <= 0.20) return 'timer-critical';
+            if (executionPercentage <= 0.50) return 'timer-warning';
             return 'timer-safe';
         }
 
-        // Render Loop Core Engine
         function refreshDashboardVisuals() {
             const inUseGrid = document.getElementById('in-use-grid');
             const availableGrid = document.getElementById('available-grid');
@@ -491,7 +502,6 @@
             });
         }
 
-        // Dynamic Router: Launches active modal properties
         function launchStationConsole(stationId) {
             targetedActiveStationId = stationId;
             const station = stationsData.find(s => s.id === stationId);
@@ -521,14 +531,12 @@
             document.getElementById('modal-overlay').classList.add('active');
         }
 
-        // Compiles Active Control View Metrics and Add-on Trackers
         function renderActiveStationPanel(station) {
             const bodyField = document.getElementById('modal-injected-body');
             
-            // Build out structural food log block markup lines
             let foodRowsHtml = station.foodHistory.length === 0 
                 ? '<div class="history-item">No food items added yet.</div>'
-                : station.foodHistory.map(f => `<div class="history-item"><span>${f.name} (x${f.qty})</span><span>$${(f.price * f.qty).toFixed(2)}</span></div>`).join('');
+                : station.foodHistory.map(f => `<div class="history-item"><span>${f.name} (x${f.qty})</span><span>₹${(f.price * f.qty).toFixed(2)}</span></div>`).join('');
 
             bodyField.innerHTML = `
                 <div class="metrics-grid">
@@ -545,9 +553,9 @@
                         <label>Add Catering Add-on</label>
                         <select id="catering-select">
                             <option value="none">-- Select Refreshment --</option>
-                            <option value="Burger|7.00">Classic Burger ($7.00)</option>
-                            <option value="Soda|3.00">Energy Soda ($3.00)</option>
-                            <option value="Fries|5.00">Salted Fries ($5.00)</option>
+                            <option value="Classic Burger|7.00">Classic Burger (₹7.00)</option>
+                            <option value="Energy Soda|3.00">Energy Soda (₹3.00)</option>
+                            <option value="Salted Fries|5.00">Salted Fries (₹5.00)</option>
                         </select>
                     </div>
                     <div>
@@ -558,13 +566,13 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Manual Misc Service Surcharge Fee ($)</label>
+                    <label>Manual Misc Service Surcharge Fee (₹)</label>
                     <input type="number" id="surcharge-fee" min="0" value="${station.miscServiceFee}" oninput="recalculateLivePanelBill()">
                 </div>
 
                 <div class="summary-total-strip">
                     <span class="total-label">Accrued Operational Balance:</span>
-                    <span class="total-price" id="panel-bill-display">$0.00</span>
+                    <span class="total-price" id="panel-bill-display">₹0.00</span>
                 </div>
 
                 <button class="action-button" onclick="saveActivePanelState()">Save Station Changes</button>
@@ -580,7 +588,6 @@
 
         function hideActiveModal(e) { if (e.target.id === 'modal-overlay') closeTopModal(); }
 
-        // Builds dynamic unique IDs based on your specific requirements
         function generateUniqueIdString(stationId, players) {
             const dateObj = new Date();
             const yyyy = dateObj.getFullYear();
@@ -592,7 +599,6 @@
             return `ST${stationId}-${yyyy}${mm}${dd}-${hh}${min}-${players}P`;
         }
 
-        // Activates Station Standby Slots
         function commitNewSession() {
             const station = stationsData.find(s => s.id === targetedActiveStationId);
             const duration = parseInt(document.getElementById('setup-duration').value) || 60;
@@ -609,7 +615,6 @@
             station.endTime = end.toTimeString().split(' ')[0].substring(0, 5);
             station.uid = generateUniqueIdString(station.id, players);
             
-            // Clean dynamic history variables
             station.foodHistory = [];
             station.miscServiceFee = 0;
 
@@ -617,7 +622,6 @@
             closeTopModal();
         }
 
-        // Adds food items to history without clearing previous counts
         function appendFoodToSession() {
             const station = stationsData.find(s => s.id === targetedActiveStationId);
             const menuSelection = document.getElementById('catering-select').value;
@@ -628,7 +632,6 @@
             const [itemName, itemCostStr] = menuSelection.split('|');
             const baseCost = parseFloat(itemCostStr);
 
-            // If the item has already been added, increment its quantity; otherwise, create a new row
             const matchingFoodItem = station.foodHistory.find(f => f.name === itemName);
             if (matchingFoodItem) {
                 matchingFoodItem.qty += quantity;
@@ -648,7 +651,6 @@
             closeTopModal();
         }
 
-        // Computes financial balance sheets in real-time
         function calculateTotalBalanceSheet(station) {
             const structuralPlayCost = (station.durationMinutes / 60) * HOURLY_RATE;
             const cateringCostTotal = station.foodHistory.reduce((sum, item) => sum + (item.price * item.qty), 0);
@@ -673,10 +675,9 @@
             const baseCost = (station.durationMinutes / 60) * HOURLY_RATE;
             const foodCost = station.foodHistory.reduce((sum, f) => sum + (f.price * f.qty), 0);
             
-            document.getElementById('panel-bill-display').textContent = `$${(baseCost + foodCost + tempMisc).toFixed(2)}`;
+            document.getElementById('panel-bill-display').textContent = `₹${(baseCost + foodCost + tempMisc).toFixed(2)}`;
         }
 
-        // Displays final billing details upon session ending
         function processSessionSettlement() {
             const station = stationsData.find(s => s.id === targetedActiveStationId);
             const finalSurchargeField = document.getElementById('surcharge-fee');
@@ -685,13 +686,8 @@
             }
 
             const statements = calculateTotalBalanceSheet(station);
+            let foodBreakdownText = station.foodHistory.length === 0 ? 'None' : station.foodHistory.map(f => `${f.name} (x${f.qty})`).join(', ');
 
-            // Format dynamic food item breakdown for the invoice display
-            let foodBreakdownText = station.foodHistory.length === 0
-                ? 'None'
-                : station.foodHistory.map(f => `${f.name} (x${f.qty})`).join(', ');
-
-            // Commit record to internal audit log ledger
             const completedLogEntry = {
                 uid: station.uid,
                 stationId: station.id,
@@ -703,24 +699,154 @@
             };
             systemAuditLogs.push(completedLogEntry);
 
-            // Re-render modal to show the final receipt invoice layout view
+            // Trigger Premium Printable PDF View Window
+            generatePrintablePDFInvoice(station, statements);
+
+            // Re-render UI block directly to confirm clear operations
             const titleField = document.getElementById('modal-title-field');
             const bodyField = document.getElementById('modal-injected-body');
 
             titleField.textContent = `Station ${station.id} Final Settlement`;
             bodyField.innerHTML = `
                 <div class="invoice-block">
+                    <p style="color:#00ff66; font-size:1.1rem; font-weight:bold; margin-bottom:10px;">✔ Invoice Generated Successfully</p>
                     <p style="color:#888; font-size:0.75rem; margin-bottom:15px;">INVOICE ID: ${station.uid}</p>
-                    <div class="invoice-line"><span>Console Usage Fee (${station.durationMinutes} Mins)</span><span>$${statements.playCost.toFixed(2)}</span></div>
-                    <div class="invoice-line"><span>Catering Order Fees</span><span>$${statements.foodCost.toFixed(2)}</span></div>
-                    <div class="invoice-line"><span>Miscellaneous Service Fees</span><span>$${statements.miscCost.toFixed(2)}</span></div>
+                    <div class="invoice-line"><span>Console Usage Fee (${station.durationMinutes} Mins)</span><span>₹${statements.playCost.toFixed(2)}</span></div>
+                    <div class="invoice-line"><span>Catering Order Fees</span><span>₹${statements.foodCost.toFixed(2)}</span></div>
+                    <div class="invoice-line"><span>Miscellaneous Service Fees</span><span>₹${statements.miscCost.toFixed(2)}</span></div>
                     <div class="summary-total-strip" style="margin-bottom:20px;">
                         <span class="total-label">Total Amount Paid:</span>
-                        <span class="total-price" style="font-size:1.8rem;">$${statements.grandTotal.toFixed(2)}</span>
+                        <span class="total-price" style="font-size:1.8rem;">₹${statements.grandTotal.toFixed(2)}</span>
                     </div>
                     <button class="action-button" onclick="flushStationSlot(${station.id})">Clear Console & Complete Order</button>
                 </div>
             `;
+        }
+
+        // Dynamically launches and executes the printable window design framework with background logo element embedded
+        function generatePrintablePDFInvoice(station, statements) {
+            const printWindow = window.open('', '_blank');
+            const currentDateStr = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+
+            let cateringTableRows = station.foodHistory.map(f => `
+                <tr>
+                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt;">
+                        <div style="font-weight:700; color:#fff;">${f.name}</div>
+                        <div style="font-size:8.5pt; color:#778; margin-top:2px;">Catering refreshment service add-on</div>
+                    </td>
+                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt; text-align:center;">₹${f.price.toFixed(2)}</td>
+                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt; text-align:center;">${f.qty}</td>
+                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt; text-align:right;">₹${(f.price * f.qty).toFixed(2)}</td>
+                </tr>
+            `).join('');
+
+            let surchargeRowHtml = statements.miscCost > 0 ? `
+                <tr>
+                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt;">
+                        <div style="font-weight:700; color:#fff;">Miscellaneous Surcharge</div>
+                        <div style="font-size:8.5pt; color:#778; margin-top:2px;">Manual system override fee</div>
+                    </td>
+                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt; text-align:center;">₹${statements.miscCost.toFixed(2)}</td>
+                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt; text-align:center;">1</td>
+                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt; text-align:right;">₹${statements.miscCost.toFixed(2)}</td>
+                </tr>
+            ` : '';
+
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Invoice - ${station.uid}</title>
+                    <style>
+                        @page { size: A4; margin: 0; }
+                        body { background-color: #0b0b0f; color: #ffffff; padding: 30mm 20mm; font-family: 'Segoe UI', sans-serif; position: relative; min-height: 297mm; box-sizing: border-box; }
+                        .watermark { position: absolute; top: 40%; left: 35%; width: 300px; height: 300px; transform: scale(2.5); background-image: url("data:image/svg+xml;utf8,${rawLogoSvg}"); background-repeat: no-repeat; opacity: 0.15; pointer-events: none; z-index: 1; }
+                        .container { position: relative; z-index: 2; max-width: 170mm; margin: 0 auto; }
+                        .header { background: linear-gradient(135deg, #1a1a24 0%, #0f0f15 100%); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 25px 35px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+                        .header-title { font-size: 24pt; font-weight: 800; text-transform: uppercase; color: #ff9100; margin: 0; letter-spacing: 1px; }
+                        .invoice-badge { background: rgba(255,145,0,0.1); border: 1px solid rgba(255,145,0,0.3); padding: 8px 18px; border-radius: 30px; color: #ff9100; font-weight: 700; font-size: 10pt; text-transform: uppercase; }
+                        .meta-box { display: flex; width: 100%; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); border-radius: 12px; padding: 15px 20px; margin-bottom: 35px; box-sizing: border-box; }
+                        .meta-col { width: 50%; font-size: 9.5pt; color: #ddd; }
+                        .meta-label { font-size: 8pt; color: #667; text-transform: uppercase; font-weight: 700; width: 100px; display: inline-block; }
+                        .inv-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+                        .inv-table th { background: #14141c; color: #ff9100; padding: 12px 16px; font-size: 9pt; text-transform: uppercase; text-align: left; border-bottom: 2px solid rgba(255,145,0,0.2); }
+                        .financial-box { display: flex; justify-content: space-between; margin-top: 20px; }
+                        .grand-total { font-size: 18pt; font-weight: 800; color: #00ff66; text-align: right; }
+                    </style>
+                </head>
+                <body>
+                    <div class="watermark"></div>
+                    <div class="container">
+                        <div class="header">
+                            <div>
+                                <h1 class="header-title">Wonder Gamezone</h1>
+                                <div style="font-size:9pt; color:#889; text-transform:uppercase; letter-spacing:2px;">Master Admin Terminal</div>
+                            </div>
+                            <div class="invoice-badge">Session Receipt</div>
+                        </div>
+                        
+                        <div class="meta-box">
+                            <div class="meta-col">
+                                <div><span class="meta-label">Invoice ID:</span><b>${station.uid}</b></div>
+                                <div style="margin-top:6px;"><span class="meta-label">Station ID:</span>Playstation ${station.id}</div>
+                                <div style="margin-top:6px;"><span class="meta-label">Occupants:</span>${station.playersCount} Person(s)</div>
+                            </div>
+                            <div class="meta-col">
+                                <div><span class="meta-label">Date:</span>${currentDateStr}</div>
+                                <div style="margin-top:6px;"><span class="meta-label">Timeline:</span>${station.startTime} - ${station.endTime}</div>
+                                <div style="margin-top:6px;"><span class="meta-label">Status:</span><span style="color:#00ff66; font-weight:bold;">Settled / Paid</span></div>
+                            </div>
+                        </div>
+
+                        <table class="inv-table">
+                            <thead>
+                                <tr>
+                                    <th style="width:55%;">Service Description</th>
+                                    <th style="text-align:center; width:15%;">Rate</th>
+                                    <th style="text-align:center; width:10%;">Qty</th>
+                                    <th style="text-align:right; width:20%;">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt;">
+                                        <div style="font-weight:700; color:#fff;">Console Usage Fee</div>
+                                        <div style="font-size:8.5pt; color:#778; margin-top:2px;">Gaming station operational duration allocation (${station.durationMinutes} Mins)</div>
+                                    </td>
+                                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt; text-align:center;">₹${HOURLY_RATE.toFixed(2)}/hr</td>
+                                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt; text-align:center;">1</td>
+                                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt; text-align:right;">₹${statements.playCost.toFixed(2)}</td>
+                                </tr>
+                                ${cateringTableRows}
+                                ${surchargeRowHtml}
+                            </tbody>
+                        </table>
+
+                        <div class="financial-box">
+                            <div style="width:50%; background:rgba(255,255,255,0.01); border-left:3px solid #ff9100; padding:12px; border-radius:0 8px 8px 0; box-sizing:border-box;">
+                                <div style="font-size:8pt; font-weight:700; text-transform:uppercase; color:#ff9100; margin-bottom:4px;">System Generation Notes</div>
+                                <div style="font-size:8pt; color:#778; line-height:1.4;">Automated balance record sheets directly compiled via local protocol server parameters. Currency converted to standard local INR.</div>
+                            </div>
+                            <div style="width:45%;">
+                                <div style="display:flex; justify-content:space-between; font-size:9pt; color:#889; text-transform:uppercase; margin-bottom:8px;"><span>Console Subtotal</span><span style="color:#ddd;">₹${statements.playCost.toFixed(2)}</span></div>
+                                <div style="display:flex; justify-content:space-between; font-size:9pt; color:#889; text-transform:uppercase; margin-bottom:8px;"><span>Catering Items</span><span style="color:#ddd;">₹${statements.foodCost.toFixed(2)}</span></div>
+                                <div style="display:flex; justify-content:space-between; font-size:9pt; color:#889; text-transform:uppercase; margin-bottom:12px;"><span>Manual Fee Addons</span><span style="color:#ddd;">₹${statements.miscCost.toFixed(2)}</span></div>
+                                <div style="display:flex; justify-content:space-between; border-top:1px dashed rgba(255,255,255,0.1); padding-top:12px; align-items:center;">
+                                    <span style="font-size:11pt; font-weight:800; text-transform:uppercase; color:#ff9100;">Grand Total</span>
+                                    <span class="grand-total">₹${statements.grandTotal.toFixed(2)}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top:60px; text-align:center; border-top:1px solid rgba(255,255,255,0.04); padding-top:20px;">
+                            <div style="font-weight:700; text-transform:uppercase; font-size:10pt; letter-spacing:1px; background:linear-gradient(to right, #ff6a00, #ffb300); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">GG WP! Thanks for playing!</div>
+                            <div style="font-size:7.5pt; color:#445; margin-top:5px; text-transform:uppercase; letter-spacing:0.5px;">Automated Ledger Record • Wonder Gamezone Admin Server v1.0</div>
+                        </div>
+                    </div>
+                    <script>window.onload = function() { window.print(); }</s` + `cript>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
         }
 
         function flushStationSlot(stationId) {
@@ -735,9 +861,8 @@
             closeTopModal();
         }
 
-        // Renders the historical records system log panel view
         function openSystemLogsModal() {
-            targetedActiveStationId = null; // Detach active hooks
+            targetedActiveStationId = null;
             const titleField = document.getElementById('modal-title-field');
             const bodyField = document.getElementById('modal-injected-body');
 
@@ -753,7 +878,7 @@
                         <td>${log.duration}m</td>
                         <td>${log.players}</td>
                         <td style="max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${log.foodDetails}">${log.foodDetails}</td>
-                        <td style="color:#00ff66; font-weight:700;">$${log.totalCollected}</td>
+                        <td style="color:#00ff66; font-weight:700;">₹${log.totalCollected}</td>
                     </tr>
                 `).join('');
 
@@ -784,26 +909,20 @@
                 if (station.status === 'IN_USE' && station.timeRemaining > 0) {
                     station.timeRemaining--;
 
-                    // Real-time grid interface injection updates
                     const gridTimer = document.getElementById(`grid-timer-${station.id}`);
                     if (gridTimer) {
                         gridTimer.textContent = formatTime(station.timeRemaining);
-                        
-                        // Update color dynamically based on threshold checks
                         gridTimer.className = `card-timer ${getTimerColorClass(station.timeRemaining, station.durationMinutes * 60)}`;
                     }
 
-                    // Active open panel runtime text synchronization updates
                     if (targetedActiveStationId === station.id) {
                         const modalTimer = document.getElementById('modal-live-timer');
                         if (modalTimer) modalTimer.textContent = formatTime(station.timeRemaining);
                     }
                 } else if (station.status === 'IN_USE' && station.timeRemaining <= 0) {
-                    // System naturally lapsed -> Automatically force processing settlement invoice view layout
                     if (targetedActiveStationId === station.id) {
                         processSessionSettlement();
                     } else {
-                        // Silent auto logs generation loop fallback sequence for closed panels
                         const statements = calculateTotalBalanceSheet(station);
                         let foodDetails = station.foodHistory.length === 0 ? 'None' : station.foodHistory.map(f => `${f.name} (x${f.qty})`).join(', ');
                         systemAuditLogs.push({
