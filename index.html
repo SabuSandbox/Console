@@ -51,13 +51,18 @@
         }
 
         .logo-placeholder {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
+            width: 60px;
+            height: 60px;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 0 15px rgba(238, 9, 121, 0.4);
+        }
+
+        .logo-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transform: scale(1.4);
         }
 
         .header-title {
@@ -68,6 +73,11 @@
             background: linear-gradient(to right, #ff7b00, #ffae00, #ffffff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 15px;
         }
 
         /* --- Primary Action System Buttons --- */
@@ -91,6 +101,29 @@
             background: #ff9100;
             border-color: #ff9100;
             box-shadow: 0 0 15px rgba(255, 145, 0, 0.4);
+        }
+
+        .admin-trigger-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 10px 24px;
+            border-radius: 30px;
+            color: #fff;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .admin-trigger-btn:hover {
+            background: #00ff66;
+            border-color: #00ff66;
+            box-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
+            color: #000;
         }
 
         /* --- Workspace Configurations --- */
@@ -184,7 +217,6 @@
             transition: color 0.3s ease;
         }
 
-        /* --- Adaptive Time Color States --- */
         .timer-safe { color: #00ff66; text-shadow: 0 0 10px rgba(0, 255, 102, 0.2); }
         .timer-warning { color: #ffae00; text-shadow: 0 0 10px rgba(255, 174, 0, 0.2); }
         .timer-critical { color: #ff3333; text-shadow: 0 0 15px rgba(255, 51, 51, 0.5); animation: blinker 1s linear infinite; }
@@ -249,7 +281,7 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 24px;
             width: 90%;
-            max-width: 550px;
+            max-width: 600px;
             padding: 30px;
             max-height: 90vh;
             overflow-y: auto;
@@ -294,6 +326,7 @@
 
         .form-group input:focus { border-color: #ff9100; }
         .nested-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; align-items: flex-end; }
+        .admin-row { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; align-items: center; margin-bottom: 8px;}
 
         /* --- Session Telemetry Elements --- */
         .metrics-grid {
@@ -311,7 +344,6 @@
         .metric-label { font-size: 0.65rem; color: #666; text-transform: uppercase; font-weight: 700; }
         .metric-value { font-size: 0.85rem; font-weight: 700; color: #ddd; word-break: break-all; }
 
-        /* --- Dynamic Ledger / History Lists --- */
         .history-list-box {
             background: rgba(0,0,0,0.2);
             border: 1px solid rgba(255,255,255,0.05);
@@ -357,13 +389,13 @@
             margin-top: 10px;
         }
 
+        .extra-time-btn { background: linear-gradient(90deg, #1e88e5, #42a5f5); }
         .release-button { background: linear-gradient(90deg, #d32f2f, #f44336); }
+        .success-btn { background: #00ff66; color: #000; }
 
-        /* --- Settlement Invoice Layout View --- */
         .invoice-block { text-align: center; padding: 10px 0; }
         .invoice-line { display: flex; justify-content: space-between; margin: 10px 0; font-size: 0.9rem; border-bottom: 1px dashed #333; padding-bottom: 5px; }
 
-        /* --- System Management Audit Logs Layout --- */
         .log-table-wrapper { width: 100%; overflow-x: auto; margin-top: 10px; }
         .log-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.8rem; }
         .log-table th { background: #222; color: #ff9100; padding: 10px; font-weight: 700; text-transform: uppercase; }
@@ -380,25 +412,18 @@
         <header class="header-panel">
             <div class="header-left">
                 <div class="logo-placeholder">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="45" height="45">
-                        <defs>
-                            <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#ff6a00" />
-                                <stop offset="100%" stop-color="#ee0979" />
-                            </linearGradient>
-                        </defs>
-                        <circle cx="50" cy="50" r="45" fill="none" stroke="url(#logoGrad)" stroke-width="5"/>
-                        <path d="M35 45 L45 45 M40 40 L40 50" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
-                        <circle cx="65" cy="42" r="3.5" fill="#ffffff" />
-                        <circle cx="57" cy="49" r="3.5" fill="#ffffff" />
-                        <path d="M 32 66 Q 50 80 68 66" fill="none" stroke="url(#logoGrad)" stroke-width="4" stroke-linecap="round" />
-                    </svg>
+                    <img src="WhatsApp_Image_2026-05-26_at_22.39.52-removebg-preview.png" alt="Wonder Gamezone Logo">
                 </div>
                 <h1 class="header-title">Wonder Gamezone</h1>
             </div>
-            <button class="log-trigger-btn" onclick="openSystemLogsModal()">
-                📊 System Audit Logs
-            </button>
+            <div class="header-right">
+                <button class="log-trigger-btn" onclick="openSystemLogsModal()">
+                    📊 System Audit Logs
+                </button>
+                <button class="admin-trigger-btn" onclick="openAdminModal()">
+                    ⚙️ Admin
+                </button>
+            </div>
         </header>
 
         <main class="main-content">
@@ -433,11 +458,16 @@
     </div>
 
     <script>
-        // System Config Variables (Updated to INR Rates)
-        const HOURLY_RATE = 15.00;
+        // System Config Variables (Admin Configurable)
+        let globalHourlyRate = 15.00;
+        let isAdminAuthenticated = false;
 
-        // Vector SVG String configuration used for background watermark rendering inside printing process
-        const rawLogoSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="none" stroke="%23ff9100" stroke-width="4" opacity="0.1"/><path d="M35 42 L45 42 M40 37 L40 47" stroke="%23ff9100" stroke-width="4" opacity="0.1"/><circle cx="65" cy="40" r="3.5" fill="%23ff9100" opacity="0.1"/><circle cx="57" cy="47" r="3.5" fill="%23ff9100" opacity="0.1"/><path d="M 30 65 Q 50 80 70 65" fill="none" stroke="%23ff9100" stroke-width="4" opacity="0.1"/></svg>`;
+        // Dynamic Inventory System Linked to Billing
+        let inventoryData = [
+            { id: 'inv_1', name: 'Classic Burger', price: 7.00, stock: 10 },
+            { id: 'inv_2', name: 'Energy Soda', price: 3.00, stock: 20 },
+            { id: 'inv_3', name: 'Salted Fries', price: 5.00, stock: 15 }
+        ];
 
         // Core Live Storage Matrices
         const stationsData = Array.from({ length: 9 }, (_, idx) => ({
@@ -450,12 +480,12 @@
             endTime: '',
             playersCount: 1,
             foodHistory: [], 
-            miscServiceFee: 0
+            miscServiceFee: 0,
+            extraTimeCost: 0,
+            extraTimeAdded: 0
         }));
 
-        // System Transaction Ledger Architecture 
         const systemAuditLogs = [];
-
         const membersData = ["Member1 Name", "Member2 Name", "Member3 Name", "Member4 Name", "Member5 Name", "Member6 Name", "Member7 Name", "Member8 Name", "Member9 Name", "Member10 Name"];
         let targetedActiveStationId = null;
 
@@ -486,7 +516,7 @@
                 card.onclick = () => launchStationConsole(station.id);
 
                 if (station.status === 'IN_USE') {
-                    const colorStateClass = getTimerColorClass(station.timeRemaining, station.durationMinutes * 60);
+                    const colorStateClass = getTimerColorClass(station.timeRemaining, (station.durationMinutes + station.extraTimeAdded) * 60);
                     card.innerHTML = `
                         <div class="card-number">${station.id}</div>
                         <div class="card-timer ${colorStateClass}" id="grid-timer-${station.id}">${formatTime(station.timeRemaining)}</div>
@@ -538,10 +568,15 @@
                 ? '<div class="history-item">No food items added yet.</div>'
                 : station.foodHistory.map(f => `<div class="history-item"><span>${f.name} (x${f.qty})</span><span>₹${(f.price * f.qty).toFixed(2)}</span></div>`).join('');
 
+            // Dynamically generate dropdown from inventory where stock > 0
+            let inventoryOptions = inventoryData.filter(item => item.stock > 0).map(item => 
+                `<option value="${item.id}">${item.name} (₹${item.price.toFixed(2)}) - ${item.stock} left</option>`
+            ).join('');
+
             bodyField.innerHTML = `
                 <div class="metrics-grid">
                     <div class="metric-item"><div class="metric-label">Session Unique ID</div><div class="metric-value">${station.uid}</div></div>
-                    <div class="metric-item"><div class="metric-label">Timeline Boundary</div><div class="metric-value">${station.startTime} - ${station.endTime}</div></div>
+                    <div class="metric-item"><div class="metric-label">Start Time</div><div class="metric-value">${station.startTime}</div></div>
                     <div class="metric-item"><div class="metric-label">Remaining Countdown</div><div class="metric-value" id="modal-live-timer">${formatTime(station.timeRemaining)}</div></div>
                     <div class="metric-item"><div class="metric-label">Occupants</div><div class="metric-value">${station.playersCount} Person(s)</div></div>
                 </div>
@@ -553,9 +588,7 @@
                         <label>Add Catering Add-on</label>
                         <select id="catering-select">
                             <option value="none">-- Select Refreshment --</option>
-                            <option value="Classic Burger|7.00">Classic Burger (₹7.00)</option>
-                            <option value="Energy Soda|3.00">Energy Soda (₹3.00)</option>
-                            <option value="Salted Fries|5.00">Salted Fries (₹5.00)</option>
+                            ${inventoryOptions}
                         </select>
                     </div>
                     <div>
@@ -570,15 +603,34 @@
                     <input type="number" id="surcharge-fee" min="0" value="${station.miscServiceFee}" oninput="recalculateLivePanelBill()">
                 </div>
 
+                <div style="display:flex; gap: 10px; margin-bottom: 10px;">
+                    <button class="action-button extra-time-btn" onclick="addExtraTimeBlock()">+ Add 5 Mins (₹50)</button>
+                    <button class="action-button" onclick="saveActivePanelState()">Save Changes</button>
+                </div>
+
                 <div class="summary-total-strip">
                     <span class="total-label">Accrued Operational Balance:</span>
                     <span class="total-price" id="panel-bill-display">₹0.00</span>
                 </div>
 
-                <button class="action-button" onclick="saveActivePanelState()">Save Station Changes</button>
                 <button class="action-button release-button" onclick="processSessionSettlement()">End Session & Generate Invoice</button>
             `;
             recalculateLivePanelBill();
+        }
+
+        function addExtraTimeBlock() {
+            const station = stationsData.find(s => s.id === targetedActiveStationId);
+            station.timeRemaining += 300; // Adds 5 mins (300 seconds)
+            station.extraTimeAdded += 5;
+            station.extraTimeCost += 50.00;
+            
+            // Push end time forward purely for logging purposes
+            let endParts = station.endTime.split(':');
+            let endTimeObj = new Date();
+            endTimeObj.setHours(parseInt(endParts[0]), parseInt(endParts[1]) + 5, 0);
+            station.endTime = endTimeObj.toTimeString().split(' ')[0].substring(0, 5);
+
+            renderActiveStationPanel(station);
         }
 
         function closeTopModal() {
@@ -595,7 +647,6 @@
             const dd = dateObj.getDate().toString().padStart(2, '0');
             const hh = dateObj.getHours().toString().padStart(2, '0');
             const min = dateObj.getMinutes().toString().padStart(2, '0');
-            
             return `ST${stationId}-${yyyy}${mm}${dd}-${hh}${min}-${players}P`;
         }
 
@@ -617,6 +668,8 @@
             
             station.foodHistory = [];
             station.miscServiceFee = 0;
+            station.extraTimeCost = 0;
+            station.extraTimeAdded = 0;
 
             refreshDashboardVisuals();
             closeTopModal();
@@ -624,19 +677,28 @@
 
         function appendFoodToSession() {
             const station = stationsData.find(s => s.id === targetedActiveStationId);
-            const menuSelection = document.getElementById('catering-select').value;
+            const invId = document.getElementById('catering-select').value;
             const quantity = parseInt(document.getElementById('catering-qty').value) || 0;
 
-            if (menuSelection === 'none' || quantity <= 0) return;
+            if (invId === 'none' || quantity <= 0) return;
 
-            const [itemName, itemCostStr] = menuSelection.split('|');
-            const baseCost = parseFloat(itemCostStr);
+            const inventoryItem = inventoryData.find(item => item.id === invId);
+            if (!inventoryItem) return;
 
-            const matchingFoodItem = station.foodHistory.find(f => f.name === itemName);
+            if (quantity > inventoryItem.stock) {
+                alert(`Insufficient stock! Only ${inventoryItem.stock} left.`);
+                return;
+            }
+
+            // Deduct from inventory link
+            inventoryItem.stock -= quantity;
+
+            // Add to session ledger
+            const matchingFoodItem = station.foodHistory.find(f => f.name === inventoryItem.name);
             if (matchingFoodItem) {
                 matchingFoodItem.qty += quantity;
             } else {
-                station.foodHistory.push({ name: itemName, price: baseCost, qty: quantity });
+                station.foodHistory.push({ id: inventoryItem.id, name: inventoryItem.name, price: inventoryItem.price, qty: quantity });
             }
 
             renderActiveStationPanel(station);
@@ -652,15 +714,17 @@
         }
 
         function calculateTotalBalanceSheet(station) {
-            const structuralPlayCost = (station.durationMinutes / 60) * HOURLY_RATE;
+            const structuralPlayCost = (station.durationMinutes / 60) * globalHourlyRate;
             const cateringCostTotal = station.foodHistory.reduce((sum, item) => sum + (item.price * item.qty), 0);
             const manualFees = parseFloat(station.miscServiceFee) || 0;
+            const extraTimeTotal = parseFloat(station.extraTimeCost) || 0;
             
             return {
                 playCost: structuralPlayCost,
                 foodCost: cateringCostTotal,
                 miscCost: manualFees,
-                grandTotal: structuralPlayCost + cateringCostTotal + manualFees
+                extraTime: extraTimeTotal,
+                grandTotal: structuralPlayCost + cateringCostTotal + manualFees + extraTimeTotal
             };
         }
 
@@ -672,10 +736,11 @@
             let tempMisc = station.miscServiceFee;
             if(surchargeField) tempMisc = parseFloat(surchargeField.value) || 0;
 
-            const baseCost = (station.durationMinutes / 60) * HOURLY_RATE;
+            const baseCost = (station.durationMinutes / 60) * globalHourlyRate;
             const foodCost = station.foodHistory.reduce((sum, f) => sum + (f.price * f.qty), 0);
+            const extraTimeTotal = station.extraTimeCost || 0;
             
-            document.getElementById('panel-bill-display').textContent = `₹${(baseCost + foodCost + tempMisc).toFixed(2)}`;
+            document.getElementById('panel-bill-display').textContent = `₹${(baseCost + foodCost + tempMisc + extraTimeTotal).toFixed(2)}`;
         }
 
         function processSessionSettlement() {
@@ -691,7 +756,7 @@
             const completedLogEntry = {
                 uid: station.uid,
                 stationId: station.id,
-                duration: station.durationMinutes,
+                duration: station.durationMinutes + station.extraTimeAdded,
                 players: station.playersCount,
                 foodDetails: foodBreakdownText,
                 totalCollected: statements.grandTotal.toFixed(2),
@@ -699,10 +764,8 @@
             };
             systemAuditLogs.push(completedLogEntry);
 
-            // Trigger Premium Printable PDF View Window
             generatePrintablePDFInvoice(station, statements);
 
-            // Re-render UI block directly to confirm clear operations
             const titleField = document.getElementById('modal-title-field');
             const bodyField = document.getElementById('modal-injected-body');
 
@@ -711,7 +774,8 @@
                 <div class="invoice-block">
                     <p style="color:#00ff66; font-size:1.1rem; font-weight:bold; margin-bottom:10px;">✔ Invoice Generated Successfully</p>
                     <p style="color:#888; font-size:0.75rem; margin-bottom:15px;">INVOICE ID: ${station.uid}</p>
-                    <div class="invoice-line"><span>Console Usage Fee (${station.durationMinutes} Mins)</span><span>₹${statements.playCost.toFixed(2)}</span></div>
+                    <div class="invoice-line"><span>Console Usage (${station.durationMinutes} Mins)</span><span>₹${statements.playCost.toFixed(2)}</span></div>
+                    <div class="invoice-line"><span>Extended Session Time (${station.extraTimeAdded} Mins)</span><span>₹${statements.extraTime.toFixed(2)}</span></div>
                     <div class="invoice-line"><span>Catering Order Fees</span><span>₹${statements.foodCost.toFixed(2)}</span></div>
                     <div class="invoice-line"><span>Miscellaneous Service Fees</span><span>₹${statements.miscCost.toFixed(2)}</span></div>
                     <div class="summary-total-strip" style="margin-bottom:20px;">
@@ -723,7 +787,102 @@
             `;
         }
 
-        // Dynamically launches and executes the printable window design framework with background logo element embedded
+        // --- Admin Dashboard Engine ---
+        function openAdminModal() {
+            if (!isAdminAuthenticated) {
+                const pwd = prompt("System Administrator Login\nEnter Admin Password (default: admin):");
+                if (pwd === 'admin') {
+                    isAdminAuthenticated = true;
+                } else {
+                    alert("Authentication Failed. Access Denied.");
+                    return;
+                }
+            }
+
+            targetedActiveStationId = null;
+            const titleField = document.getElementById('modal-title-field');
+            const bodyField = document.getElementById('modal-injected-body');
+
+            titleField.textContent = "⚙️ Admin Control Panel";
+
+            let inventoryHtml = inventoryData.map((item, i) => `
+                <div class="admin-row">
+                    <input type="text" value="${item.name}" id="inv_name_${i}">
+                    <input type="number" value="${item.price}" id="inv_price_${i}" step="0.01">
+                    <input type="number" value="${item.stock}" id="inv_stock_${i}">
+                    <button class="action-button" style="margin:0; padding:10px 15px;" onclick="updateInventoryItem(${i})">Save</button>
+                </div>
+            `).join('');
+
+            bodyField.innerHTML = `
+                <div class="form-group">
+                    <label>Global Hourly Console Rate (₹)</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="number" id="admin_hourly_rate" value="${globalHourlyRate}" step="0.5">
+                        <button class="action-button" style="margin:0; padding:10px; width:auto;" onclick="updateGlobalRate()">Update Rate</button>
+                    </div>
+                </div>
+
+                <div class="section-title" style="margin-top: 30px;">Inventory Management</div>
+                <div class="admin-row" style="margin-bottom: 5px;">
+                    <label style="font-size: 0.7rem; font-weight: bold; color: #aaa; text-transform: uppercase;">Item Name</label>
+                    <label style="font-size: 0.7rem; font-weight: bold; color: #aaa; text-transform: uppercase;">Price (₹)</label>
+                    <label style="font-size: 0.7rem; font-weight: bold; color: #aaa; text-transform: uppercase;">Stock Qty</label>
+                    <label></label>
+                </div>
+                ${inventoryHtml}
+
+                <div class="section-title" style="margin-top: 30px;">Add New Inventory Item</div>
+                <div class="admin-row" style="margin-bottom: 8px;">
+                    <input type="text" id="new_item_name" placeholder="Item Name">
+                    <input type="number" id="new_item_price" placeholder="Price" step="0.01">
+                    <input type="number" id="new_item_stock" placeholder="Initial Stock">
+                    <button class="action-button success-btn" style="margin:0; padding:10px 15px;" onclick="addNewInventoryItem()">Add</button>
+                </div>
+            `;
+            document.getElementById('modal-overlay').classList.add('active');
+        }
+
+        function updateGlobalRate() {
+            const newRate = parseFloat(document.getElementById('admin_hourly_rate').value);
+            if (!isNaN(newRate) && newRate > 0) {
+                globalHourlyRate = newRate;
+                alert(`Global rate updated to ₹${globalHourlyRate}/hr successfully.`);
+            }
+        }
+
+        function updateInventoryItem(index) {
+            const newName = document.getElementById(`inv_name_${index}`).value;
+            const newPrice = parseFloat(document.getElementById(`inv_price_${index}`).value);
+            const newStock = parseInt(document.getElementById(`inv_stock_${index}`).value);
+
+            if (newName && !isNaN(newPrice) && !isNaN(newStock)) {
+                inventoryData[index].name = newName;
+                inventoryData[index].price = newPrice;
+                inventoryData[index].stock = newStock;
+                alert(`Inventory item [${newName}] updated.`);
+                openAdminModal(); // Refresh interface
+            }
+        }
+
+        function addNewInventoryItem() {
+            const name = document.getElementById('new_item_name').value;
+            const price = parseFloat(document.getElementById('new_item_price').value);
+            const stock = parseInt(document.getElementById('new_item_stock').value);
+
+            if (name && !isNaN(price) && !isNaN(stock)) {
+                inventoryData.push({
+                    id: `inv_${new Date().getTime()}`,
+                    name: name,
+                    price: price,
+                    stock: stock
+                });
+                openAdminModal(); // Refresh view
+            } else {
+                alert("Please fill out all fields with valid data.");
+            }
+        }
+
         function generatePrintablePDFInvoice(station, statements) {
             const printWindow = window.open('', '_blank');
             const currentDateStr = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -752,6 +911,18 @@
                 </tr>
             ` : '';
 
+            let extraTimeRowHtml = statements.extraTime > 0 ? `
+                <tr>
+                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt;">
+                        <div style="font-weight:700; color:#fff;">Extended Session Time</div>
+                        <div style="font-size:8.5pt; color:#778; margin-top:2px;">Additional intervals requested (+${station.extraTimeAdded} Mins)</div>
+                    </td>
+                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt; text-align:center;">-</td>
+                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt; text-align:center;">1</td>
+                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt; text-align:right;">₹${statements.extraTime.toFixed(2)}</td>
+                </tr>
+            ` : '';
+
             printWindow.document.write(`
                 <html>
                 <head>
@@ -759,7 +930,6 @@
                     <style>
                         @page { size: A4; margin: 0; }
                         body { background-color: #0b0b0f; color: #ffffff; padding: 30mm 20mm; font-family: 'Segoe UI', sans-serif; position: relative; min-height: 297mm; box-sizing: border-box; }
-                        .watermark { position: absolute; top: 40%; left: 35%; width: 300px; height: 300px; transform: scale(2.5); background-image: url("data:image/svg+xml;utf8,${rawLogoSvg}"); background-repeat: no-repeat; opacity: 0.15; pointer-events: none; z-index: 1; }
                         .container { position: relative; z-index: 2; max-width: 170mm; margin: 0 auto; }
                         .header { background: linear-gradient(135deg, #1a1a24 0%, #0f0f15 100%); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; padding: 25px 35px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
                         .header-title { font-size: 24pt; font-weight: 800; text-transform: uppercase; color: #ff9100; margin: 0; letter-spacing: 1px; }
@@ -774,7 +944,6 @@
                     </style>
                 </head>
                 <body>
-                    <div class="watermark"></div>
                     <div class="container">
                         <div class="header">
                             <div>
@@ -809,13 +978,14 @@
                             <tbody>
                                 <tr>
                                     <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt;">
-                                        <div style="font-weight:700; color:#fff;">Console Usage Fee</div>
-                                        <div style="font-size:8.5pt; color:#778; margin-top:2px;">Gaming station operational duration allocation (${station.durationMinutes} Mins)</div>
+                                        <div style="font-weight:700; color:#fff;">Base Console Usage</div>
+                                        <div style="font-size:8.5pt; color:#778; margin-top:2px;">Gaming station allocation (${station.durationMinutes} Mins)</div>
                                     </td>
-                                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt; text-align:center;">₹${HOURLY_RATE.toFixed(2)}/hr</td>
+                                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt; text-align:center;">₹${globalHourlyRate.toFixed(2)}/hr</td>
                                     <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt; text-align:center;">1</td>
                                     <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt; text-align:right;">₹${statements.playCost.toFixed(2)}</td>
                                 </tr>
+                                ${extraTimeRowHtml}
                                 ${cateringTableRows}
                                 ${surchargeRowHtml}
                             </tbody>
@@ -824,22 +994,17 @@
                         <div class="financial-box">
                             <div style="width:50%; background:rgba(255,255,255,0.01); border-left:3px solid #ff9100; padding:12px; border-radius:0 8px 8px 0; box-sizing:border-box;">
                                 <div style="font-size:8pt; font-weight:700; text-transform:uppercase; color:#ff9100; margin-bottom:4px;">System Generation Notes</div>
-                                <div style="font-size:8pt; color:#778; line-height:1.4;">Automated balance record sheets directly compiled via local protocol server parameters. Currency converted to standard local INR.</div>
+                                <div style="font-size:8pt; color:#778; line-height:1.4;">Automated balance record sheets directly compiled via local protocol server parameters.</div>
                             </div>
                             <div style="width:45%;">
-                                <div style="display:flex; justify-content:space-between; font-size:9pt; color:#889; text-transform:uppercase; margin-bottom:8px;"><span>Console Subtotal</span><span style="color:#ddd;">₹${statements.playCost.toFixed(2)}</span></div>
-                                <div style="display:flex; justify-content:space-between; font-size:9pt; color:#889; text-transform:uppercase; margin-bottom:8px;"><span>Catering Items</span><span style="color:#ddd;">₹${statements.foodCost.toFixed(2)}</span></div>
-                                <div style="display:flex; justify-content:space-between; font-size:9pt; color:#889; text-transform:uppercase; margin-bottom:12px;"><span>Manual Fee Addons</span><span style="color:#ddd;">₹${statements.miscCost.toFixed(2)}</span></div>
+                                <div style="display:flex; justify-content:space-between; font-size:9pt; color:#889; text-transform:uppercase; margin-bottom:8px;"><span>Base & Extra Time Subtotal</span><span style="color:#ddd;">₹${(statements.playCost + statements.extraTime).toFixed(2)}</span></div>
+                                <div style="display:flex; justify-content:space-between; font-size:9pt; color:#889; text-transform:uppercase; margin-bottom:8px;"><span>Catering Subtotal</span><span style="color:#ddd;">₹${statements.foodCost.toFixed(2)}</span></div>
+                                <div style="display:flex; justify-content:space-between; font-size:9pt; color:#889; text-transform:uppercase; margin-bottom:12px;"><span>Manual Fees</span><span style="color:#ddd;">₹${statements.miscCost.toFixed(2)}</span></div>
                                 <div style="display:flex; justify-content:space-between; border-top:1px dashed rgba(255,255,255,0.1); padding-top:12px; align-items:center;">
                                     <span style="font-size:11pt; font-weight:800; text-transform:uppercase; color:#ff9100;">Grand Total</span>
                                     <span class="grand-total">₹${statements.grandTotal.toFixed(2)}</span>
                                 </div>
                             </div>
-                        </div>
-
-                        <div style="margin-top:60px; text-align:center; border-top:1px solid rgba(255,255,255,0.04); padding-top:20px;">
-                            <div style="font-weight:700; text-transform:uppercase; font-size:10pt; letter-spacing:1px; background:linear-gradient(to right, #ff6a00, #ffb300); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">GG WP! Thanks for playing!</div>
-                            <div style="font-size:7.5pt; color:#445; margin-top:5px; text-transform:uppercase; letter-spacing:0.5px;">Automated Ledger Record • Wonder Gamezone Admin Server v1.0</div>
                         </div>
                     </div>
                     <script>window.onload = function() { window.print(); }</s` + `cript>
@@ -856,6 +1021,8 @@
             station.uid = '';
             station.foodHistory = [];
             station.miscServiceFee = 0;
+            station.extraTimeCost = 0;
+            station.extraTimeAdded = 0;
 
             refreshDashboardVisuals();
             closeTopModal();
@@ -912,7 +1079,7 @@
                     const gridTimer = document.getElementById(`grid-timer-${station.id}`);
                     if (gridTimer) {
                         gridTimer.textContent = formatTime(station.timeRemaining);
-                        gridTimer.className = `card-timer ${getTimerColorClass(station.timeRemaining, station.durationMinutes * 60)}`;
+                        gridTimer.className = `card-timer ${getTimerColorClass(station.timeRemaining, (station.durationMinutes + station.extraTimeAdded) * 60)}`;
                     }
 
                     if (targetedActiveStationId === station.id) {
@@ -926,13 +1093,15 @@
                         const statements = calculateTotalBalanceSheet(station);
                         let foodDetails = station.foodHistory.length === 0 ? 'None' : station.foodHistory.map(f => `${f.name} (x${f.qty})`).join(', ');
                         systemAuditLogs.push({
-                            uid: station.uid, stationId: station.id, duration: station.durationMinutes, players: station.playersCount,
+                            uid: station.uid, stationId: station.id, duration: station.durationMinutes + station.extraTimeAdded, players: station.playersCount,
                             foodDetails: foodDetails, totalCollected: statements.grandTotal.toFixed(2), timestamp: new Date().toLocaleTimeString().substring(0, 5)
                         });
                         station.status = 'AVAILABLE';
                         station.uid = '';
                         station.foodHistory = [];
                         station.miscServiceFee = 0;
+                        station.extraTimeCost = 0;
+                        station.extraTimeAdded = 0;
                         refreshDashboardVisuals();
                     }
                 }
