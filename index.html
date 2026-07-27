@@ -406,7 +406,6 @@
             box-shadow: 0 0 10px rgba(178, 0, 255, 0.4); 
         }
         
-        /* Dropdown styling updates for <select> options */
         .form-group select option {
             background-color: #1a0b2e;
             color: #fff;
@@ -492,9 +491,6 @@
         .extra-time-btn { background: linear-gradient(90deg, #1e88e5, #42a5f5); box-shadow: 0 4px 15px rgba(30, 136, 229, 0.4); }
         .release-button { background: linear-gradient(90deg, #d32f2f, #f44336); box-shadow: 0 4px 15px rgba(211, 47, 47, 0.4); }
         .success-btn { background: linear-gradient(90deg, #00b347, #00ff66); color: #000; border: none; box-shadow: 0 4px 15px rgba(0, 255, 102, 0.4); }
-
-        .invoice-block { text-align: center; padding: 10px 0; }
-        .invoice-line { display: flex; justify-content: space-between; margin: 10px 0; font-size: 0.9rem; border-bottom: 1px dashed rgba(255, 255, 255, 0.1); padding-bottom: 5px; }
 
         .log-table-wrapper { width: 100%; overflow-x: auto; margin-top: 10px; }
         .log-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.8rem; }
@@ -767,7 +763,7 @@
                     <span class="total-price" id="panel-bill-display">₹0.00</span>
                 </div>
 
-                <button class="action-button release-button" onclick="processSessionSettlement()">End Session & Generate Invoice</button>
+                <button class="action-button release-button" onclick="processSessionSettlement()">End Session</button>
             `;
             recalculateLivePanelBill();
         }
@@ -791,7 +787,6 @@
             document.getElementById('modal-overlay').classList.remove('active');
             targetedActiveStationId = null;
             
-            // Close dropdowns when a modal closes just in case
             const dropdowns = document.getElementsByClassName("dropdown-content");
             for (let i = 0; i < dropdowns.length; i++) {
                 dropdowns[i].classList.remove('show');
@@ -901,17 +896,22 @@
             document.getElementById('panel-bill-display').textContent = `₹${(baseCost + foodCost + tempMisc + extraTimeTotal).toFixed(2)}`;
         }
 
-        function processSessionSettlement() {
-            const station = stationsData.find(s => s.id === targetedActiveStationId);
-            const finalSurchargeField = document.getElementById('surcharge-fee');
-            if (finalSurchargeField) {
-                station.miscServiceFee = parseFloat(finalSurchargeField.value) || 0;
+        // --- NEW SETTLEMENT LOGIC (NO INVOICE RENDER) ---
+        function processSessionSettlement(stationId = targetedActiveStationId) {
+            if (!stationId) return;
+            const station = stationsData.find(s => s.id === stationId);
+            
+            if (stationId === targetedActiveStationId) {
+                const finalSurchargeField = document.getElementById('surcharge-fee');
+                if (finalSurchargeField) {
+                    station.miscServiceFee = parseFloat(finalSurchargeField.value) || 0;
+                }
             }
 
             const statements = calculateTotalBalanceSheet(station);
             let foodBreakdownText = station.foodHistory.length === 0 ? 'None' : station.foodHistory.map(f => `${f.name} (x${f.qty})`).join(', ');
 
-            const completedLogEntry = {
+            systemAuditLogs.push({
                 uid: station.uid,
                 stationId: station.id,
                 duration: station.durationMinutes + station.extraTimeAdded,
@@ -919,30 +919,27 @@
                 foodDetails: foodBreakdownText,
                 totalCollected: statements.grandTotal.toFixed(2),
                 timestamp: new Date().toLocaleTimeString().substring(0, 5)
-            };
-            systemAuditLogs.push(completedLogEntry);
+            });
 
-            generatePrintablePDFInvoice(station, statements);
+            if (stationId === targetedActiveStationId) {
+                alert(`✅ Session P${station.id} Ended Successfully.\n\nTotal Bill: ₹${statements.grandTotal.toFixed(2)}\n\nThis transaction has been saved to the History Logs.`);
+            }
 
-            const titleField = document.getElementById('modal-title-field');
-            const bodyField = document.getElementById('modal-injected-body');
+            flushStationSlot(station.id);
+        }
 
-            titleField.textContent = `Station ${station.id} Final Settlement`;
-            bodyField.innerHTML = `
-                <div class="invoice-block">
-                    <p style="color:#00ff66; font-size:1.1rem; font-weight:bold; margin-bottom:10px; text-shadow: 0 0 10px rgba(0, 255, 102, 0.4);">✔ Invoice Generated Successfully</p>
-                    <p style="color:#aaa; font-size:0.75rem; margin-bottom:15px;">INVOICE ID: ${station.uid}</p>
-                    <div class="invoice-line"><span>Console Usage (${station.durationMinutes} Mins)</span><span>₹${statements.playCost.toFixed(2)}</span></div>
-                    <div class="invoice-line"><span>Extended Session Time (${station.extraTimeAdded} Mins)</span><span>₹${statements.extraTime.toFixed(2)}</span></div>
-                    <div class="invoice-line"><span>Catering Order Fees</span><span>₹${statements.foodCost.toFixed(2)}</span></div>
-                    <div class="invoice-line"><span>Miscellaneous Service Fees</span><span>₹${statements.miscCost.toFixed(2)}</span></div>
-                    <div class="summary-total-strip" style="margin-bottom:20px;">
-                        <span class="total-label">Total Amount Paid:</span>
-                        <span class="total-price" style="font-size:1.8rem;">₹${statements.grandTotal.toFixed(2)}</span>
-                    </div>
-                    <button class="action-button" onclick="flushStationSlot(${station.id})">Clear Console & Complete Order</button>
-                </div>
-            `;
+        function flushStationSlot(stationId) {
+            const station = stationsData.find(s => s.id === stationId);
+            station.status = 'AVAILABLE';
+            station.timeRemaining = 0;
+            station.uid = '';
+            station.foodHistory = [];
+            station.miscServiceFee = 0;
+            station.extraTimeCost = 0;
+            station.extraTimeAdded = 0;
+
+            refreshDashboardVisuals();
+            closeTopModal();
         }
 
         // --- Header Menu Modal Actions ---
@@ -1104,152 +1101,6 @@
             document.getElementById('modal-overlay').classList.add('active');
         }
 
-        // --- Print Invoice Utility ---
-        function generatePrintablePDFInvoice(station, statements) {
-            const printWindow = window.open('', '_blank');
-            const currentDateStr = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
-
-            let cateringTableRows = station.foodHistory.map(f => `
-                <tr>
-                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt;">
-                        <div style="font-weight:700; color:#fff;">${f.name}</div>
-                        <div style="font-size:8.5pt; color:#778; margin-top:2px;">Catering refreshment service add-on</div>
-                    </td>
-                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt; text-align:center;">₹${f.price.toFixed(2)}</td>
-                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt; text-align:center;">${f.qty}</td>
-                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt; text-align:right;">₹${(f.price * f.qty).toFixed(2)}</td>
-                </tr>
-            `).join('');
-
-            let surchargeRowHtml = statements.miscCost > 0 ? `
-                <tr>
-                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt;">
-                        <div style="font-weight:700; color:#fff;">Miscellaneous Surcharge</div>
-                        <div style="font-size:8.5pt; color:#778; margin-top:2px;">Manual system override fee</div>
-                    </td>
-                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt; text-align:center;">₹${statements.miscCost.toFixed(2)}</td>
-                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt; text-align:center;">1</td>
-                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt; text-align:right;">₹${statements.miscCost.toFixed(2)}</td>
-                </tr>
-            ` : '';
-
-            let extraTimeRowHtml = statements.extraTime > 0 ? `
-                <tr>
-                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt;">
-                        <div style="font-weight:700; color:#fff;">Extended Session Time</div>
-                        <div style="font-size:8.5pt; color:#778; margin-top:2px;">Additional intervals requested (+${station.extraTimeAdded} Mins)</div>
-                    </td>
-                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt; text-align:center;">-</td>
-                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt; text-align:center;">1</td>
-                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt; text-align:right;">₹${statements.extraTime.toFixed(2)}</td>
-                </tr>
-            ` : '';
-
-            printWindow.document.write(`
-                <html>
-                <head>
-                    <title>Invoice - ${station.uid}</title>
-                    <style>
-                        @page { size: A4; margin: 0; }
-                        body { background-color: #0b0b0f; color: #ffffff; padding: 30mm 20mm; font-family: 'Segoe UI', sans-serif; position: relative; min-height: 297mm; box-sizing: border-box; }
-                        .container { position: relative; z-index: 2; max-width: 170mm; margin: 0 auto; }
-                        .header { background: linear-gradient(135deg, #181324 0%, #100b1a 100%); border: 1px solid rgba(178, 0, 255, 0.2); border-radius: 20px; padding: 25px 35px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
-                        .header-title { font-size: 24pt; font-weight: 800; text-transform: uppercase; color: #b200ff; margin: 0; letter-spacing: 1px; }
-                        .invoice-badge { background: rgba(178, 0, 255, 0.1); border: 1px solid rgba(178, 0, 255, 0.3); padding: 8px 18px; border-radius: 30px; color: #e066ff; font-weight: 700; font-size: 10pt; text-transform: uppercase; }
-                        .meta-box { display: flex; width: 100%; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); border-radius: 12px; padding: 15px 20px; margin-bottom: 35px; box-sizing: border-box; }
-                        .meta-col { width: 50%; font-size: 9.5pt; color: #ddd; }
-                        .meta-label { font-size: 8pt; color: #667; text-transform: uppercase; font-weight: 700; width: 100px; display: inline-block; }
-                        .inv-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-                        .inv-table th { background: #14101c; color: #b200ff; padding: 12px 16px; font-size: 9pt; text-transform: uppercase; text-align: left; border-bottom: 2px solid rgba(178, 0, 255, 0.2); }
-                        .financial-box { display: flex; justify-content: space-between; margin-top: 20px; }
-                        .grand-total { font-size: 18pt; font-weight: 800; color: #00ff66; text-align: right; }
-                    </style>
-                </head>
-                <body>
-                    <div class="container">
-                        <div class="header">
-                            <div>
-                                <h1 class="header-title">Wonder Gamezone</h1>
-                                <div style="font-size:9pt; color:#889; text-transform:uppercase; letter-spacing:2px;">Master Admin Terminal</div>
-                            </div>
-                            <div class="invoice-badge">Session Receipt</div>
-                        </div>
-                        
-                        <div class="meta-box">
-                            <div class="meta-col">
-                                <div><span class="meta-label">Invoice ID:</span><b>${station.uid}</b></div>
-                                <div style="margin-top:6px;"><span class="meta-label">Station ID:</span>Playstation ${station.id}</div>
-                                <div style="margin-top:6px;"><span class="meta-label">Occupants:</span>${station.playersCount} Person(s)</div>
-                            </div>
-                            <div class="meta-col">
-                                <div><span class="meta-label">Date:</span>${currentDateStr}</div>
-                                <div style="margin-top:6px;"><span class="meta-label">Timeline:</span>${station.startTime} - ${station.endTime}</div>
-                                <div style="margin-top:6px;"><span class="meta-label">Status:</span><span style="color:#00ff66; font-weight:bold;">Settled / Paid</span></div>
-                            </div>
-                        </div>
-
-                        <table class="inv-table">
-                            <thead>
-                                <tr>
-                                    <th style="width:55%;">Service Description</th>
-                                    <th style="text-align:center; width:15%;">Rate</th>
-                                    <th style="text-align:center; width:10%;">Qty</th>
-                                    <th style="text-align:right; width:20%;">Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt;">
-                                        <div style="font-weight:700; color:#fff;">Base Console Usage</div>
-                                        <div style="font-size:8.5pt; color:#778; margin-top:2px;">Gaming station allocation (${station.durationMinutes} Mins)</div>
-                                    </td>
-                                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt; text-align:center;">₹${globalHourlyRate.toFixed(2)}/hr</td>
-                                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt; text-align:center;">1</td>
-                                    <td style="padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:10pt; text-align:right;">₹${statements.playCost.toFixed(2)}</td>
-                                </tr>
-                                ${extraTimeRowHtml}
-                                ${cateringTableRows}
-                                ${surchargeRowHtml}
-                            </tbody>
-                        </table>
-
-                        <div class="financial-box">
-                            <div style="width:50%; background:rgba(255,255,255,0.01); border-left:3px solid #b200ff; padding:12px; border-radius:0 8px 8px 0; box-sizing:border-box;">
-                                <div style="font-size:8pt; font-weight:700; text-transform:uppercase; color:#b200ff; margin-bottom:4px;">System Generation Notes</div>
-                                <div style="font-size:8pt; color:#778; line-height:1.4;">Automated balance record sheets directly compiled via local protocol server parameters.</div>
-                            </div>
-                            <div style="width:45%;">
-                                <div style="display:flex; justify-content:space-between; font-size:9pt; color:#889; text-transform:uppercase; margin-bottom:8px;"><span>Base & Extra Time Subtotal</span><span style="color:#ddd;">₹${(statements.playCost + statements.extraTime).toFixed(2)}</span></div>
-                                <div style="display:flex; justify-content:space-between; font-size:9pt; color:#889; text-transform:uppercase; margin-bottom:8px;"><span>Catering Subtotal</span><span style="color:#ddd;">₹${statements.foodCost.toFixed(2)}</span></div>
-                                <div style="display:flex; justify-content:space-between; font-size:9pt; color:#889; text-transform:uppercase; margin-bottom:12px;"><span>Manual Fees</span><span style="color:#ddd;">₹${statements.miscCost.toFixed(2)}</span></div>
-                                <div style="display:flex; justify-content:space-between; border-top:1px dashed rgba(255,255,255,0.1); padding-top:12px; align-items:center;">
-                                    <span style="font-size:11pt; font-weight:800; text-transform:uppercase; color:#b200ff;">Grand Total</span>
-                                    <span class="grand-total">₹${statements.grandTotal.toFixed(2)}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <script>window.onload = function() { window.print(); }</s` + `cript>
-                </body>
-                </html>
-            `);
-            printWindow.document.close();
-        }
-
-        function flushStationSlot(stationId) {
-            const station = stationsData.find(s => s.id === stationId);
-            station.status = 'AVAILABLE';
-            station.timeRemaining = 0;
-            station.uid = '';
-            station.foodHistory = [];
-            station.miscServiceFee = 0;
-            station.extraTimeCost = 0;
-            station.extraTimeAdded = 0;
-
-            refreshDashboardVisuals();
-            closeTopModal();
-        }
-
         // --- Global Tick Engine ---
         setInterval(() => {
             stationsData.forEach(station => {
@@ -1267,23 +1118,7 @@
                         if (modalTimer) modalTimer.textContent = formatTime(station.timeRemaining);
                     }
                 } else if (station.status === 'IN_USE' && station.timeRemaining <= 0) {
-                    if (targetedActiveStationId === station.id) {
-                        processSessionSettlement();
-                    } else {
-                        const statements = calculateTotalBalanceSheet(station);
-                        let foodDetails = station.foodHistory.length === 0 ? 'None' : station.foodHistory.map(f => `${f.name} (x${f.qty})`).join(', ');
-                        systemAuditLogs.push({
-                            uid: station.uid, stationId: station.id, duration: station.durationMinutes + station.extraTimeAdded, players: station.playersCount,
-                            foodDetails: foodDetails, totalCollected: statements.grandTotal.toFixed(2), timestamp: new Date().toLocaleTimeString().substring(0, 5)
-                        });
-                        station.status = 'AVAILABLE';
-                        station.uid = '';
-                        station.foodHistory = [];
-                        station.miscServiceFee = 0;
-                        station.extraTimeCost = 0;
-                        station.extraTimeAdded = 0;
-                        refreshDashboardVisuals();
-                    }
+                    processSessionSettlement(station.id);
                 }
             });
         }, 1000);
