@@ -27,7 +27,7 @@
             align-items: center;
             padding: 20px;
             overflow-x: hidden;
-            background-color: #05010a; /* Fallback */
+            background-color: #05010a;
         }
 
         /* --- Animated Galaxy & Starfield Background --- */
@@ -107,7 +107,6 @@
             transform: scale(1.4);
         }
 
-        /* --- Animated Neon Title --- */
         .header-title {
             font-family: 'Orbitron', sans-serif;
             font-size: 2.5rem;
@@ -115,11 +114,7 @@
             letter-spacing: 3px;
             text-transform: uppercase;
             margin: 0;
-            
-            /* Text Stroke for the outline border effect */
             -webkit-text-stroke: 1px rgba(224, 102, 255, 0.6);
-            
-            /* Flowing animated gradient */
             background: linear-gradient(90deg, #b200ff, #5900ff, #e066ff, #ffffff, #e066ff, #5900ff, #b200ff);
             background-size: 200% auto;
             -webkit-background-clip: text;
@@ -203,10 +198,6 @@
             display: flex;
             align-items: center;
             gap: 10px;
-        }
-
-        .dropdown-item:last-child {
-            border-bottom: none;
         }
 
         .dropdown-item:hover {
@@ -406,10 +397,7 @@
             box-shadow: 0 0 10px rgba(178, 0, 255, 0.4); 
         }
         
-        .form-group select option {
-            background-color: #1a0b2e;
-            color: #fff;
-        }
+        .form-group select option { background-color: #1a0b2e; color: #fff; }
 
         .nested-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; align-items: flex-end; }
         .admin-row { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; align-items: center; margin-bottom: 8px;}
@@ -488,9 +476,21 @@
             border-radius: 8px;
         }
 
+        .quick-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            box-shadow: none;
+            flex: 1;
+        }
+        .quick-btn:hover { background: rgba(255,255,255,0.1); }
+
         .extra-time-btn { background: linear-gradient(90deg, #1e88e5, #42a5f5); box-shadow: 0 4px 15px rgba(30, 136, 229, 0.4); }
         .release-button { background: linear-gradient(90deg, #d32f2f, #f44336); box-shadow: 0 4px 15px rgba(211, 47, 47, 0.4); }
         .success-btn { background: linear-gradient(90deg, #00b347, #00ff66); color: #000; border: none; box-shadow: 0 4px 15px rgba(0, 255, 102, 0.4); }
+
+        .invoice-block { text-align: center; padding: 10px 0; }
+        .invoice-line { display: flex; justify-content: space-between; margin: 10px 0; font-size: 0.9rem; border-bottom: 1px dashed rgba(255, 255, 255, 0.1); padding-bottom: 5px; }
 
         .log-table-wrapper { width: 100%; overflow-x: auto; margin-top: 10px; }
         .log-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.8rem; }
@@ -499,18 +499,9 @@
 
         /* --- Responsive Handling --- */
         @media (max-width: 850px) {
-            .header-panel {
-                flex-direction: column;
-                gap: 20px;
-            }
-            .header-right {
-                position: absolute;
-                top: 20px;
-                right: 20px;
-            }
-            .header-title {
-                font-size: 1.8rem;
-            }
+            .header-panel { flex-direction: column; gap: 20px; }
+            .header-right { position: absolute; top: 20px; right: 20px; }
+            .header-title { font-size: 1.8rem; }
         }
     </style>
 </head>
@@ -522,27 +513,18 @@
         <header class="header-panel glass-panel">
             <div class="header-center">
                 <div class="logo-placeholder">
-                    <!-- Ensure the src matches your actual logo file path -->
                     <img src="WhatsApp_Image_2026-05-26_at_22.39.52-removebg-preview.png" alt="Wonder Gamezone Logo">
                 </div>
                 <h1 class="header-title">Wonder Gamezone</h1>
             </div>
             <div class="header-right">
                 <div class="dropdown-container">
-                    <button class="menu-btn" onclick="toggleMenu(event)">
-                        ☰
-                    </button>
+                    <button class="menu-btn" onclick="toggleMenu(event)">☰</button>
                     <!-- Dropdown List -->
                     <div class="dropdown-content glass-panel" id="mainMenu">
-                        <div class="dropdown-item" onclick="openAdminModal()">
-                            📦 Inventory & Admin
-                        </div>
-                        <div class="dropdown-item" onclick="openSystemLogsModal()">
-                            📜 History
-                        </div>
-                        <div class="dropdown-item" onclick="openMembershipModal()">
-                            💎 Membership
-                        </div>
+                        <div class="dropdown-item" onclick="openAdminModal()">📦 Inventory & Admin</div>
+                        <div class="dropdown-item" onclick="openSystemLogsModal()">📜 History</div>
+                        <div class="dropdown-item" onclick="openMembershipModal()">💎 Membership</div>
                     </div>
                 </div>
             </div>
@@ -575,21 +557,24 @@
         let globalHourlyRate = 15.00;
         let isAdminAuthenticated = false;
 
+        // Base inventory setup (including generic Cigarette and Cold Drink for quick adds)
         let inventoryData = [
             { id: 'inv_1', name: 'Classic Burger', price: 7.00, stock: 10 },
             { id: 'inv_2', name: 'Energy Soda', price: 3.00, stock: 20 },
-            { id: 'inv_3', name: 'Salted Fries', price: 5.00, stock: 15 }
+            { id: 'inv_3', name: 'Salted Fries', price: 5.00, stock: 15 },
+            { id: 'inv_cig', name: 'Cigarette', price: 20.00, stock: 100 },
+            { id: 'inv_drink', name: 'Cold Drink', price: 50.00, stock: 100 }
         ];
 
         const stationsData = Array.from({ length: 9 }, (_, idx) => ({
             id: idx + 1,
             status: 'AVAILABLE',
-            uid: '',
             timeRemaining: 0,
             durationMinutes: 0,
-            startTime: '',
-            endTime: '',
+            startTimestamp: null,
+            endTimestamp: null,
             playersCount: 1,
+            playerNames: '',
             foodHistory: [], 
             miscServiceFee: 0,
             extraTimeCost: 0,
@@ -605,15 +590,11 @@
             document.getElementById('mainMenu').classList.toggle('show');
         }
 
-        // Close dropdown when clicking anywhere else
         window.onclick = function(event) {
             if (!event.target.matches('.menu-btn')) {
                 const dropdowns = document.getElementsByClassName("dropdown-content");
                 for (let i = 0; i < dropdowns.length; i++) {
-                    const openDropdown = dropdowns[i];
-                    if (openDropdown.classList.contains('show')) {
-                        openDropdown.classList.remove('show');
-                    }
+                    dropdowns[i].classList.remove('show');
                 }
             }
         }
@@ -624,6 +605,17 @@
             const mins = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
             const secs = (totalSeconds % 60).toString().padStart(2, '0');
             return `${hrs}:${mins}:${secs}`;
+        }
+
+        function get12HourTime(dateObj) {
+            if (!dateObj) return '--:--';
+            let hours = dateObj.getHours();
+            let minutes = dateObj.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; 
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            return hours + ':' + minutes + ' ' + ampm;
         }
 
         function getTimerColorClass(secondsLeft, totalDurationSeconds) {
@@ -657,7 +649,7 @@
                         <button class="action-button small-btn" onclick="event.stopPropagation(); launchStationConsole(${station.id})">🍕 Add Food / Manage</button>
                     `;
                     inUseGrid.appendChild(card);
-                } else {
+                } else if (station.status === 'AVAILABLE') {
                     card.innerHTML = `
                         <div class="card-header">
                             <div class="card-number" style="color: #666;">P${station.id}</div>
@@ -719,16 +711,27 @@
                 ? '<div class="history-item">No food items added yet.</div>'
                 : station.foodHistory.map(f => `<div class="history-item"><span>${f.name} (x${f.qty})</span><span>₹${(f.price * f.qty).toFixed(2)}</span></div>`).join('');
 
+            // Filters out items without stock, hiding Quick Add items if preferred, but leaving them for manual dropdown selection just in case
             let inventoryOptions = inventoryData.filter(item => item.stock > 0).map(item => 
                 `<option value="${item.id}">${item.name} (₹${item.price.toFixed(2)}) - ${item.stock} left</option>`
             ).join('');
 
             bodyField.innerHTML = `
+                <div class="form-group">
+                    <input type="text" id="player-names-input" placeholder="Enter Player Names (Optional)..." value="${station.playerNames || ''}" onchange="updatePlayerNames(${station.id}, this.value)" style="border-color: rgba(178, 0, 255, 0.3);">
+                </div>
+
                 <div class="metrics-grid">
-                    <div class="metric-item"><div class="metric-label">Session Unique ID</div><div class="metric-value">${station.uid}</div></div>
-                    <div class="metric-item"><div class="metric-label">Start Time</div><div class="metric-value">${station.startTime}</div></div>
-                    <div class="metric-item"><div class="metric-label">Remaining Countdown</div><div class="metric-value" id="modal-live-timer" style="font-family:'Orbitron', sans-serif;">${formatTime(station.timeRemaining)}</div></div>
+                    <div class="metric-item"><div class="metric-label">Start At</div><div class="metric-value">${get12HourTime(station.startTimestamp)}</div></div>
+                    <div class="metric-item"><div class="metric-label">End By</div><div class="metric-value">${get12HourTime(station.endTimestamp)}</div></div>
+                    <div class="metric-item"><div class="metric-label">Remaining Time</div><div class="metric-value" id="modal-live-timer" style="font-family:'Orbitron', sans-serif;">${formatTime(station.timeRemaining)}</div></div>
                     <div class="metric-item"><div class="metric-label">Occupants</div><div class="metric-value">${station.playersCount} Person(s)</div></div>
+                </div>
+
+                <!-- Quick Action Buttons -->
+                <div style="display:flex; gap:10px; margin-bottom: 16px;">
+                    <button class="action-button small-btn quick-btn" onclick="quickAddItem('Cigarette')">🚬 + Cigarette</button>
+                    <button class="action-button small-btn quick-btn" onclick="quickAddItem('Cold Drink')">🥤 + Cold Drink</button>
                 </div>
 
                 <div class="form-group"><label>Food Order History Ledger</label><div class="history-list-box">${foodRowsHtml}</div></div>
@@ -763,30 +766,29 @@
                     <span class="total-price" id="panel-bill-display">₹0.00</span>
                 </div>
 
-                <button class="action-button release-button" onclick="processSessionSettlement()">End Session</button>
+                <button class="action-button release-button" onclick="endSessionManually()">End Session</button>
             `;
             recalculateLivePanelBill();
         }
 
         // --- Core Application Logic ---
+        function updatePlayerNames(stationId, val) {
+            const station = stationsData.find(s => s.id === stationId);
+            if(station) station.playerNames = val;
+        }
+
         function addExtraTimeBlock() {
             const station = stationsData.find(s => s.id === targetedActiveStationId);
             station.timeRemaining += 300;
             station.extraTimeAdded += 5;
             station.extraTimeCost += 50.00;
-            
-            let endParts = station.endTime.split(':');
-            let endTimeObj = new Date();
-            endTimeObj.setHours(parseInt(endParts[0]), parseInt(endParts[1]) + 5, 0);
-            station.endTime = endTimeObj.toTimeString().split(' ')[0].substring(0, 5);
-
+            station.endTimestamp = new Date(station.endTimestamp.getTime() + 5 * 60000);
             renderActiveStationPanel(station);
         }
 
         function closeTopModal() {
             document.getElementById('modal-overlay').classList.remove('active');
             targetedActiveStationId = null;
-            
             const dropdowns = document.getElementsByClassName("dropdown-content");
             for (let i = 0; i < dropdowns.length; i++) {
                 dropdowns[i].classList.remove('show');
@@ -794,16 +796,6 @@
         }
 
         function hideActiveModal(e) { if (e.target.id === 'modal-overlay') closeTopModal(); }
-
-        function generateUniqueIdString(stationId, players) {
-            const dateObj = new Date();
-            const yyyy = dateObj.getFullYear();
-            const mm = (dateObj.getMonth() + 1).toString().padStart(2, '0');
-            const dd = dateObj.getDate().toString().padStart(2, '0');
-            const hh = dateObj.getHours().toString().padStart(2, '0');
-            const min = dateObj.getMinutes().toString().padStart(2, '0');
-            return `ST${stationId}-${yyyy}${mm}${dd}-${hh}${min}-${players}P`;
-        }
 
         function commitNewSession() {
             const station = stationsData.find(s => s.id === targetedActiveStationId);
@@ -817,9 +809,9 @@
             station.timeRemaining = duration * 60;
             station.durationMinutes = duration;
             station.playersCount = players;
-            station.startTime = now.toTimeString().split(' ')[0].substring(0, 5);
-            station.endTime = end.toTimeString().split(' ')[0].substring(0, 5);
-            station.uid = generateUniqueIdString(station.id, players);
+            station.playerNames = '';
+            station.startTimestamp = now;
+            station.endTimestamp = end;
             
             station.foodHistory = [];
             station.miscServiceFee = 0;
@@ -828,6 +820,32 @@
 
             refreshDashboardVisuals();
             closeTopModal();
+        }
+
+        function quickAddItem(itemName) {
+            const station = stationsData.find(s => s.id === targetedActiveStationId);
+            const inventoryItem = inventoryData.find(item => item.name === itemName);
+            
+            if (!inventoryItem) {
+                alert(itemName + " not found in system inventory. Please add it via Admin panel.");
+                return;
+            }
+
+            if (inventoryItem.stock <= 0) {
+                alert(`Insufficient stock for ${itemName}!`);
+                return;
+            }
+
+            inventoryItem.stock -= 1; // Reduce global stock
+
+            const matchingFoodItem = station.foodHistory.find(f => f.name === inventoryItem.name);
+            if (matchingFoodItem) {
+                matchingFoodItem.qty += 1;
+            } else {
+                station.foodHistory.push({ id: inventoryItem.id, name: inventoryItem.name, price: inventoryItem.price, qty: 1 });
+            }
+
+            renderActiveStationPanel(station);
         }
 
         function appendFoodToSession() {
@@ -896,11 +914,17 @@
             document.getElementById('panel-bill-display').textContent = `₹${(baseCost + foodCost + tempMisc + extraTimeTotal).toFixed(2)}`;
         }
 
-        // --- NEW SETTLEMENT LOGIC (NO INVOICE RENDER) ---
-        function processSessionSettlement(stationId = targetedActiveStationId) {
+        function endSessionManually() {
+            const station = stationsData.find(s => s.id === targetedActiveStationId);
+            station.status = 'SETTLING';
+            processSessionSettlement(station.id);
+        }
+
+        function processSessionSettlement(stationId) {
             if (!stationId) return;
             const station = stationsData.find(s => s.id === stationId);
             
+            // If the user triggered this manually via the open panel, grab any unsaved surcharge input
             if (stationId === targetedActiveStationId) {
                 const finalSurchargeField = document.getElementById('surcharge-fee');
                 if (finalSurchargeField) {
@@ -909,30 +933,87 @@
             }
 
             const statements = calculateTotalBalanceSheet(station);
-            let foodBreakdownText = station.foodHistory.length === 0 ? 'None' : station.foodHistory.map(f => `${f.name} (x${f.qty})`).join(', ');
-
-            systemAuditLogs.push({
-                uid: station.uid,
+            
+            // Create a detailed log entry instead of just flat text
+            const logEntry = {
+                id: 'LOG_' + Date.now(),
                 stationId: station.id,
                 duration: station.durationMinutes + station.extraTimeAdded,
                 players: station.playersCount,
-                foodDetails: foodBreakdownText,
-                totalCollected: statements.grandTotal.toFixed(2),
-                timestamp: new Date().toLocaleTimeString().substring(0, 5)
-            });
+                playerNames: station.playerNames,
+                foodHistory: JSON.parse(JSON.stringify(station.foodHistory)), // Deep copy array
+                statements: statements,
+                timestamp: new Date().toLocaleDateString() + ' ' + get12HourTime(new Date())
+            };
+            
+            systemAuditLogs.unshift(logEntry); // Add to beginning of history array
 
-            if (stationId === targetedActiveStationId) {
-                alert(`✅ Session P${station.id} Ended Successfully.\n\nTotal Bill: ₹${statements.grandTotal.toFixed(2)}\n\nThis transaction has been saved to the History Logs.`);
-            }
+            // Open the new Custom Bill Modal (True = show 'Clear Station' button)
+            renderBillReceipt(logEntry.id, true, station.id);
+        }
 
-            flushStationSlot(station.id);
+        // --- New Custom Bill Display Modal ---
+        function renderBillReceipt(logId, isImmediateSettlement, stationId = null) {
+            const log = systemAuditLogs.find(l => l.id === logId);
+            const titleField = document.getElementById('modal-title-field');
+            const bodyField = document.getElementById('modal-injected-body');
+
+            titleField.textContent = `🧾 Bill - P${log.stationId}`;
+
+            let itemsHtml = log.foodHistory.map(item => `
+                <div class="invoice-line" style="font-size:0.85rem;">
+                    <span style="color:#ccc;">${item.name} (x${item.qty})</span>
+                    <span>₹${(item.price * item.qty).toFixed(2)}</span>
+                </div>
+            `).join('');
+
+            let namesHtml = log.playerNames ? `<div style="color:#e066ff; font-size:0.85rem; margin-bottom:15px; font-weight:bold;">Players: ${log.playerNames}</div>` : '';
+
+            let actionBtn = isImmediateSettlement 
+                ? `<button class="action-button success-btn" onclick="flushStationSlot(${stationId})">✅ Clear Station & Close</button>`
+                : `<button class="action-button" onclick="openSystemLogsModal()">⬅ Back to History</button>`;
+
+            bodyField.innerHTML = `
+                <div class="invoice-block" style="text-align:left;">
+                    ${namesHtml}
+                    <div class="invoice-line" style="font-size:0.9rem; color:#fff; font-weight:bold;">
+                        <span>Session Play Time (${log.duration} Mins)</span>
+                        <span>₹${log.statements.playCost.toFixed(2)}</span>
+                    </div>
+                    ${log.statements.extraTime > 0 ? `
+                    <div class="invoice-line" style="font-size:0.85rem; color:#ccc;">
+                        <span>Extra Time Surcharge</span>
+                        <span>₹${log.statements.extraTime.toFixed(2)}</span>
+                    </div>` : ''}
+                    ${log.statements.miscCost > 0 ? `
+                    <div class="invoice-line" style="font-size:0.85rem; color:#ccc;">
+                        <span>Misc Surcharges</span>
+                        <span>₹${log.statements.miscCost.toFixed(2)}</span>
+                    </div>` : ''}
+                    
+                    <div style="margin-top:15px; margin-bottom:5px; font-weight:bold; color:#b200ff; border-bottom:1px solid rgba(178,0,255,0.3); padding-bottom:5px;">Add-ons & Refreshments</div>
+                    ${itemsHtml || '<div style="color:#666; font-size:0.8rem; font-style:italic;">No items ordered.</div>'}
+
+                    <div class="summary-total-strip" style="margin-top:20px;">
+                        <span class="total-label">Grand Total</span>
+                        <span class="total-price" style="font-size:1.8rem;">₹${log.statements.grandTotal.toFixed(2)}</span>
+                    </div>
+                    
+                    <div style="margin-top: 25px;">
+                        ${actionBtn}
+                    </div>
+                </div>
+            `;
+            document.getElementById('modal-overlay').classList.add('active');
         }
 
         function flushStationSlot(stationId) {
             const station = stationsData.find(s => s.id === stationId);
             station.status = 'AVAILABLE';
             station.timeRemaining = 0;
-            station.uid = '';
+            station.startTimestamp = null;
+            station.endTimestamp = null;
+            station.playerNames = '';
             station.foodHistory = [];
             station.miscServiceFee = 0;
             station.extraTimeCost = 0;
@@ -1047,33 +1128,35 @@
             const titleField = document.getElementById('modal-title-field');
             const bodyField = document.getElementById('modal-injected-body');
 
-            titleField.textContent = "System Transaction Logs";
+            titleField.textContent = "📜 System Transaction Logs";
 
             if (systemAuditLogs.length === 0) {
                 bodyField.innerHTML = `<p style="text-align:center; padding:30px; color:#aaa;">No historical session entries found in this runtime environment.</p>`;
             } else {
-                let logRowsHtml = systemAuditLogs.map(log => `
+                let logRowsHtml = systemAuditLogs.map(log => {
+                    let totalItems = log.foodHistory.reduce((sum, f) => sum + f.qty, 0);
+                    return `
                     <tr>
-                        <td>${log.uid}</td>
                         <td>P${log.stationId}</td>
                         <td>${log.duration}m</td>
                         <td>${log.players}</td>
-                        <td style="max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${log.foodDetails}">${log.foodDetails}</td>
-                        <td style="color:#00ff66; font-weight:700;">₹${log.totalCollected}</td>
+                        <td>${totalItems} Items</td>
+                        <td style="color:#00ff66; font-weight:700;">₹${log.statements.grandTotal.toFixed(2)}</td>
+                        <td><button class="action-button small-btn" style="padding: 4px 8px; margin:0;" onclick="renderBillReceipt('${log.id}', false)">View</button></td>
                     </tr>
-                `).join('');
+                `}).join('');
 
                 bodyField.innerHTML = `
                     <div class="log-table-wrapper">
                         <table class="log-table">
                             <thead>
                                 <tr>
-                                    <th>Session ID</th>
                                     <th>Stn</th>
                                     <th>Time</th>
                                     <th>Pax</th>
-                                    <th>Items Ordered</th>
+                                    <th>Food</th>
                                     <th>Total</th>
+                                    <th>Bill</th>
                                 </tr>
                             </thead>
                             <tbody>${logRowsHtml}</tbody>
@@ -1118,6 +1201,8 @@
                         if (modalTimer) modalTimer.textContent = formatTime(station.timeRemaining);
                     }
                 } else if (station.status === 'IN_USE' && station.timeRemaining <= 0) {
+                    // Prevent repeated triggers by updating status to SETTLING
+                    station.status = 'SETTLING';
                     processSessionSettlement(station.id);
                 }
             });
