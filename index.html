@@ -83,6 +83,7 @@
             justify-content: center;
             align-items: center;
             position: relative;
+            z-index: 50; /* FIXED: Ensures the dropdown sits above the main content below it */
         }
 
         .header-center {
@@ -106,17 +107,31 @@
             transform: scale(1.4);
         }
 
+        /* --- Animated Neon Title --- */
         .header-title {
             font-family: 'Orbitron', sans-serif;
             font-size: 2.5rem;
             font-weight: 900;
             letter-spacing: 3px;
             text-transform: uppercase;
-            background: linear-gradient(to right, #b200ff, #e066ff, #ffffff);
+            margin: 0;
+            
+            /* Text Stroke for the outline border effect */
+            -webkit-text-stroke: 1px rgba(224, 102, 255, 0.6);
+            
+            /* Flowing animated gradient */
+            background: linear-gradient(90deg, #b200ff, #5900ff, #e066ff, #ffffff, #e066ff, #5900ff, #b200ff);
+            background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 20px rgba(178, 0, 255, 0.4);
-            margin: 0;
+            text-shadow: 0 0 15px rgba(178, 0, 255, 0.5);
+            animation: neonFlow 3s linear infinite;
+        }
+
+        /* Keyframes to sweep the background gradient across the text */
+        @keyframes neonFlow {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
         }
 
         .header-right {
@@ -163,6 +178,7 @@
             overflow: hidden;
             z-index: 1000;
             border: 1px solid rgba(178, 0, 255, 0.4);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8); /* Added heavier shadow to drop over elements */
         }
 
         .dropdown-content.show {
@@ -207,6 +223,7 @@
             flex-direction: column;
             gap: 40px;
             position: relative;
+            z-index: 10; /* Lower than header panel */
         }
 
         .section-title {
@@ -327,7 +344,7 @@
             height: 100vh;
             background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(8px);
-            z-index: 999;
+            z-index: 9999;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -755,6 +772,12 @@
         function closeTopModal() {
             document.getElementById('modal-overlay').classList.remove('active');
             targetedActiveStationId = null;
+            
+            // Close dropdowns when a modal closes just in case
+            const dropdowns = document.getElementsByClassName("dropdown-content");
+            for (let i = 0; i < dropdowns.length; i++) {
+                dropdowns[i].classList.remove('show');
+            }
         }
 
         function hideActiveModal(e) { if (e.target.id === 'modal-overlay') closeTopModal(); }
@@ -906,6 +929,8 @@
 
         // --- Header Menu Modal Actions ---
         function openAdminModal() {
+            document.getElementById('mainMenu').classList.remove('show');
+            
             if (!isAdminAuthenticated) {
                 const pwd = prompt("System Administrator Login\nEnter Admin Password (default: admin):");
                 if (pwd === 'admin') {
@@ -1001,7 +1026,9 @@
         }
 
         function openSystemLogsModal() {
+            document.getElementById('mainMenu').classList.remove('show');
             targetedActiveStationId = null;
+            
             const titleField = document.getElementById('modal-title-field');
             const bodyField = document.getElementById('modal-injected-body');
 
@@ -1043,7 +1070,9 @@
         }
 
         function openMembershipModal() {
+            document.getElementById('mainMenu').classList.remove('show');
             targetedActiveStationId = null;
+            
             const titleField = document.getElementById('modal-title-field');
             const bodyField = document.getElementById('modal-injected-body');
 
