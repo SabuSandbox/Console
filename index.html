@@ -83,7 +83,7 @@
             justify-content: center;
             align-items: center;
             position: relative;
-            z-index: 50; /* FIXED: Ensures the dropdown sits above the main content below it */
+            z-index: 50; 
         }
 
         .header-center {
@@ -128,7 +128,6 @@
             animation: neonFlow 3s linear infinite;
         }
 
-        /* Keyframes to sweep the background gradient across the text */
         @keyframes neonFlow {
             0% { background-position: 0% center; }
             100% { background-position: 200% center; }
@@ -178,7 +177,7 @@
             overflow: hidden;
             z-index: 1000;
             border: 1px solid rgba(178, 0, 255, 0.4);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.8); /* Added heavier shadow to drop over elements */
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
         }
 
         .dropdown-content.show {
@@ -223,7 +222,7 @@
             flex-direction: column;
             gap: 40px;
             position: relative;
-            z-index: 10; /* Lower than header panel */
+            z-index: 10;
         }
 
         .section-title {
@@ -406,6 +405,13 @@
             border-color: #b200ff; 
             box-shadow: 0 0 10px rgba(178, 0, 255, 0.4); 
         }
+        
+        /* Dropdown styling updates for <select> options */
+        .form-group select option {
+            background-color: #1a0b2e;
+            color: #fff;
+        }
+
         .nested-row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; align-items: flex-end; }
         .admin-row { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; align-items: center; margin-bottom: 8px;}
 
@@ -680,14 +686,26 @@
             if (station.status === 'AVAILABLE') {
                 bodyField.innerHTML = `
                     <div class="form-group">
-                        <label>Session Playing Duration (Minutes)</label>
-                        <input type="number" id="setup-duration" min="1" value="60" required>
+                        <label>Session Playing Duration</label>
+                        <select id="setup-duration">
+                            <option value="30">Half Hour (30 mins)</option>
+                            <option value="60" selected>1 Hour (60 mins)</option>
+                            <option value="90">1.5 Hours (90 mins)</option>
+                            <option value="120">2 Hours (120 mins)</option>
+                            <option value="150">2.5 Hours (150 mins)</option>
+                            <option value="180">3 Hours (180 mins)</option>
+                            <option value="210">3.5 Hours (210 mins)</option>
+                            <option value="240">4 Hours (240 mins)</option>
+                            <option value="300">5 Hours (300 mins)</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label>Occupancy Count (Persons)</label>
                         <select id="setup-players">
-                            <option value="1">1 Person</option><option value="2">2 Persons</option>
-                            <option value="3">3 Persons</option><option value="4">4 Persons</option>
+                            <option value="1">1 Person</option>
+                            <option value="2">2 Persons</option>
+                            <option value="3">3 Persons</option>
+                            <option value="4">4 Persons</option>
                         </select>
                     </div>
                     <button class="action-button" onclick="commitNewSession()">Initialize Station</button>
