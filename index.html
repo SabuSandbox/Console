@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Wonder Gamezone - Administration</title>
     
-    <meta name="theme-color" content="#06010f">
+    <meta name="theme-color" content="#121212">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Wonder GZ">
     <meta name="mobile-web-app-capable" content="yes">
+    <link rel="icon" type="image/png" href="wgz_prple_logo_3.png">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,123 +23,175 @@
 
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { color: #ffffff; min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 20px; overflow-x: hidden; background-color: #05010a; user-select: none; -webkit-user-select: none; }
+        body { color: #ffffff; min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 20px; overflow-x: hidden; background-color: #0d0d0d; user-select: none; -webkit-user-select: none; }
         input, select, textarea { user-select: auto; -webkit-user-select: auto; }
         .hidden { display: none !important; }
 
-        #galaxy-background {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -2; background-color: #06010f; 
-            background-image: radial-gradient(circle at 15% 50%, rgba(70, 10, 130, 0.4) 0%, transparent 40%), radial-gradient(circle at 85% 20%, rgba(120, 0, 200, 0.25) 0%, transparent 50%), radial-gradient(circle at 50% 100%, rgba(40, 0, 80, 0.5) 0%, transparent 50%), radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)), radial-gradient(1.5px 1.5px at 90px 40px, #e8d5ff, rgba(0,0,0,0)), radial-gradient(2px 2px at 160px 120px, #ffffff, rgba(0,0,0,0)), radial-gradient(1px 1px at 250px 150px, #d4aaff, rgba(0,0,0,0)), radial-gradient(2px 2px at 300px 50px, #ffffff, rgba(0,0,0,0)), radial-gradient(1px 1px at 350px 250px, #ffffff, rgba(0,0,0,0));
-            background-repeat: repeat; background-size: 100% 100%, 100% 100%, 100% 100%, 250px 250px, 350px 350px, 400px 400px, 200px 200px, 450px 450px, 300px 300px;
-            animation: drift 100s linear infinite;
+        /* --- Tech Grey & Subtle Orange Background --- */
+        #tech-background {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -2; 
+            background-color: #0a0a0a;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(255, 106, 0, 0.05) 0%, transparent 40%), 
+                radial-gradient(circle at 85% 20%, rgba(150, 150, 150, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 50% 100%, rgba(255, 123, 0, 0.03) 0%, transparent 50%),
+                radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 100% 100%, 25px 25px;
         }
 
-        @keyframes drift { 0% { background-position: 0% 0%, 0% 0%, 0% 0%, 0px 0px, 0px 0px, 0px 0px, 0px 0px, 0px 0px, 0px 0px; } 100% { background-position: 0% 0%, 0% 0%, 0% 0%, -250px -250px, -350px -350px, -400px -400px, -200px -200px, -450px -450px, -300px -300px; } }
+        /* --- Background Video Game Animations --- */
+        #retro-animations { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; overflow: hidden; opacity: 0.15; }
         
+        .sprite-pacman {
+            position: absolute; bottom: 10%; width: 0; height: 0;
+            border-right: 25px solid transparent; border-top: 25px solid #ffaa00;
+            border-left: 25px solid #ffaa00; border-bottom: 25px solid #ffaa00;
+            border-radius: 50%; animation: moveRight 25s linear infinite, chomp 0.4s ease-in-out infinite;
+        }
+        .sprite-ghost { position: absolute; bottom: 12%; font-size: 2.5rem; animation: moveRight 25s linear infinite 1.5s; }
+        .sprite-invader { position: absolute; top: 20%; font-size: 3rem; animation: floatDiag 35s linear infinite; filter: grayscale(100%); }
+        .sprite-ship { position: absolute; top: 60%; font-size: 2.5rem; animation: flyUp 20s linear infinite; transform: rotate(-45deg); filter: grayscale(100%); }
+
+        @keyframes moveRight { 0% { left: -100px; transform: scale(0.6); } 100% { left: 110vw; transform: scale(0.6); } }
+        @keyframes chomp { 0%, 100% { border-right: 25px solid transparent; } 50% { border-right: 25px solid #ffaa00; } }
+        @keyframes floatDiag { 0% { left: -100px; top: 20%; transform: scale(0.8); } 50% { top: 40%; } 100% { left: 110vw; top: 10%; transform: scale(0.8); } }
+        @keyframes flyUp { 0% { left: 20%; top: 110vh; } 100% { left: 40%; top: -100px; } }
+
         /* --- Login Screen --- */
         #login-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
-        .login-box { background: rgba(20, 5, 35, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(178, 0, 255, 0.3); border-radius: 30px; padding: 50px 40px; display: flex; flex-direction: column; align-items: center; gap: 15px; box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 30px rgba(138, 43, 226, 0.2); width: 100%; max-width: 400px; }
-        .login-title { font-family: 'Orbitron', sans-serif; font-size: 1.6rem; text-transform: uppercase; background: linear-gradient(90deg, #b200ff, #e066ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .login-input { width: 100%; background: rgba(0,0,0,0.6); border: 1px solid rgba(178,0,255,0.4); border-radius: 12px; padding: 12px; color: #fff; font-size: 1rem; text-align: center; outline: none; transition: 0.3s; }
-        .login-input:focus { border-color: #e066ff; box-shadow: 0 0 10px rgba(224, 102, 255, 0.4); }
+        .login-box { background: rgba(15, 15, 18, 0.8); backdrop-filter: blur(20px); border: 1px solid rgba(200, 200, 200, 0.15); border-bottom: 3px solid #ff6a00; border-radius: 20px; padding: 50px 40px; display: flex; flex-direction: column; align-items: center; gap: 15px; box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 40px rgba(255, 106, 0, 0.05); width: 100%; max-width: 400px; }
+        .login-logo { width: 140px; margin-bottom: 10px; filter: drop-shadow(0 0 15px rgba(255,255,255,0.1)); }
+        .login-title { font-family: 'Orbitron', sans-serif; font-size: 1.6rem; text-transform: uppercase; background: linear-gradient(90deg, #ffffff, #aaaaaa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 2px; }
+        
+        /* --- Themed Inputs --- */
+        .themed-input { width: 100%; background: rgba(0,0,0,0.7); border: 1px solid rgba(120, 120, 120, 0.3); border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 0.95rem; outline: none; transition: 0.3s; }
+        .themed-input:focus { border-color: #ff6a00; box-shadow: 0 0 10px rgba(255, 106, 0, 0.2); }
+        .themed-input option, .themed-input optgroup { background-color: #1a1a1a; color: #fff; }
 
         /* --- Global & Glassmorphism --- */
-        .glass-panel { background: rgba(20, 5, 35, 0.25); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); border-top: 1px solid rgba(255, 255, 255, 0.15); border-left: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 0 20px rgba(138, 43, 226, 0.15); }
+        .glass-panel { background: rgba(25, 25, 25, 0.6); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.05); border-top: 1px solid rgba(255, 255, 255, 0.1); border-left: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6); }
         .dashboard-wrapper { width: 100%; max-width: 1400px; display: flex; flex-direction: column; gap: 20px; padding-bottom: 50px; }
         
-        .header-panel { border-radius: 40px; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 50; }
-        .header-title { font-family: 'Orbitron', sans-serif; font-size: 2.2rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin: 0; background: linear-gradient(90deg, #b200ff, #e066ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .header-subtitle { font-size: 0.9rem; color: #00ff66; letter-spacing: 2px; text-transform: uppercase; margin-top: 5px; font-weight: bold; }
+        .header-panel { border-radius: 20px; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 50; border-bottom: 2px solid rgba(255, 106, 0, 0.3); }
+        .header-brand { display: flex; align-items: center; gap: 15px; }
+        .header-logo-small { width: 50px; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)); }
+        .header-title { font-family: 'Orbitron', sans-serif; font-size: 2rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin: 0; background: linear-gradient(90deg, #ffffff, #bbbbbb); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header-subtitle { font-size: 0.8rem; color: #ff6a00; letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; font-weight: bold; }
         
-        .location-switcher { background: rgba(0,0,0,0.6); border: 1px solid #b200ff; color: #fff; padding: 8px 15px; border-radius: 8px; font-weight: bold; outline: none; }
-        .location-switcher option { background: #1a0b2e; }
+        .location-switcher { background: rgba(0,0,0,0.8); border: 1px solid #555; color: #fff; padding: 8px 15px; border-radius: 8px; font-weight: bold; outline: none; }
+        .location-switcher:focus { border-color: #ff6a00; }
+        .location-switcher option { background: #1a1a1a; }
 
         /* --- Dropdown Menu --- */
         .dropdown-container { position: relative; }
-        .menu-btn { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.2); padding: 10px 18px; border-radius: 12px; color: #fff; font-size: 1.4rem; cursor: pointer; display: flex; align-items: center; transition: 0.2s; }
-        .dropdown-content { display: none; position: absolute; right: 0; top: 130%; min-width: 240px; flex-direction: column; border-radius: 16px; overflow: hidden; z-index: 1000; border: 1px solid rgba(178, 0, 255, 0.4); box-shadow: 0 20px 40px rgba(0,0,0,0.8); }
+        .menu-btn { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 10px 18px; border-radius: 8px; color: #fff; font-size: 1.4rem; cursor: pointer; display: flex; align-items: center; transition: 0.2s; }
+        .menu-btn:hover { border-color: #ff6a00; color: #ff6a00; }
+        .dropdown-content { display: none; position: absolute; right: 0; top: 130%; min-width: 240px; flex-direction: column; border-radius: 12px; overflow: hidden; z-index: 1000; border: 1px solid rgba(150, 150, 150, 0.2); box-shadow: 0 20px 40px rgba(0,0,0,0.9); }
         .dropdown-content.show { display: flex; }
-        .dropdown-item { padding: 16px 20px; cursor: pointer; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; font-size: 0.8rem; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .dropdown-item:hover { background: rgba(178, 0, 255, 0.4); }
-        .logout-item { color: #ff3333; }
+        .dropdown-item { padding: 16px 20px; cursor: pointer; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; font-size: 0.8rem; color: #ccc; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; }
+        .dropdown-item:hover { background: rgba(255, 106, 0, 0.1); color: #fff; }
+        .logout-item { color: #ff4444; }
 
         /* --- Workspace & Cards --- */
-        .main-content { border-radius: 40px; padding: 40px; display: flex; flex-direction: column; gap: 40px; position: relative; z-index: 10; }
-        .section-title { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; font-weight: 700; text-transform: uppercase; color: #ffffff; margin-bottom: 20px; display: flex; align-items: center; gap: 15px; }
-        .section-title::after { content: ""; flex-grow: 1; height: 1px; background: rgba(178, 0, 255, 0.4); }
+        .main-content { border-radius: 30px; padding: 40px; display: flex; flex-direction: column; gap: 40px; position: relative; z-index: 10; }
+        .section-title { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 700; text-transform: uppercase; color: #dddddd; margin-bottom: 20px; display: flex; align-items: center; gap: 15px; letter-spacing: 1px; }
+        .section-title::after { content: ""; flex-grow: 1; height: 1px; background: linear-gradient(90deg, rgba(255,255,255,0.1), transparent); }
         .stations-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
         
-        .card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; padding: 25px 20px; min-height: 240px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px; cursor: pointer; transition: 0.2s; }
-        .card:hover { transform: scale(1.03) translateY(-5px); border-color: rgba(224, 102, 255, 0.5); box-shadow: 0 10px 25px rgba(138, 43, 226, 0.4); }
-        .card-number { font-family: 'Orbitron', sans-serif; font-size: 3.5rem; font-weight: 900; background: linear-gradient(180deg, #e066ff 0%, #8a2be2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .card-players { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(178, 0, 255, 0.3); padding: 5px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; color: #e066ff; margin-top: 10px; }
+        .card { background: rgba(30, 30, 35, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 25px 20px; min-height: 240px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; gap: 10px; cursor: pointer; transition: 0.2s; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
+        .card:hover { transform: translateY(-4px); border-color: rgba(255, 106, 0, 0.4); box-shadow: 0 10px 25px rgba(0,0,0,0.8), inset 0 0 15px rgba(255, 106, 0, 0.05); }
+        .card-number { font-family: 'Orbitron', sans-serif; font-size: 3.5rem; font-weight: 900; background: linear-gradient(180deg, #ffffff 0%, #888888 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1;}
+        .card-players { background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(255, 106, 0, 0.2); padding: 5px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: bold; color: #ff8c00; margin-top: 10px; letter-spacing: 1px; }
         .card-timer { font-family: 'Orbitron', sans-serif; font-size: 2.2rem; font-weight: 700; letter-spacing: 2px; margin: 10px 0; }
-        .timer-safe { color: #00ff66; text-shadow: 0 0 15px rgba(0, 255, 102, 0.4); }
-        .timer-warning { color: #ffae00; text-shadow: 0 0 15px rgba(255, 174, 0, 0.4); }
-        .timer-critical { color: #ff3333; text-shadow: 0 0 20px rgba(255, 51, 51, 0.6); animation: blinker 1s linear infinite; }
+        .timer-safe { color: #aaaaaa; } 
+        .timer-warning { color: #ffaa00; text-shadow: 0 0 10px rgba(255, 170, 0, 0.2); }
+        .timer-critical { color: #ff4444; text-shadow: 0 0 15px rgba(255, 68, 68, 0.4); animation: blinker 1s linear infinite; }
         @keyframes blinker { 50% { opacity: 0.4; } }
 
         /* --- Modals & Forms --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px); z-index: 9999; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.3s; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        .modal-container { border-radius: 24px; width: 90%; max-width: 650px; padding: 30px; max-height: 90vh; overflow-y: auto; }
-        .modal-container::-webkit-scrollbar { width: 0; background: transparent; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 10px; }
-        .modal-header h2 { font-family: 'Orbitron', sans-serif; font-size: 1.3rem; font-weight: 800; text-transform: uppercase; background: linear-gradient(to right, #b200ff, #e066ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .close-btn { background: none; border: none; color: #aaa; font-size: 1.6rem; cursor: pointer; }
+        .modal-container { border-radius: 16px; width: 90%; max-width: 700px; padding: 30px; max-height: 90vh; overflow-y: auto; background: rgba(20, 20, 20, 0.95); border: 1px solid rgba(100,100,100,0.2); border-top: 2px solid #ff6a00; box-shadow: 0 25px 50px rgba(0,0,0,1); }
+        .modal-container::-webkit-scrollbar { width: 4px; background: transparent; }
+        .modal-container::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: 15px; }
+        .modal-header h2 { font-family: 'Orbitron', sans-serif; font-size: 1.3rem; font-weight: 800; text-transform: uppercase; background: linear-gradient(to right, #ffffff, #aaaaaa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .close-btn { background: none; border: none; color: #666; font-size: 1.8rem; cursor: pointer; transition: 0.2s; }
+        .close-btn:hover { color: #ff6a00; }
 
         .form-group { margin-bottom: 16px; display: flex; flex-direction: column; gap: 6px; }
-        .form-group label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: #ccc; }
-        .form-group input, .form-group select { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px; padding: 10px; color: #fff; font-size: 0.95rem; outline: none; }
-        .form-group input:focus, .form-group select:focus { border-color: #b200ff; }
-        .form-group select option, .form-group select optgroup { background-color: #1a0b2e; color: #fff; }
+        .form-group label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: #888; letter-spacing: 1px; }
         
         .nested-row { display: grid; grid-template-columns: 2fr 1fr auto; gap: 10px; align-items: flex-end; }
-        .admin-row { display: grid; gap: 10px; align-items: center; margin-bottom: 10px;}
+        .admin-row { display: grid; gap: 10px; align-items: center; margin-bottom: 10px; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.03); }
 
-        .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: rgba(255, 255, 255, 0.03); padding: 14px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05); margin-bottom: 16px; }
-        .history-list-box { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; max-height: 140px; overflow-y: auto; margin-bottom: 15px; padding: 10px; }
-        .history-item { font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; padding: 6px 4px; color: #ddd; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: rgba(0, 0, 0, 0.5); padding: 14px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.05); margin-bottom: 16px; }
+        .history-list-box { background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px; max-height: 140px; overflow-y: auto; margin-bottom: 15px; padding: 10px; }
+        .history-item { font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; padding: 8px 4px; color: #bbb; border-bottom: 1px solid rgba(255,255,255,0.02); }
 
-        .action-button { width: 100%; background: linear-gradient(90deg, #5900ff, #b200ff); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 10px; padding: 12px; color: white; font-weight: 700; text-transform: uppercase; cursor: pointer; transition: 0.2s; }
-        .action-button:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(178, 0, 255, 0.6); }
-        .action-button.small-btn { padding: 10px; font-size: 0.8rem; border-radius: 8px; }
+        /* --- Buttons --- */
+        .action-button { width: 100%; background: linear-gradient(90deg, #2a2a2a, #3a3a3a); border: 1px solid rgba(255, 106, 0, 0.3); border-radius: 8px; padding: 12px; color: white; font-weight: 700; text-transform: uppercase; cursor: pointer; transition: 0.2s; letter-spacing: 1px; }
+        .action-button:hover { background: linear-gradient(90deg, #cc5500, #ff6a00); border-color: #ff6a00; box-shadow: 0 5px 15px rgba(255, 106, 0, 0.3); }
+        .action-button.small-btn { padding: 10px; font-size: 0.75rem; border-radius: 6px; }
         
-        .quick-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255, 255, 255, 0.2); flex: 1; }
-        .quick-btn:hover { background: rgba(255,255,255,0.15); border-color:#e066ff; }
-        .release-button { background: linear-gradient(90deg, #d32f2f, #f44336); }
-        .success-btn { background: linear-gradient(90deg, #00b347, #00ff66); color: #000; border: none; }
+        .quick-btn { background: rgba(255,255,255,0.03); border: 1px solid rgba(255, 255, 255, 0.1); flex: 1; color: #ccc; }
+        .quick-btn:hover { background: rgba(255, 106, 0, 0.1); border-color: #ff6a00; color: #fff; }
+        .release-button { background: linear-gradient(90deg, #8b0000, #b22222); border-color: #ff4444; }
+        .release-button:hover { background: linear-gradient(90deg, #b22222, #ff4444); box-shadow: 0 5px 15px rgba(255, 68, 68, 0.3); }
+        .success-btn { background: linear-gradient(90deg, #333333, #444444); color: #fff; border: 1px solid #ff6a00; }
+        .success-btn:hover { background: linear-gradient(90deg, #cc5500, #ff6a00); color: #fff; }
+        .ghost-btn { background: transparent; border: 1px solid #666; color: #aaa; }
+        .ghost-btn:hover { border-color: #ff6a00; color: #ff6a00; background: transparent; box-shadow: none; }
 
+        /* --- Tables & Finance --- */
         .log-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.8rem; margin-top: 10px;}
-        .log-table th { background: rgba(0,0,0,0.3); color: #e066ff; padding: 12px; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .log-table td { padding: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); color: #ddd; }
+        .log-table th { background: rgba(0,0,0,0.5); color: #888; padding: 12px; text-transform: uppercase; border-bottom: 1px solid #ff6a00; letter-spacing: 1px; }
+        .log-table td { padding: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); color: #ccc; }
+        
+        .finance-tracker { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px; text-align: center; }
+        .finance-card { background: rgba(0,0,0,0.6); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
+        .finance-card.profit { border-bottom: 2px solid #00cc55; }
+        .finance-card.loss { border-bottom: 2px solid #ff4444; }
+        .finance-label { font-size: 0.7rem; color: #888; text-transform: uppercase; font-weight: bold; margin-bottom: 5px; letter-spacing: 1px;}
+        .finance-amt { font-family: 'Orbitron', sans-serif; font-size: 1.6rem; font-weight: 900; color: #fff; }
+        .color-orange { color: #ff8c00; }
     </style>
 </head>
 <body>
 
-    <div id="galaxy-background"></div>
+    <div id="tech-background"></div>
+    
+    <div id="retro-animations">
+        <div class="sprite-pacman"></div>
+        <div class="sprite-ghost">👻</div>
+        <div class="sprite-invader">👾</div>
+        <div class="sprite-ship">🚀</div>
+    </div>
 
     <!-- STAFF LOGIN OVERLAY -->
     <div id="login-screen">
         <div class="login-box glass-panel">
-            <h2 class="login-title">CONSOLE ACCESS</h2>
-            <input type="email" id="staff-email" class="login-input" placeholder="Mail">
-            <input type="password" id="staff-password" class="login-input" placeholder="Password">
-            <button class="action-button" style="font-size:1.1rem; padding:15px; margin-top:20px;" onclick="handleLogin()">LOGIN</button>
-            <p id="login-error" style="color:#ff3333; font-size:0.8rem; display:none; text-align:center;"></p>
+            <img src="wgz_prple_logo_3.png" alt="Wonder GZ Logo" class="login-logo">
+            <h2 class="login-title">System Auth</h2>
+            <input type="email" id="staff-email" class="themed-input" style="text-align:center;" placeholder="Staff ID / Email">
+            <input type="password" id="staff-password" class="themed-input" style="text-align:center;" placeholder="Passcode">
+            <button class="action-button" style="font-size:1rem; padding:12px; margin-top:20px;" onclick="handleLogin()">ACCESS CONSOLE</button>
+            <p id="login-error" style="color:#ff4444; font-size:0.8rem; display:none; text-align:center;"></p>
         </div>
     </div>
 
     <!-- MAIN APP DASHBOARD -->
     <div class="dashboard-wrapper hidden" id="main-app">
         <header class="header-panel glass-panel">
-            <div>
-                <h1 class="header-title">Wonder Gamezone</h1>
-                <div class="header-subtitle" id="header-loc-title">Loading Branch...</div>
+            <div class="header-brand">
+                <img src="wgz_prple_logo_3.png" alt="Logo" class="header-logo-small">
+                <div>
+                    <h1 class="header-title">Wonder Gamezone</h1>
+                    <div class="header-subtitle" id="header-loc-title">Loading Branch...</div>
+                </div>
             </div>
             
             <div style="display:flex; align-items:center; gap:15px;">
-                <!-- Master Location Switcher -->
                 <select id="master-location-switcher" class="location-switcher hidden" onchange="switchLocation(this.value)">
                     <option value="loc_delhi_01">Delhi 01</option>
                     <option value="loc_gurugram_01">Gurugram 01</option>
@@ -150,7 +203,7 @@
                     <div class="dropdown-content glass-panel" id="mainMenu">
                         <div class="dropdown-item" onclick="openAdminModal()">⚙️ Admin Cockpit</div>
                         <div class="dropdown-item" onclick="openSystemLogsModal()">📜 Session Register</div>
-                        <div class="dropdown-item logout-item" onclick="handleLogout()">🚪 Logout App</div>
+                        <div class="dropdown-item logout-item" onclick="handleLogout()">🚪 Terminate Link</div>
                     </div>
                 </div>
             </div>
@@ -158,11 +211,11 @@
 
         <main class="main-content glass-panel">
             <div>
-                <div class="section-title">🎮 Active Stations</div>
+                <div class="section-title">🎮 Active Links</div>
                 <div class="stations-grid" id="in-use-grid"></div>
             </div>
             <div style="margin-top: 10px;">
-                <div class="section-title">✅ Available Stations</div>
+                <div class="section-title">✅ Standby Nodes</div>
                 <div class="stations-grid" id="available-grid"></div>
             </div>
         </main>
@@ -172,7 +225,7 @@
     <div class="modal-overlay" id="modal-overlay" onclick="hideActiveModal(event)">
         <div class="modal-container glass-panel" onclick="event.stopPropagation()">
             <div class="modal-header">
-                <h2 id="modal-title-field">Control Terminal</h2>
+                <h2 id="modal-title-field">Command Terminal</h2>
                 <button class="close-btn" onclick="closeTopModal()">&times;</button>
             </div>
             <div id="modal-injected-body"></div>
@@ -181,7 +234,7 @@
 
     <script>
         // ==========================================
-        // 1. FIREBASE CONFIGURATION (Place keys here)
+        // 1. FIREBASE CONFIGURATION
         // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyDjLHWHnD02-pR7d6q5pWfsiD4H4_enIuQ",
@@ -208,49 +261,41 @@
         let targetedActiveStationId = null;
         let unsubscribeStations = null;
         
-        // Multi-Location State
         let currentLocationId = 'default_loc';
         let currentUserRole = 'manager';
 
-        // Phase 1: Categorized Menu & Shortcuts Setup
         let inventoryData = [
             { id: 'inv_1', name: 'Classic Burger', category: 'Food', price: 7.00, stock: 10, isShortcut: false },
             { id: 'inv_2', name: 'Energy Soda', category: 'Drinks', price: 3.00, stock: 20, isShortcut: true },
             { id: 'inv_cig', name: 'Cigarette', category: 'Misc', price: 20.00, stock: 100, isShortcut: true }
         ];
 
-        // Phase 1: 3-4 Player Rates added
         function createStation(id) {
             return {
                 id: id, status: 'AVAILABLE', timeRemaining: 0, durationMinutes: 0,
                 startTimestamp: null, endTimestamp: null, playersCount: 1, playerNames: '',
                 foodHistory: [], miscServiceFee: 0, extraTimeCost: 0, extraTimeAdded: 0,
-                rate1Player: 15.00, rate2Player: 20.00, rate3Player: 25.00, rate4Player: 30.00 
+                rate1Player: 15.00, rate2Player: 20.00, rate3Player: 25.00, rate4Player: 30.00,
+                lastSessionLogId: null 
             };
         }
 
         let stationsData = Array.from({ length: 9 }, (_, idx) => createStation(idx + 1));
         let systemAuditLogs = [];
+        let expenseLogs = [];
 
-        // Helper to scope DB paths per location
-        function getLocDb() {
-            if (!db) return null;
-            return db.collection('locations').doc(currentLocationId);
-        }
+        function getLocDb() { return db ? db.collection('locations').doc(currentLocationId) : null; }
 
         // ==========================================
-        // 3. PERSISTENT DATA SYNC (Cloud & Local)
+        // 3. PERSISTENT DATA SYNC
         // ==========================================
         function saveSystemData() {
             if (db && currentLocationId !== 'ALL') {
-                stationsData.forEach(st => {
-                    getLocDb().collection('stations').doc(st.id.toString()).set(st, {merge: true});
-                });
+                stationsData.forEach(st => getLocDb().collection('stations').doc(st.id.toString()).set(st, {merge: true}));
             }
-            // Scope local storage keys to the specific location so data doesn't bleed across branches
             localStorage.setItem(`wgz_stations_${currentLocationId}`, JSON.stringify(stationsData));
-            localStorage.setItem(`wgz_logs_${currentLocationId}`, JSON.stringify(systemAuditLogs));
             localStorage.setItem(`wgz_inventory_${currentLocationId}`, JSON.stringify(inventoryData));
+            localStorage.setItem(`wgz_expenses_${currentLocationId}`, JSON.stringify(expenseLogs));
         }
 
         function pushLogToCloud(logEntry) {
@@ -284,28 +329,28 @@
         function loadLocalFallback() {
             const savedStations = localStorage.getItem(`wgz_stations_${currentLocationId}`);
             if (savedStations) {
-                let parsed = JSON.parse(savedStations);
-                stationsData = parsed.map((st, i) => {
+                stationsData = JSON.parse(savedStations).map((st, i) => {
                     let merged = { ...createStation(st.id || (i + 1)), ...st };
                     if (merged.startTimestamp) merged.startTimestamp = new Date(merged.startTimestamp);
                     if (merged.endTimestamp) merged.endTimestamp = new Date(merged.endTimestamp);
                     return merged;
                 });
-            } else {
-                stationsData = Array.from({ length: 9 }, (_, idx) => createStation(idx + 1));
-            }
+            } else { stationsData = Array.from({ length: 9 }, (_, idx) => createStation(idx + 1)); }
             
             const savedLogs = localStorage.getItem(`wgz_logs_${currentLocationId}`);
-            if (savedLogs) systemAuditLogs = JSON.parse(savedLogs); else systemAuditLogs = [];
+            systemAuditLogs = savedLogs ? JSON.parse(savedLogs) : [];
 
             const savedInv = localStorage.getItem(`wgz_inventory_${currentLocationId}`);
             if (savedInv) inventoryData = JSON.parse(savedInv);
+
+            const savedExp = localStorage.getItem(`wgz_expenses_${currentLocationId}`);
+            if (savedExp) expenseLogs = JSON.parse(savedExp);
 
             refreshDashboardVisuals(); 
         }
 
         // ==========================================
-        // 4. AUTHENTICATION & MULTI-TENANCY LOGIC
+        // 4. AUTH & MULTI-TENANCY
         // ==========================================
         function checkLoginState() {
             const isLoggedIn = sessionStorage.getItem('wgz_isLoggedIn');
@@ -316,20 +361,13 @@
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('main-app').classList.remove('hidden');
                 
-                // Show location switcher for Master
                 if (currentUserRole === 'master') {
                     document.getElementById('master-location-switcher').classList.remove('hidden');
-                    if(currentLocationId === 'ALL') {
-                        currentLocationId = document.getElementById('master-location-switcher').value;
-                    } else {
-                        document.getElementById('master-location-switcher').value = currentLocationId;
-                    }
+                    document.getElementById('master-location-switcher').value = currentLocationId === 'ALL' ? document.getElementById('master-location-switcher').value : currentLocationId;
                 }
 
                 document.getElementById('header-loc-title').textContent = `Branch: ${currentLocationId.replace('loc_', '').toUpperCase()}`;
-                
-                loadLocalFallback(); 
-                bootCloudListeners(); 
+                loadLocalFallback(); bootCloudListeners(); 
             } else {
                 document.getElementById('login-screen').classList.remove('hidden');
                 document.getElementById('main-app').classList.add('hidden');
@@ -346,24 +384,16 @@
             if (auth) {
                 try {
                     const cred = await auth.signInWithEmailAndPassword(email, pass);
-                    // Fetch user's role and location from Users collection
                     const userDoc = await db.collection('users').doc(cred.user.uid).get();
-                    
                     if(userDoc.exists) {
                         const data = userDoc.data();
                         sessionStorage.setItem('wgz_isLoggedIn', 'true');
                         sessionStorage.setItem('wgz_locId', data.location_id);
                         sessionStorage.setItem('wgz_role', data.role);
                         checkLoginState();
-                    } else {
-                        throw new Error("Role profile not found. Please setup user document in Firestore.");
-                    }
-                } catch(err) {
-                    errLabel.textContent = "Error: " + err.message;
-                    errLabel.style.display = 'block';
-                }
+                    } else throw new Error("Role profile not found.");
+                } catch(err) { errLabel.textContent = "Error: " + err.message; errLabel.style.display = 'block'; }
             } else {
-                // Local testing fallback
                 sessionStorage.setItem('wgz_isLoggedIn', 'true');
                 sessionStorage.setItem('wgz_locId', 'loc_local_test');
                 sessionStorage.setItem('wgz_role', 'master');
@@ -376,8 +406,7 @@
             currentLocationId = newLocId;
             sessionStorage.setItem('wgz_locId', newLocId);
             document.getElementById('header-loc-title').textContent = `Branch: ${newLocId.replace('loc_', '').toUpperCase()}`;
-            loadLocalFallback();
-            bootCloudListeners();
+            loadLocalFallback(); bootCloudListeners();
         }
 
         function handleLogout() {
@@ -389,7 +418,7 @@
         }
 
         // ==========================================
-        // 5. PHASE 1: RENDERING PANELS & MENUS
+        // 5. RENDERING PANELS & WORKFLOW
         // ==========================================
         function formatTime(totalSeconds) {
             if (totalSeconds < 0) totalSeconds = 0;
@@ -398,9 +427,8 @@
             const secs = (totalSeconds % 60).toString().padStart(2, '0');
             return `${hrs}:${mins}:${secs}`;
         }
-
         function toggleMenu(e) { e.stopPropagation(); document.getElementById('mainMenu').classList.toggle('show'); }
-        window.onclick = function(e) { if (!e.target.matches('.menu-btn')) { document.querySelectorAll(".dropdown-content").forEach(d => d.classList.remove('show')); } }
+        window.onclick = function(e) { if (!e.target.matches('.menu-btn')) document.querySelectorAll(".dropdown-content").forEach(d => d.classList.remove('show')); }
 
         function refreshDashboardVisuals() {
             stationsData.sort((a,b) => a.id - b.id);
@@ -416,15 +444,18 @@
                 if (station.status === 'IN_USE' || station.status === 'SETTLING') {
                     let displayNames = station.playerNames ? station.playerNames : `${station.playersCount} Player(s)`;
                     card.innerHTML = `
-                        <div style="text-align:center;"><div class="card-number">P${station.id}</div><div class="card-players">👥 ${displayNames}</div></div>
+                        <div style="text-align:center; width:100%;"><div class="card-number">P${station.id}</div><div class="card-players">👥 ${displayNames}</div></div>
                         <div class="card-timer timer-safe" id="grid-timer-${station.id}">${formatTime(station.timeRemaining)}</div>
-                        <button class="action-button small-btn" onclick="event.stopPropagation(); launchStationConsole(${station.id})">🍕 Manage</button>
+                        <button class="action-button small-btn" onclick="event.stopPropagation(); launchStationConsole(${station.id})">⚙️ Adjust Link</button>
                     `;
                     inUseGrid.appendChild(card);
                 } else {
                     card.innerHTML = `
-                        <div style="text-align:center;"><div class="card-number" style="color: #666;">P${station.id}</div></div>
-                        <button class="action-button success-btn small-btn" onclick="event.stopPropagation(); launchStationConsole(${station.id})">🚀 Initialize</button>
+                        <div style="text-align:center; width:100%;"><div class="card-number" style="color: #444;">P${station.id}</div></div>
+                        <div style="width: 100%; display:flex; flex-direction:column; gap:8px;">
+                            <button class="action-button success-btn small-btn" onclick="event.stopPropagation(); launchStationConsole(${station.id})">🚀 Initialize</button>
+                            ${station.lastSessionLogId ? `<button class="action-button ghost-btn small-btn" onclick="event.stopPropagation(); renderBillReceipt('${station.lastSessionLogId}', false)">📜 Retrieve Data</button>` : ''}
+                        </div>
                     `;
                     availableGrid.appendChild(card);
                 }
@@ -435,18 +466,33 @@
             targetedActiveStationId = stationId;
             const station = stationsData.find(s => s.id === stationId);
             const bodyField = document.getElementById('modal-injected-body');
-            document.getElementById('modal-title-field').textContent = `Playstation P${station.id}`;
+            document.getElementById('modal-title-field').textContent = `Node Terminal P${station.id}`;
 
             if (station.status === 'AVAILABLE') {
                 bodyField.innerHTML = `
                     <div class="form-group">
-                        <label>Session Playing Duration</label>
-                        <select id="setup-duration"><option value="30">30 mins</option><option value="60" selected>1 Hour</option><option value="120">2 Hours</option></select>
+                        <label>Engagement Duration</label>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                            <select id="setup-hours" class="themed-input">
+                                <option value="0">0 Hours</option>
+                                <option value="1" selected>1 Hour</option>
+                                <option value="2">2 Hours</option>
+                                <option value="3">3 Hours</option>
+                                <option value="4">4 Hours</option>
+                                <option value="5">5 Hours</option>
+                            </select>
+                            <select id="setup-mins" class="themed-input">
+                                <option value="0">00 Mins</option>
+                                <option value="15">15 Mins</option>
+                                <option value="30">30 Mins</option>
+                                <option value="45">45 Mins</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="form-group"><label>Occupancy</label>
-                        <select id="setup-players"><option value="1">1 Person</option><option value="2">2 Persons</option><option value="3">3 Persons</option><option value="4">4 Persons</option></select>
+                        <select id="setup-players" class="themed-input"><option value="1">1 Person</option><option value="2">2 Persons</option><option value="3">3 Persons</option><option value="4">4 Persons</option></select>
                     </div>
-                    <button class="action-button" onclick="commitNewSession()">Initialize Station</button>
+                    <button class="action-button" style="margin-top:10px;" onclick="commitNewSession()">▶ Establish Link</button>
                 `;
             } else {
                 renderActiveStationPanel(station);
@@ -454,18 +500,16 @@
             document.getElementById('modal-overlay').classList.add('active');
         }
 
-        // --- Phase 1: Categorized Select & Dynamic Shortcuts ---
         function renderActiveStationPanel(station) {
             const bodyField = document.getElementById('modal-injected-body');
             
-            let foodRowsHtml = station.foodHistory.length === 0 ? '<div class="history-item">No items added.</div>' : station.foodHistory.map(f => `
+            let foodRowsHtml = station.foodHistory.length === 0 ? '<div class="history-item">No supplies issued.</div>' : station.foodHistory.map(f => `
                 <div class="history-item">
                     <span><button class="action-button small-btn release-button" style="padding:4px 8px; width:auto; box-shadow:none; margin-right:5px;" onclick="decreaseFoodItem(${station.id}, '${f.id}')">➖</button>${f.name} (x${f.qty})</span>
                     <span>₹${(f.price * f.qty).toFixed(2)}</span>
                 </div>
             `).join('');
 
-            // Grouping Inventory By Category
             const groupedInventory = inventoryData.reduce((acc, item) => {
                 if (item.stock > 0) {
                     if (!acc[item.category]) acc[item.category] = [];
@@ -479,41 +523,38 @@
                 return `<optgroup label="--- ${category.toUpperCase()} ---">${options}</optgroup>`;
             }).join('');
 
-            // Dynamic Shortcuts logic
             let shortcutButtonsHtml = inventoryData
                 .filter(item => item.isShortcut && item.stock > 0)
-                .map(item => `<button class="action-button small-btn quick-btn" onclick="quickAddItem('${item.name}')">⚡ + ${item.name}</button>`)
+                .map(item => `<button class="action-button small-btn quick-btn" onclick="quickAddItem('${item.name}')">⚡ ${item.name}</button>`)
                 .join('');
 
             bodyField.innerHTML = `
-                <div class="form-group"><input type="text" id="player-names-input" placeholder="Enter Player Names..." value="${station.playerNames || ''}" onchange="updatePlayerNames(${station.id}, this.value)"></div>
+                <div class="form-group"><input type="text" id="player-names-input" class="themed-input" placeholder="Assign Player Tags..." value="${station.playerNames || ''}" onchange="updatePlayerNames(${station.id}, this.value)"></div>
                 <div class="metrics-grid">
-                    <div class="metric-item"><div style="font-size: 0.65rem; color: #aaa;">Remaining Time</div><div id="modal-live-timer" style="color:#00ff66; font-size:1rem; font-weight:bold;">${formatTime(station.timeRemaining)}</div></div>
-                    <div class="metric-item"><div style="font-size: 0.65rem; color: #aaa;">Occupants</div><div>${station.playersCount} Person(s)</div></div>
+                    <div class="metric-item"><div style="font-size: 0.65rem; color: #888; text-transform:uppercase;">Time Remaining</div><div id="modal-live-timer" style="color:#aaa; font-size:1.2rem; font-family:'Orbitron'; font-weight:bold;">${formatTime(station.timeRemaining)}</div></div>
+                    <div class="metric-item"><div style="font-size: 0.65rem; color: #888; text-transform:uppercase;">Occupants</div><div style="font-size:1.1rem; font-weight:bold; color:#fff;">${station.playersCount} Entity(s)</div></div>
                 </div>
                 
-                <div style="display:flex; gap:10px; margin-bottom: 16px; flex-wrap:wrap;">
-                    ${shortcutButtonsHtml || '<span style="font-size:0.7rem; color:#aaa;">No shortcuts configured.</span>'}
-                </div>
+                <div style="display:flex; gap:10px; margin-bottom: 16px; flex-wrap:wrap;">${shortcutButtonsHtml || '<span style="font-size:0.7rem; color:#666;">No shortcuts configured.</span>'}</div>
                 
                 <div class="form-group"><div class="history-list-box">${foodRowsHtml}</div></div>
                 <div class="form-group nested-row">
-                    <select id="catering-select"><option value="none">-- Select Item --</option>${inventoryOptions}</select>
-                    <input type="number" id="catering-qty" min="1" value="1">
+                    <select id="catering-select" class="themed-input"><option value="none">-- Issue Supply --</option>${inventoryOptions}</select>
+                    <input type="number" id="catering-qty" class="themed-input" min="1" value="1">
                     <button class="action-button" style="margin:0; padding:10px;" onclick="appendFoodToSession()">Add</button>
                 </div>
                 
-                <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed #666; padding-top:15px; margin-top:20px;">
-                    <span style="color:#e066ff; font-weight:bold;">Accrued Balance:</span>
-                    <span id="panel-bill-display" style="font-size:1.5rem; color:#00ff66; font-weight:bold;">₹0.00</span>
+                <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed rgba(255,255,255,0.1); padding-top:15px; margin-top:20px;">
+                    <span style="color:#aaa; font-weight:bold; font-size:1rem; text-transform:uppercase;">Live Balance:</span>
+                    <span id="panel-bill-display" style="font-size:1.8rem; color:#ff8c00; font-weight:bold;">₹0.00</span>
                 </div>
-                <button class="action-button release-button" style="margin-top:20px;" onclick="endSessionManually()">Settle & End Session</button>
+                <button class="action-button release-button" style="margin-top:20px;" onclick="endSessionManually()">Terminate & Settle Link</button>
             `;
             recalculateLivePanelBill();
         }
 
         // ==========================================
-        // 6. PRICING & LOGIC (Phase 1 logic handling)
+        // 6. PRICING & LOGIC
         // ==========================================
         function calculateTotalBalanceSheet(station) {
             let activeRate = parseFloat(station.rate1Player) || 15;
@@ -538,9 +579,15 @@
         }
 
         function updatePlayerNames(stationId, val) { const st = stationsData.find(s => s.id === stationId); if(st) { st.playerNames = val; saveSystemData(); refreshDashboardVisuals(); } }
+        
         function commitNewSession() {
             const st = stationsData.find(s => s.id === targetedActiveStationId);
-            const dur = parseInt(document.getElementById('setup-duration').value) || 60;
+            const hrs = parseInt(document.getElementById('setup-hours').value) || 0;
+            const mins = parseInt(document.getElementById('setup-mins').value) || 0;
+            const dur = (hrs * 60) + mins;
+            
+            if (dur <= 0) return alert("Please specify duration.");
+
             st.status = 'IN_USE'; st.timeRemaining = dur * 60; st.durationMinutes = dur;
             st.playersCount = parseInt(document.getElementById('setup-players').value);
             st.startTimestamp = new Date(); st.endTimestamp = new Date(st.startTimestamp.getTime() + dur * 60000);
@@ -551,7 +598,7 @@
         function quickAddItem(itemName) {
             const st = stationsData.find(s => s.id === targetedActiveStationId);
             const item = inventoryData.find(i => i.name === itemName);
-            if (!item || item.stock <= 0) return alert("Unavailable!");
+            if (!item || item.stock <= 0) return alert("Depleted!");
             item.stock -= 1;
             const match = st.foodHistory.find(f => f.name === item.name);
             if (match) match.qty += 1; else st.foodHistory.push({ id: item.id, name: item.name, price: item.price, qty: 1 });
@@ -564,7 +611,7 @@
             const qty = parseInt(document.getElementById('catering-qty').value) || 0;
             if (invId === 'none' || qty <= 0) return;
             const item = inventoryData.find(i => i.id === invId);
-            if (!item || qty > item.stock) return alert("Insufficient stock!");
+            if (!item || qty > item.stock) return alert("Insufficient inventory!");
             item.stock -= qty;
             const match = st.foodHistory.find(f => f.name === item.name);
             if (match) match.qty += qty; else st.foodHistory.push({ id: item.id, name: item.name, price: item.price, qty: qty });
@@ -585,18 +632,60 @@
 
         function endSessionManually() {
             const st = stationsData.find(s => s.id === targetedActiveStationId);
-            st.status = 'SETTLING';
             const sheet = calculateTotalBalanceSheet(st);
-            const logEntry = { id: 'LOG_' + Date.now(), stationId: st.id, duration: st.durationMinutes, players: st.playersCount, playerNames: st.playerNames, foodHistory: JSON.parse(JSON.stringify(st.foodHistory)), statements: sheet };
+            const logEntry = { 
+                id: 'LOG_' + Date.now(), stationId: st.id, duration: st.durationMinutes, 
+                players: st.playersCount, playerNames: st.playerNames, 
+                foodHistory: JSON.parse(JSON.stringify(st.foodHistory)), statements: sheet,
+                dateStr: new Date().toLocaleDateString()
+            };
+            
             pushLogToCloud(logEntry);
             
-            st.status = 'AVAILABLE'; st.timeRemaining = 0; st.startTimestamp = null; st.endTimestamp = null; st.foodHistory = [];
-            saveSystemData(); refreshDashboardVisuals(); closeTopModal();
-            alert(`Session Closed. Bill: ₹${sheet.grandTotal.toFixed(2)}`);
+            st.status = 'AVAILABLE'; st.timeRemaining = 0; st.startTimestamp = null; st.endTimestamp = null; 
+            st.foodHistory = []; st.lastSessionLogId = logEntry.id;
+            
+            saveSystemData(); refreshDashboardVisuals(); 
+            renderBillReceipt(logEntry.id, true);
+        }
+
+        // --- Bill Receipt Render ---
+        function renderBillReceipt(logId, showCloseAction = false) {
+            const log = systemAuditLogs.find(l => l.id === logId);
+            if(!log) return alert("Data purged or not found.");
+
+            const bodyField = document.getElementById('modal-injected-body');
+            document.getElementById('modal-title-field').textContent = `Data Log - P${log.stationId}`;
+
+            let itemsHtml = log.foodHistory.map(i => `<div style="display:flex; justify-content:space-between; font-size:0.9rem; margin-bottom:5px;"><span style="color:#aaa;">${i.name} <strong style="color:#fff;">(x${i.qty})</strong></span><span>₹${(i.price * i.qty).toFixed(2)}</span></div>`).join('');
+            
+            let actionBtn = showCloseAction 
+                ? `<button class="action-button success-btn" onclick="closeTopModal()">Acknowledge & Clear</button>`
+                : `<button class="action-button ghost-btn" onclick="closeTopModal()">Close Data File</button>`;
+
+            bodyField.innerHTML = `
+                <div style="text-align:left; background:rgba(0,0,0,0.6); padding:20px; border-radius:12px; border:1px solid rgba(255,255,255,0.05);">
+                    ${log.playerNames ? `<div style="color:#ccc; font-size:1rem; margin-bottom:15px; font-weight:bold; text-transform:uppercase; letter-spacing:1px;">Tags: ${log.playerNames}</div>` : ''}
+                    <div style="display:flex; justify-content:space-between; font-size:1rem; color:#fff; font-weight:bold; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:10px; margin-bottom:10px;">
+                        <span>Play Time (${log.duration} Mins) @ ₹${log.statements.appliedRate}/hr</span>
+                        <span>₹${log.statements.playCost.toFixed(2)}</span>
+                    </div>
+                    
+                    <div style="margin-top:15px; margin-bottom:10px; font-weight:bold; color:#777; text-transform:uppercase; font-size:0.8rem;">Supplies Consumed</div>
+                    ${itemsHtml || '<div style="color:#444; font-size:0.8rem; font-style:italic;">No supplies ordered.</div>'}
+                    
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed rgba(255,255,255,0.1); padding-top:15px; margin-top:20px;">
+                        <span style="color:#fff; font-weight:bold; font-size:1.1rem; text-transform:uppercase; letter-spacing:1px;">Final Tally</span>
+                        <span style="font-size:2rem; color:#ff6a00; font-weight:bold; text-shadow:0 0 15px rgba(255,106,0,0.3);">₹${log.statements.grandTotal.toFixed(2)}</span>
+                    </div>
+                    <div style="margin-top: 25px;">${actionBtn}</div>
+                </div>
+            `;
+            document.getElementById('modal-overlay').classList.add('active');
         }
 
         // ==========================================
-        // 7. ADMIN COCKPIT (Phase 1 configuration handling)
+        // 7. ADMIN COCKPIT & LEDGER
         // ==========================================
         function closeTopModal() { document.getElementById('modal-overlay').classList.remove('active'); }
         function hideActiveModal(e) { if (e.target.id === 'modal-overlay') closeTopModal(); }
@@ -604,59 +693,77 @@
         function openAdminModal() {
             document.getElementById('mainMenu').classList.remove('show');
             const bodyField = document.getElementById('modal-injected-body');
-            document.getElementById('modal-title-field').textContent = "⚙️ Admin Cockpit";
+            document.getElementById('modal-title-field').textContent = "⚙️ Base Configurator";
 
-            // Station Pricing Form
+            const totalRev = systemAuditLogs.reduce((sum, log) => sum + ((log.statements && log.statements.grandTotal) ? log.statements.grandTotal : 0), 0);
+            const totalExp = expenseLogs.reduce((sum, exp) => sum + parseFloat(exp.amount), 0);
+            const netProfit = totalRev - totalExp;
+            const profitClass = netProfit >= 0 ? 'profit color-orange' : 'loss color-red';
+
             let stationsHtml = stationsData.map(st => `
-                <div class="admin-row" style="grid-template-columns: 30px 1fr 1fr 1fr 1fr auto; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom:10px;">
-                    <div style="color:#fff; font-weight:bold;">P${st.id}</div>
-                    <div><label style="font-size:0.5rem; color:#aaa;">1Pl</label><input type="number" value="${st.rate1Player||15}" id="r1_${st.id}" style="width:100%; padding:5px;"></div>
-                    <div><label style="font-size:0.5rem; color:#aaa;">2Pl</label><input type="number" value="${st.rate2Player||20}" id="r2_${st.id}" style="width:100%; padding:5px;"></div>
-                    <div><label style="font-size:0.5rem; color:#aaa;">3Pl</label><input type="number" value="${st.rate3Player||25}" id="r3_${st.id}" style="width:100%; padding:5px;"></div>
-                    <div><label style="font-size:0.5rem; color:#aaa;">4Pl</label><input type="number" value="${st.rate4Player||30}" id="r4_${st.id}" style="width:100%; padding:5px;"></div>
-                    <button class="action-button small-btn" style="margin-top:auto;" onclick="updateRates(${st.id})">Save</button>
+                <div class="admin-row" style="grid-template-columns: 35px 1fr 1fr 1fr 1fr auto;">
+                    <div style="color:#ccc; font-weight:bold;">P${st.id}</div>
+                    <div><label style="font-size:0.5rem; color:#888;">1Pl</label><input type="number" value="${st.rate1Player||15}" id="r1_${st.id}" class="themed-input" style="padding:6px; font-size:0.8rem;"></div>
+                    <div><label style="font-size:0.5rem; color:#888;">2Pl</label><input type="number" value="${st.rate2Player||20}" id="r2_${st.id}" class="themed-input" style="padding:6px; font-size:0.8rem;"></div>
+                    <div><label style="font-size:0.5rem; color:#888;">3Pl</label><input type="number" value="${st.rate3Player||25}" id="r3_${st.id}" class="themed-input" style="padding:6px; font-size:0.8rem;"></div>
+                    <div><label style="font-size:0.5rem; color:#888;">4Pl</label><input type="number" value="${st.rate4Player||30}" id="r4_${st.id}" class="themed-input" style="padding:6px; font-size:0.8rem;"></div>
+                    <button class="action-button small-btn ghost-btn" style="margin-top:auto;" onclick="updateRates(${st.id})">Commit</button>
                 </div>
             `).join('');
 
-            // Inventory Form
             let inventoryHtml = inventoryData.map((item, i) => `
-                <div class="admin-row" style="grid-template-columns: 1fr 1fr 1fr 60px auto; margin-bottom:5px;">
-                    <input type="text" value="${item.name}" id="inv_name_${i}">
-                    <input type="text" value="${item.category||'Food'}" id="inv_cat_${i}" placeholder="Category">
-                    <input type="number" value="${item.price}" id="inv_price_${i}" step="1">
-                    <div>
-                        <label style="font-size:0.5rem; color:#aaa; display:block;">Shortcut</label>
-                        <input type="checkbox" id="inv_short_${i}" ${item.isShortcut ? 'checked' : ''}>
+                <div class="admin-row" style="grid-template-columns: 1.5fr 1fr 1fr 60px auto;">
+                    <input type="text" value="${item.name}" id="inv_name_${i}" class="themed-input" style="font-size:0.8rem;">
+                    <input type="text" value="${item.category||'Food'}" id="inv_cat_${i}" class="themed-input" placeholder="Category" style="font-size:0.8rem;">
+                    <input type="number" value="${item.price}" id="inv_price_${i}" class="themed-input" step="1" style="font-size:0.8rem;">
+                    <div style="text-align:center;">
+                        <label style="font-size:0.5rem; color:#888; display:block;">Quick</label>
+                        <input type="checkbox" id="inv_short_${i}" ${item.isShortcut ? 'checked' : ''} style="transform:scale(1.2); margin-top:5px; accent-color:#ff6a00;">
                     </div>
-                    <button class="action-button small-btn" onclick="updateInventory(${i})">Save</button>
+                    <button class="action-button small-btn ghost-btn" onclick="updateInventory(${i})">Save</button>
                 </div>
             `).join('');
             
             bodyField.innerHTML = `
-                <div class="section-title" style="font-size: 0.9rem;">Station Hourly Rates (₹)</div>
-                <div style="max-height: 200px; overflow-y: auto; margin-bottom: 15px;">${stationsHtml}</div>
+                <div class="finance-tracker">
+                    <div class="finance-card"><div class="finance-label">Gross Intake</div><div class="finance-amt">₹${totalRev.toFixed(2)}</div></div>
+                    <div class="finance-card"><div class="finance-label">Overhead</div><div class="finance-amt color-red">₹${totalExp.toFixed(2)}</div></div>
+                    <div class="finance-card ${profitClass.split(' ')[0]}"><div class="finance-label">Net Yield</div><div class="finance-amt ${profitClass.split(' ')[1]}">₹${netProfit.toFixed(2)}</div></div>
+                </div>
 
-                <div class="section-title" style="margin-top: 20px; font-size: 0.9rem;">Menu Configurator</div>
-                ${inventoryHtml}
+                <div class="section-title" style="font-size: 0.85rem;">Ledger Entries</div>
+                <div class="admin-row" style="grid-template-columns: 2fr 1fr auto;">
+                    <input type="text" id="new_exp_desc" class="themed-input" placeholder="Expense Record (e.g. Utility)">
+                    <input type="number" id="new_exp_amt" class="themed-input" placeholder="Cost (₹)">
+                    <button class="action-button release-button small-btn" onclick="addExpense()">Write</button>
+                </div>
+                <button class="action-button ghost-btn small-btn" style="margin-bottom:25px;" onclick="exportLedgerCSV()">📥 Extract Ledger CSV File</button>
+
+                <div class="section-title" style="font-size: 0.85rem;">Node Tariffs (₹)</div>
+                <div style="max-height: 200px; overflow-y: auto; margin-bottom: 25px; padding-right:5px;">${stationsHtml}</div>
+
+                <div class="section-title" style="font-size: 0.85rem;">Supply Configurator</div>
+                <div style="max-height: 200px; overflow-y: auto; margin-bottom: 10px; padding-right:5px;">${inventoryHtml}</div>
                 
-                <div class="section-title" style="margin-top: 20px; font-size: 0.9rem;">Add Menu Item</div>
-                <div class="admin-row" style="grid-template-columns: 1fr 1fr 1fr auto;">
-                    <input type="text" id="new_item_name" placeholder="Name">
-                    <input type="text" id="new_item_cat" placeholder="Category (e.g. Drinks)">
-                    <input type="number" id="new_item_price" placeholder="Price">
-                    <button class="action-button success-btn small-btn" onclick="addNewInventory()">Add</button>
+                <div class="section-title" style="margin-top: 15px; font-size: 0.85rem;">Define Supply Item</div>
+                <div class="admin-row" style="grid-template-columns: 1.5fr 1fr 1fr auto;">
+                    <input type="text" id="new_item_name" class="themed-input" placeholder="Item Name">
+                    <input type="text" id="new_item_cat" class="themed-input" placeholder="Class">
+                    <input type="number" id="new_item_price" class="themed-input" placeholder="Value">
+                    <button class="action-button success-btn small-btn" onclick="addNewInventory()">Define</button>
                 </div>
             `;
             document.getElementById('modal-overlay').classList.add('active');
         }
 
+        // --- Config Updaters ---
         function updateRates(id) {
             const st = stationsData.find(s => s.id === id);
             st.rate1Player = parseFloat(document.getElementById(`r1_${id}`).value) || 15;
             st.rate2Player = parseFloat(document.getElementById(`r2_${id}`).value) || 20;
             st.rate3Player = parseFloat(document.getElementById(`r3_${id}`).value) || 25;
             st.rate4Player = parseFloat(document.getElementById(`r4_${id}`).value) || 30;
-            saveSystemData(); alert(`Rates for P${id} saved.`);
+            saveSystemData(); alert(`Node P${id} matrix updated.`);
         }
 
         function updateInventory(i) {
@@ -664,7 +771,7 @@
             inventoryData[i].category = document.getElementById(`inv_cat_${i}`).value || 'Misc';
             inventoryData[i].price = parseFloat(document.getElementById(`inv_price_${i}`).value) || 0;
             inventoryData[i].isShortcut = document.getElementById(`inv_short_${i}`).checked;
-            saveSystemData(); alert('Item updated.');
+            saveSystemData(); alert('Supply matrix updated.');
         }
 
         function addNewInventory() {
@@ -677,8 +784,58 @@
             }
         }
 
+        function addExpense() {
+            const desc = document.getElementById('new_exp_desc').value;
+            const amt = parseFloat(document.getElementById('new_exp_amt').value);
+            if (desc && !isNaN(amt)) {
+                expenseLogs.push({ id: `EXP_${Date.now()}`, desc: desc, amount: amt, date: new Date().toLocaleDateString() });
+                saveSystemData(); openAdminModal();
+            }
+        }
+
+        // --- CSV Ledger Export ---
+        function exportLedgerCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Type,Date,Description/Node,Amount (INR)\n";
+            
+            systemAuditLogs.forEach(log => {
+                const total = log.statements && log.statements.grandTotal ? log.statements.grandTotal : 0;
+                csvContent += `Income,${log.dateStr},Node P${log.stationId},${total.toFixed(2)}\n`;
+            });
+            
+            expenseLogs.forEach(exp => {
+                csvContent += `Expenditure,${exp.date},${exp.desc},-${parseFloat(exp.amount).toFixed(2)}\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `WGZ_Ledger_${currentLocationId}_${new Date().toLocaleDateString().replace(/\//g, '-')}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // --- Session Register UI ---
+        function openSystemLogsModal() {
+            document.getElementById('mainMenu').classList.remove('show');
+            const bodyField = document.getElementById('modal-injected-body');
+            document.getElementById('modal-title-field').textContent = "📜 Data Logs";
+            if (systemAuditLogs.length === 0) {
+                bodyField.innerHTML = `<p style="text-align:center; padding:30px; color:#555;">No local records extracted.</p>`;
+            } else {
+                let rows = systemAuditLogs.map(log => {
+                    let totalItems = log.foodHistory ? log.foodHistory.reduce((s, f) => s + f.qty, 0) : 0;
+                    let grandTotal = log.statements && log.statements.grandTotal ? log.statements.grandTotal : 0;
+                    return `<tr><td>P${log.stationId}</td><td>${log.duration}m</td><td style="max-width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${log.playerNames||log.players}</td><td>${totalItems} Itm</td><td style="color:#ff8c00; font-weight:700;">₹${grandTotal.toFixed(2)}</td><td><button class="action-button small-btn ghost-btn" style="padding: 4px 8px; margin:0;" onclick="renderBillReceipt('${log.id}', false)">Read</button></td></tr>`;
+                }).join('');
+                bodyField.innerHTML = `<div class="log-table-wrapper" style="max-height:60vh; overflow-y:auto; border: 1px solid rgba(255,255,255,0.05); border-radius:10px;"><table class="log-table"><thead><tr><th>Node</th><th>Time</th><th>Tags</th><th>Sup</th><th>Tally</th><th>File</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+            }
+            document.getElementById('modal-overlay').classList.add('active');
+        }
+
         // ==========================================
-        // TICK ENGINE
+        // 8. TICK ENGINE
         // ==========================================
         setInterval(() => {
             const now = new Date();
@@ -686,11 +843,23 @@
                 if (station.status === 'IN_USE' && station.endTimestamp) {
                     station.timeRemaining = Math.max(0, Math.floor((station.endTimestamp - now) / 1000));
                     const gridTimer = document.getElementById(`grid-timer-${station.id}`);
-                    if (gridTimer) gridTimer.textContent = formatTime(station.timeRemaining);
+                    if (gridTimer) {
+                        gridTimer.textContent = formatTime(station.timeRemaining);
+                        if (station.timeRemaining <= 300 && station.timeRemaining > 0) gridTimer.className = 'card-timer timer-warning';
+                        else if (station.timeRemaining <= 0) gridTimer.className = 'card-timer timer-critical';
+                    }
                     
                     if (targetedActiveStationId === station.id) {
                         const modalTimer = document.getElementById('modal-live-timer');
-                        if (modalTimer) modalTimer.textContent = formatTime(station.timeRemaining);
+                        if (modalTimer) {
+                            modalTimer.textContent = formatTime(station.timeRemaining);
+                            if(station.timeRemaining <= 0) modalTimer.style.color = '#ff4444';
+                        }
+                    }
+
+                    if(station.timeRemaining <= 0) {
+                        targetedActiveStationId = station.id;
+                        endSessionManually();
                     }
                 }
             });
