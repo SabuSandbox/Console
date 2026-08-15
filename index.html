@@ -39,49 +39,35 @@
             background-size: 100% 100%, 100% 100%, 100% 100%, 25px 25px;
         }
 
-        /* --- Expanded Background Video Game Animations --- */
-        #retro-animations { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; overflow: hidden; opacity: 0.15; }
-        
-        /* Pac-Man & Ghosts */
-        .sprite-pacman {
-            position: absolute; bottom: 12%; width: 0; height: 0;
-            border-right: 25px solid transparent; border-top: 25px solid #ffcc00;
-            border-left: 25px solid #ffcc00; border-bottom: 25px solid #ffcc00;
-            border-radius: 50%; animation: moveRightPac 25s linear infinite, chomp 0.4s ease-in-out infinite;
+        /* --- Authentic Linear Arcade Chase Animation --- */
+        #arcade-track { 
+            position: fixed; bottom: 5%; left: 0; width: 100vw; height: 60px; 
+            z-index: -1; pointer-events: none; opacity: 0.25; 
+            border-bottom: 2px dashed rgba(255, 204, 0, 0.1); /* Subtle dot track */
         }
-        .sprite-ghost { position: absolute; bottom: 12%; font-size: 2.5rem; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
-        .ghost-red { animation: moveRightPac 25s linear infinite 1.2s; filter: hue-rotate(0deg); }
-        .ghost-pink { animation: moveRightPac 25s linear infinite 1.8s; filter: hue-rotate(300deg); }
-        .ghost-cyan { animation: moveRightPac 25s linear infinite 2.5s; filter: hue-rotate(180deg); }
         
-        /* Pac-Man Dots */
-        .sprite-coin { position: absolute; bottom: 14.5%; width: 10px; height: 10px; background: #ffcc00; border-radius: 50%; box-shadow: 0 0 8px #ffcc00; }
-        .coin-1 { animation: moveRightPac 25s linear infinite -5s; }
-        .coin-2 { animation: moveRightPac 25s linear infinite -10s; }
-        .coin-3 { animation: moveRightPac 25s linear infinite -15s; }
+        .arcade-entity { 
+            position: absolute; bottom: 10px; font-size: 2.2rem;
+            animation: arcadeChase 18s linear infinite; 
+            filter: drop-shadow(0 0 5px rgba(255,255,255,0.3));
+        }
 
-        /* Space Invaders */
-        .sprite-invader { position: absolute; font-size: 3rem; filter: grayscale(100%) opacity(0.8); }
-        .invader-1 { top: 20%; animation: floatDiag 35s linear infinite; }
-        .invader-2 { top: 45%; animation: floatDiagReverse 45s linear infinite 5s; }
-        .invader-3 { top: 15%; animation: floatDiag 28s linear infinite 15s; }
+        /* Negative delays keep them perfectly spaced in a line from the very start */
+        .pacman-wrapper { animation-delay: -4s; }
+        .ghost-blinky { animation-delay: -3s; filter: hue-rotate(0deg); }   /* Red */
+        .ghost-pinky  { animation-delay: -2.3s; filter: hue-rotate(300deg); } /* Pink */
+        .ghost-inky   { animation-delay: -1.6s; filter: hue-rotate(180deg); } /* Cyan */
+        .ghost-clyde  { animation-delay: -0.9s; filter: hue-rotate(90deg); }  /* Orange-ish */
+        
+        .pacman {
+            width: 0; height: 0;
+            border-right: 18px solid transparent; border-top: 18px solid #ffcc00;
+            border-left: 18px solid #ffcc00; border-bottom: 18px solid #ffcc00;
+            border-radius: 50%; animation: chomp 0.3s ease-in-out infinite;
+        }
 
-        /* Ships & Asteroids */
-        .sprite-ship { position: absolute; font-size: 2.5rem; filter: grayscale(100%); }
-        .ship-1 { top: 75%; animation: flyUp 22s linear infinite; transform: rotate(-45deg); }
-        .ship-2 { top: 85%; animation: flyAcross 30s linear infinite 10s; transform: rotate(90deg); }
-
-        .sprite-asteroid { position: absolute; font-size: 1.8rem; filter: grayscale(100%); animation: fallRotate 18s linear infinite; }
-        .ast-1 { left: 25%; animation-delay: 2s; }
-        .ast-2 { left: 75%; animation-delay: 9s; font-size: 2.5rem; }
-
-        @keyframes moveRightPac { 0% { left: -150px; } 100% { left: 110vw; } }
-        @keyframes chomp { 0%, 100% { border-right: 25px solid transparent; } 50% { border-right: 25px solid #ffcc00; } }
-        @keyframes floatDiag { 0% { left: -100px; top: 20%; } 50% { top: 35%; } 100% { left: 110vw; top: 15%; } }
-        @keyframes floatDiagReverse { 0% { left: 110vw; top: 45%; } 50% { top: 25%; } 100% { left: -100px; top: 50%; } }
-        @keyframes flyUp { 0% { left: 15%; top: 110vh; } 100% { left: 55%; top: -100px; } }
-        @keyframes flyAcross { 0% { left: -100px; top: 85%; } 100% { left: 110vw; top: 75%; } }
-        @keyframes fallRotate { 0% { top: -100px; transform: rotate(0deg); } 100% { top: 110vh; transform: rotate(360deg); } }
+        @keyframes arcadeChase { 0% { left: -100px; } 100% { left: 110vw; } }
+        @keyframes chomp { 0%, 100% { border-right: 18px solid transparent; } 50% { border-right: 18px solid #ffcc00; } }
 
         /* --- Login Screen --- */
         #login-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
@@ -187,26 +173,12 @@
 
     <div id="tech-background"></div>
     
-    <div id="retro-animations">
-        <!-- Pac-Man Chase -->
-        <div class="sprite-coin coin-1"></div>
-        <div class="sprite-coin coin-2"></div>
-        <div class="sprite-coin coin-3"></div>
-        <div class="sprite-pacman"></div>
-        <div class="sprite-ghost ghost-red">👻</div>
-        <div class="sprite-ghost ghost-pink">👻</div>
-        <div class="sprite-ghost ghost-cyan">👻</div>
-
-        <!-- Space Invaders -->
-        <div class="sprite-invader invader-1">👾</div>
-        <div class="sprite-invader invader-2">👾</div>
-        <div class="sprite-invader invader-3">👾</div>
-
-        <!-- Ships & Asteroids -->
-        <div class="sprite-ship ship-1">🚀</div>
-        <div class="sprite-ship ship-2">🛸</div>
-        <div class="sprite-asteroid ast-1">☄️</div>
-        <div class="sprite-asteroid ast-2">☄️</div>
+    <div id="arcade-track">
+        <div class="arcade-entity pacman-wrapper"><div class="pacman"></div></div>
+        <div class="arcade-entity ghost-blinky">👻</div>
+        <div class="arcade-entity ghost-pinky">👻</div>
+        <div class="arcade-entity ghost-inky">👻</div>
+        <div class="arcade-entity ghost-clyde">👻</div>
     </div>
 
     <!-- STAFF LOGIN OVERLAY -->
@@ -425,7 +397,7 @@
             if (auth) {
                 try {
                     const cred = await auth.signInWithEmailAndPassword(email, pass);
-                    const userDoc = await db.collection('Users').doc(cred.user.uid).get();
+                    const userDoc = await db.collection('users').doc(cred.user.uid).get();
                     if(userDoc.exists) {
                         const data = userDoc.data();
                         sessionStorage.setItem('wgz_isLoggedIn', 'true');
