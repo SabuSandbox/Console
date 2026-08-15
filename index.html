@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Wonder Gamezone - Overlord Console</title>
+    <title>Wonder Gamezone - Administration</title>
     
     <meta name="theme-color" content="#121212">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -43,7 +43,7 @@
         #arcade-track { 
             position: fixed; bottom: 5%; left: 0; width: 100vw; height: 60px; 
             z-index: -1; pointer-events: none; opacity: 0.25; 
-            border-bottom: 2px dashed rgba(255, 204, 0, 0.1); /* Subtle dot track */
+            border-bottom: 2px dashed rgba(255, 204, 0, 0.1); 
         }
         
         .arcade-entity { 
@@ -52,12 +52,11 @@
             filter: drop-shadow(0 0 5px rgba(255,255,255,0.3));
         }
 
-        /* Negative delays keep them perfectly spaced in a line from the very start */
         .pacman-wrapper { animation-delay: -4s; }
-        .ghost-blinky { animation-delay: -3s; filter: hue-rotate(0deg); }   /* Red */
-        .ghost-pinky  { animation-delay: -2.3s; filter: hue-rotate(300deg); } /* Pink */
-        .ghost-inky   { animation-delay: -1.6s; filter: hue-rotate(180deg); } /* Cyan */
-        .ghost-clyde  { animation-delay: -0.9s; filter: hue-rotate(90deg); }  /* Orange-ish */
+        .ghost-blinky { animation-delay: -3s; filter: hue-rotate(0deg); }   
+        .ghost-pinky  { animation-delay: -2.3s; filter: hue-rotate(300deg); } 
+        .ghost-inky   { animation-delay: -1.6s; filter: hue-rotate(180deg); } 
+        .ghost-clyde  { animation-delay: -0.9s; filter: hue-rotate(90deg); }  
         
         .pacman {
             width: 0; height: 0;
@@ -123,7 +122,7 @@
         /* --- Modals & Forms --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px); z-index: 9999; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.3s; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        .modal-container { border-radius: 16px; width: 90%; max-width: 700px; padding: 30px; max-height: 90vh; overflow-y: auto; background: rgba(20, 20, 20, 0.95); border: 1px solid rgba(100,100,100,0.2); border-top: 2px solid #ff6a00; box-shadow: 0 25px 50px rgba(0,0,0,1); }
+        .modal-container { position: relative; border-radius: 16px; width: 90%; max-width: 700px; padding: 30px; max-height: 90vh; overflow-y: auto; background: rgba(20, 20, 20, 0.95); border: 1px solid rgba(100,100,100,0.2); border-top: 2px solid #ff6a00; box-shadow: 0 25px 50px rgba(0,0,0,1); }
         .modal-container::-webkit-scrollbar { width: 4px; background: transparent; }
         .modal-container::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: 15px; }
@@ -154,6 +153,10 @@
         .success-btn:hover { background: linear-gradient(90deg, #cc5500, #ff6a00); color: #fff; }
         .ghost-btn { background: transparent; border: 1px solid #666; color: #aaa; }
         .ghost-btn:hover { border-color: #ff6a00; color: #ff6a00; background: transparent; box-shadow: none; }
+
+        /* Global Save Bar inside Modal */
+        #global-save-bar { position: sticky; bottom: -30px; left: 0; width: 100%; background: rgba(20,20,20,0.95); padding: 15px; border-top: 1px solid #ff6a00; box-shadow: 0 -10px 20px rgba(0,0,0,0.8); z-index: 100; transform: translateY(100%); opacity: 0; transition: 0.3s; }
+        #global-save-bar.active { transform: translateY(0); opacity: 1; bottom: 0;}
 
         /* --- Tables & Finance --- */
         .log-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.8rem; margin-top: 10px;}
@@ -186,9 +189,9 @@
         <div class="login-box glass-panel">
             <img src="wgz_prple_logo_3.png" alt="Wonder GZ Logo" class="login-logo">
             <h2 class="login-title">System Auth</h2>
-            <input type="email" id="staff-email" class="themed-input" style="text-align:center;" placeholder="Admin ID / Gamertag">
+            <input type="email" id="staff-email" class="themed-input" style="text-align:center;" placeholder="Staff ID / Email">
             <input type="password" id="staff-password" class="themed-input" style="text-align:center;" placeholder="Passcode">
-            <button class="action-button" style="font-size:1rem; padding:12px; margin-top:20px;" onclick="handleLogin()">ACCESS SERVER</button>
+            <button class="action-button" style="font-size:1rem; padding:12px; margin-top:20px;" onclick="handleLogin()">LOGIN</button>
             <p id="login-error" style="color:#ff4444; font-size:0.8rem; display:none; text-align:center;"></p>
         </div>
     </div>
@@ -200,23 +203,23 @@
                 <img src="wgz_prple_logo_3.png" alt="Logo" class="header-logo-small">
                 <div>
                     <h1 class="header-title">Wonder Gamezone</h1>
-                    <div class="header-subtitle" id="header-loc-title">Loading Server...</div>
+                    <div class="header-subtitle" id="header-loc-title">Loading Branch...</div>
                 </div>
             </div>
             
             <div style="display:flex; align-items:center; gap:15px;">
                 <select id="master-location-switcher" class="location-switcher hidden" onchange="switchLocation(this.value)">
-                    <option value="loc_delhi_01">Delhi 01 Realm</option>
-                    <option value="loc_gurugram_01">Gurugram 01 Realm</option>
-                    <option value="loc_mumbai_01">Mumbai 01 Realm</option>
+                    <option value="loc_delhi_01">Delhi 01</option>
+                    <option value="loc_gurugram_01">Gurugram 01</option>
+                    <option value="loc_mumbai_01">Mumbai 01</option>
                 </select>
 
                 <div class="dropdown-container">
                     <button class="menu-btn" onclick="toggleMenu(event)">☰</button>
                     <div class="dropdown-content glass-panel" id="mainMenu">
-                        <div class="dropdown-item" onclick="openAdminModal()">⚙️ Overlord Console</div>
-                        <div class="dropdown-item" onclick="openSystemLogsModal()">📜 Match History</div>
-                        <div class="dropdown-item logout-item" onclick="handleLogout()">🚪 Disconnect Server</div>
+                        <div class="dropdown-item" onclick="openAdminModal()">⚙️ Admin Cockpit</div>
+                        <div class="dropdown-item" onclick="openSystemLogsModal()">📜 Session Register</div>
+                        <div class="dropdown-item logout-item" onclick="handleLogout()">🚪 Logout App</div>
                     </div>
                 </div>
             </div>
@@ -224,11 +227,11 @@
 
         <main class="main-content glass-panel">
             <div>
-                <div class="section-title">🎮 Live Lobbies</div>
+                <div class="section-title">🎮 Active Stations</div>
                 <div class="stations-grid" id="in-use-grid"></div>
             </div>
             <div style="margin-top: 10px;">
-                <div class="section-title">✅ Open Servers</div>
+                <div class="section-title">✅ Available Stations</div>
                 <div class="stations-grid" id="available-grid"></div>
             </div>
         </main>
@@ -238,10 +241,10 @@
     <div class="modal-overlay" id="modal-overlay" onclick="hideActiveModal(event)">
         <div class="modal-container glass-panel" onclick="event.stopPropagation()">
             <div class="modal-header">
-                <h2 id="modal-title-field">Server Command Line</h2>
+                <h2 id="modal-title-field">Control Terminal</h2>
                 <button class="close-btn" onclick="closeTopModal()">&times;</button>
             </div>
-            <div id="modal-injected-body"></div>
+            <div id="modal-injected-body" style="padding-bottom: 20px;"></div>
         </div>
     </div>
 
@@ -379,7 +382,7 @@
                     document.getElementById('master-location-switcher').value = currentLocationId === 'ALL' ? document.getElementById('master-location-switcher').value : currentLocationId;
                 }
 
-                document.getElementById('header-loc-title').textContent = `Server: ${currentLocationId.replace('loc_', '').toUpperCase()}`;
+                document.getElementById('header-loc-title').textContent = `Branch: ${currentLocationId.replace('loc_', '').toUpperCase()}`;
                 loadLocalFallback(); bootCloudListeners(); 
             } else {
                 document.getElementById('login-screen').classList.remove('hidden');
@@ -397,7 +400,7 @@
             if (auth) {
                 try {
                     const cred = await auth.signInWithEmailAndPassword(email, pass);
-                    const userDoc = await db.collection('users').doc(cred.user.uid).get();
+                    const userDoc = await db.collection('Users').doc(cred.user.uid).get();
                     if(userDoc.exists) {
                         const data = userDoc.data();
                         sessionStorage.setItem('wgz_isLoggedIn', 'true');
@@ -418,7 +421,7 @@
             if(unsubscribeStations) unsubscribeStations();
             currentLocationId = newLocId;
             sessionStorage.setItem('wgz_locId', newLocId);
-            document.getElementById('header-loc-title').textContent = `Server: ${newLocId.replace('loc_', '').toUpperCase()}`;
+            document.getElementById('header-loc-title').textContent = `Branch: ${newLocId.replace('loc_', '').toUpperCase()}`;
             loadLocalFallback(); bootCloudListeners();
         }
 
@@ -455,19 +458,19 @@
                 card.onclick = () => launchStationConsole(station.id);
 
                 if (station.status === 'IN_USE' || station.status === 'SETTLING') {
-                    let displayNames = station.playerNames ? station.playerNames : `${station.playersCount} Gamers(s)`;
+                    let displayNames = station.playerNames ? station.playerNames : `${station.playersCount} Player(s)`;
                     card.innerHTML = `
                         <div style="text-align:center; width:100%;"><div class="card-number">P${station.id}</div><div class="card-players">👥 ${displayNames}</div></div>
                         <div class="card-timer timer-safe" id="grid-timer-${station.id}">${formatTime(station.timeRemaining)}</div>
-                        <button class="action-button small-btn" onclick="event.stopPropagation(); launchStationConsole(${station.id})">⚙️ Modify Loadout</button>
+                        <button class="action-button small-btn" onclick="event.stopPropagation(); launchStationConsole(${station.id})">⚙️ Manage</button>
                     `;
                     inUseGrid.appendChild(card);
                 } else {
                     card.innerHTML = `
                         <div style="text-align:center; width:100%;"><div class="card-number" style="color: #444;">P${station.id}</div></div>
                         <div style="width: 100%; display:flex; flex-direction:column; gap:8px;">
-                            <button class="action-button success-btn small-btn" onclick="event.stopPropagation(); launchStationConsole(${station.id})">🚀 Spawn Party</button>
-                            ${station.lastSessionLogId ? `<button class="action-button ghost-btn small-btn" onclick="event.stopPropagation(); renderBillReceipt('${station.lastSessionLogId}', false)">📜 Last Match Data</button>` : ''}
+                            <button class="action-button success-btn small-btn" onclick="event.stopPropagation(); launchStationConsole(${station.id})">🚀 Initialize</button>
+                            ${station.lastSessionLogId ? `<button class="action-button ghost-btn small-btn" onclick="event.stopPropagation(); renderBillReceipt('${station.lastSessionLogId}', false)">📜 Last Bill</button>` : ''}
                         </div>
                     `;
                     availableGrid.appendChild(card);
@@ -479,12 +482,12 @@
             targetedActiveStationId = stationId;
             const station = stationsData.find(s => s.id === stationId);
             const bodyField = document.getElementById('modal-injected-body');
-            document.getElementById('modal-title-field').textContent = `Server Command Line P${station.id}`;
+            document.getElementById('modal-title-field').textContent = `Control Terminal P${station.id}`;
 
             if (station.status === 'AVAILABLE') {
                 bodyField.innerHTML = `
                     <div class="form-group">
-                        <label>Match Duration Timer</label>
+                        <label>Session Duration</label>
                         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                             <select id="setup-hours" class="themed-input">
                                 <option value="0">0 Hours</option>
@@ -502,10 +505,10 @@
                             </select>
                         </div>
                     </div>
-                    <div class="form-group"><label>Party Size</label>
-                        <select id="setup-players" class="themed-input"><option value="1">1 Gamer</option><option value="2">2 Gamers</option><option value="3">3 Gamers</option><option value="4">4 Gamers</option></select>
+                    <div class="form-group"><label>Occupancy</label>
+                        <select id="setup-players" class="themed-input"><option value="1">1 Person</option><option value="2">2 Persons</option><option value="3">3 Persons</option><option value="4">4 Persons</option></select>
                     </div>
-                    <button class="action-button" style="margin-top:10px;" onclick="commitNewSession()">▶ Launch Match</button>
+                    <button class="action-button" style="margin-top:10px;" onclick="commitNewSession()">▶ Start Session</button>
                 `;
             } else {
                 renderActiveStationPanel(station);
@@ -516,7 +519,7 @@
         function renderActiveStationPanel(station) {
             const bodyField = document.getElementById('modal-injected-body');
             
-            let foodRowsHtml = station.foodHistory.length === 0 ? '<div class="history-item">No loot dropped yet.</div>' : station.foodHistory.map(f => `
+            let foodRowsHtml = station.foodHistory.length === 0 ? '<div class="history-item">No items added yet.</div>' : station.foodHistory.map(f => `
                 <div class="history-item">
                     <span><button class="action-button small-btn release-button" style="padding:4px 8px; width:auto; box-shadow:none; margin-right:5px;" onclick="decreaseFoodItem(${station.id}, '${f.id}')">➖</button>${f.name} (x${f.qty})</span>
                     <span>₹${(f.price * f.qty).toFixed(2)}</span>
@@ -542,26 +545,26 @@
                 .join('');
 
             bodyField.innerHTML = `
-                <div class="form-group"><input type="text" id="player-names-input" class="themed-input" placeholder="Assign Gamertags..." value="${station.playerNames || ''}" onchange="updatePlayerNames(${station.id}, this.value)"></div>
+                <div class="form-group"><input type="text" id="player-names-input" class="themed-input" placeholder="Enter Player Names..." value="${station.playerNames || ''}" onchange="updatePlayerNames(${station.id}, this.value)"></div>
                 <div class="metrics-grid">
                     <div class="metric-item"><div style="font-size: 0.65rem; color: #888; text-transform:uppercase;">Time Remaining</div><div id="modal-live-timer" style="color:#aaa; font-size:1.2rem; font-family:'Orbitron'; font-weight:bold;">${formatTime(station.timeRemaining)}</div></div>
-                    <div class="metric-item"><div style="font-size: 0.65rem; color: #888; text-transform:uppercase;">Party Size</div><div style="font-size:1.1rem; font-weight:bold; color:#fff;">${station.playersCount} Gamers</div></div>
+                    <div class="metric-item"><div style="font-size: 0.65rem; color: #888; text-transform:uppercase;">Occupants</div><div style="font-size:1.1rem; font-weight:bold; color:#fff;">${station.playersCount} Person(s)</div></div>
                 </div>
                 
-                <div style="display:flex; gap:10px; margin-bottom: 16px; flex-wrap:wrap;">${shortcutButtonsHtml || '<span style="font-size:0.7rem; color:#666;">No quick-slots set.</span>'}</div>
+                <div style="display:flex; gap:10px; margin-bottom: 16px; flex-wrap:wrap;">${shortcutButtonsHtml || '<span style="font-size:0.7rem; color:#666;">No shortcuts configured.</span>'}</div>
                 
                 <div class="form-group"><div class="history-list-box">${foodRowsHtml}</div></div>
                 <div class="form-group nested-row">
-                    <select id="catering-select" class="themed-input"><option value="none">-- Equip Supply --</option>${inventoryOptions}</select>
+                    <select id="catering-select" class="themed-input"><option value="none">-- Select Item --</option>${inventoryOptions}</select>
                     <input type="number" id="catering-qty" class="themed-input" min="1" value="1">
-                    <button class="action-button" style="margin:0; padding:10px;" onclick="appendFoodToSession()">Drop Item</button>
+                    <button class="action-button" style="margin:0; padding:10px;" onclick="appendFoodToSession()">Add</button>
                 </div>
                 
                 <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed rgba(255,255,255,0.1); padding-top:15px; margin-top:20px;">
-                    <span style="color:#aaa; font-weight:bold; font-size:1rem; text-transform:uppercase;">Current Bounty:</span>
+                    <span style="color:#aaa; font-weight:bold; font-size:1rem; text-transform:uppercase;">Accrued Balance:</span>
                     <span id="panel-bill-display" style="font-size:1.8rem; color:#ff8c00; font-weight:bold;">₹0.00</span>
                 </div>
-                <button class="action-button release-button" style="margin-top:20px;" onclick="endSessionManually()">🛑 Terminate Match & Collect Bounty</button>
+                <button class="action-button release-button" style="margin-top:20px;" onclick="endSessionManually()">🛑 Settle & End Session</button>
             `;
             recalculateLivePanelBill();
         }
@@ -599,7 +602,7 @@
             const mins = parseInt(document.getElementById('setup-mins').value) || 0;
             const dur = (hrs * 60) + mins;
             
-            if (dur <= 0) return alert("Please specify match duration.");
+            if (dur <= 0) return alert("Please specify session duration.");
 
             st.status = 'IN_USE'; st.timeRemaining = dur * 60; st.durationMinutes = dur;
             st.playersCount = parseInt(document.getElementById('setup-players').value);
@@ -611,7 +614,7 @@
         function quickAddItem(itemName) {
             const st = stationsData.find(s => s.id === targetedActiveStationId);
             const item = inventoryData.find(i => i.name === itemName);
-            if (!item || item.stock <= 0) return alert("Depleted!");
+            if (!item || item.stock <= 0) return alert("Out of stock!");
             item.stock -= 1;
             const match = st.foodHistory.find(f => f.name === item.name);
             if (match) match.qty += 1; else st.foodHistory.push({ id: item.id, name: item.name, price: item.price, qty: 1 });
@@ -668,27 +671,27 @@
             if(!log) return alert("Data purged or not found.");
 
             const bodyField = document.getElementById('modal-injected-body');
-            document.getElementById('modal-title-field').textContent = `Match Tally - P${log.stationId}`;
+            document.getElementById('modal-title-field').textContent = `Bill - P${log.stationId}`;
 
             let itemsHtml = log.foodHistory.map(i => `<div style="display:flex; justify-content:space-between; font-size:0.9rem; margin-bottom:5px;"><span style="color:#aaa;">${i.name} <strong style="color:#fff;">(x${i.qty})</strong></span><span>₹${(i.price * i.qty).toFixed(2)}</span></div>`).join('');
             
             let actionBtn = showCloseAction 
-                ? `<button class="action-button success-btn" onclick="closeTopModal()">Acknowledge & Clear Lobby</button>`
-                : `<button class="action-button ghost-btn" onclick="closeTopModal()">Close Match File</button>`;
+                ? `<button class="action-button success-btn" onclick="closeTopModal()">Acknowledge & Clear Station</button>`
+                : `<button class="action-button ghost-btn" onclick="closeTopModal()">Close Bill</button>`;
 
             bodyField.innerHTML = `
                 <div style="text-align:left; background:rgba(0,0,0,0.6); padding:20px; border-radius:12px; border:1px solid rgba(255,255,255,0.05);">
-                    ${log.playerNames ? `<div style="color:#ccc; font-size:1rem; margin-bottom:15px; font-weight:bold; text-transform:uppercase; letter-spacing:1px;">Gamertags: ${log.playerNames}</div>` : ''}
+                    ${log.playerNames ? `<div style="color:#ccc; font-size:1rem; margin-bottom:15px; font-weight:bold; text-transform:uppercase; letter-spacing:1px;">Players: ${log.playerNames}</div>` : ''}
                     <div style="display:flex; justify-content:space-between; font-size:1rem; color:#fff; font-weight:bold; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:10px; margin-bottom:10px;">
-                        <span>Server Time (${log.duration} Mins) @ ₹${log.statements.appliedRate}/hr</span>
+                        <span>Play Time (${log.duration} Mins) @ ₹${log.statements.appliedRate}/hr</span>
                         <span>₹${log.statements.playCost.toFixed(2)}</span>
                     </div>
                     
-                    <div style="margin-top:15px; margin-bottom:10px; font-weight:bold; color:#777; text-transform:uppercase; font-size:0.8rem;">Supplies Consumed</div>
-                    ${itemsHtml || '<div style="color:#444; font-size:0.8rem; font-style:italic;">No supplies ordered.</div>'}
+                    <div style="margin-top:15px; margin-bottom:10px; font-weight:bold; color:#777; text-transform:uppercase; font-size:0.8rem;">Food & Inventory</div>
+                    ${itemsHtml || '<div style="color:#444; font-size:0.8rem; font-style:italic;">No items ordered.</div>'}
                     
                     <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed rgba(255,255,255,0.1); padding-top:15px; margin-top:20px;">
-                        <span style="color:#fff; font-weight:bold; font-size:1.1rem; text-transform:uppercase; letter-spacing:1px;">Total Bounty</span>
+                        <span style="color:#fff; font-weight:bold; font-size:1.1rem; text-transform:uppercase; letter-spacing:1px;">Grand Total</span>
                         <span style="font-size:2rem; color:#ff6a00; font-weight:bold; text-shadow:0 0 15px rgba(255,106,0,0.3);">₹${log.statements.grandTotal.toFixed(2)}</span>
                     </div>
                     <div style="margin-top: 25px;">${actionBtn}</div>
@@ -698,93 +701,126 @@
         }
 
         // ==========================================
-        // 7. ADMIN COCKPIT & LEDGER
+        // 7. ADMIN COCKPIT & GLOBAL SAVE
         // ==========================================
         function closeTopModal() { document.getElementById('modal-overlay').classList.remove('active'); }
         function hideActiveModal(e) { if (e.target.id === 'modal-overlay') closeTopModal(); }
 
+        // Shows the sticky save bar when any input is edited
+        function triggerGlobalSave() {
+            const saveBar = document.getElementById('global-save-bar');
+            if(saveBar) saveBar.classList.add('active');
+        }
+
+        // Iterates through all DOM elements to save rates and inventory at once
+        function saveAllAdminChanges() {
+            stationsData.forEach(st => {
+                const r1 = document.getElementById(`r1_${st.id}`);
+                if (r1) {
+                    st.rate1Player = parseFloat(r1.value) || 15;
+                    st.rate2Player = parseFloat(document.getElementById(`r2_${st.id}`).value) || 20;
+                    st.rate3Player = parseFloat(document.getElementById(`r3_${st.id}`).value) || 25;
+                    st.rate4Player = parseFloat(document.getElementById(`r4_${st.id}`).value) || 30;
+                }
+            });
+
+            inventoryData.forEach((item, i) => {
+                const n = document.getElementById(`inv_name_${i}`);
+                if (n) {
+                    item.name = n.value;
+                    item.category = document.getElementById(`inv_cat_${i}`).value || 'Misc';
+                    item.price = parseFloat(document.getElementById(`inv_price_${i}`).value) || 0;
+                    item.isShortcut = document.getElementById(`inv_short_${i}`).checked;
+                }
+            });
+
+            saveSystemData();
+            document.getElementById('global-save-bar').classList.remove('active');
+            alert('All configurations saved successfully!');
+        }
+
         function openAdminModal() {
             document.getElementById('mainMenu').classList.remove('show');
             const bodyField = document.getElementById('modal-injected-body');
-            document.getElementById('modal-title-field').textContent = "⚙️ Overlord Command Center";
+            document.getElementById('modal-title-field').textContent = "⚙️ Admin Cockpit";
 
             const totalRev = systemAuditLogs.reduce((sum, log) => sum + ((log.statements && log.statements.grandTotal) ? log.statements.grandTotal : 0), 0);
             const totalExp = expenseLogs.reduce((sum, exp) => sum + parseFloat(exp.amount), 0);
             const netProfit = totalRev - totalExp;
             const profitClass = netProfit >= 0 ? 'profit color-orange' : 'loss color-red';
 
+            // Removed individual save buttons, added oninput trigger
             let stationsHtml = stationsData.map(st => `
-                <div class="admin-row" style="grid-template-columns: 35px 1fr 1fr 1fr 1fr auto;">
+                <div class="admin-row" style="grid-template-columns: 35px 1fr 1fr 1fr 1fr;">
                     <div style="color:#ccc; font-weight:bold;">P${st.id}</div>
-                    <div><label style="font-size:0.5rem; color:#888;">1Pl</label><input type="number" value="${st.rate1Player||15}" id="r1_${st.id}" class="themed-input" style="padding:6px; font-size:0.8rem;"></div>
-                    <div><label style="font-size:0.5rem; color:#888;">2Pl</label><input type="number" value="${st.rate2Player||20}" id="r2_${st.id}" class="themed-input" style="padding:6px; font-size:0.8rem;"></div>
-                    <div><label style="font-size:0.5rem; color:#888;">3Pl</label><input type="number" value="${st.rate3Player||25}" id="r3_${st.id}" class="themed-input" style="padding:6px; font-size:0.8rem;"></div>
-                    <div><label style="font-size:0.5rem; color:#888;">4Pl</label><input type="number" value="${st.rate4Player||30}" id="r4_${st.id}" class="themed-input" style="padding:6px; font-size:0.8rem;"></div>
-                    <button class="action-button small-btn ghost-btn" style="margin-top:auto;" onclick="updateRates(${st.id})">Lock In</button>
+                    <div><label style="font-size:0.5rem; color:#888;">1Pl</label><input type="number" value="${st.rate1Player||15}" id="r1_${st.id}" class="themed-input" style="padding:6px; font-size:0.8rem;" oninput="triggerGlobalSave()"></div>
+                    <div><label style="font-size:0.5rem; color:#888;">2Pl</label><input type="number" value="${st.rate2Player||20}" id="r2_${st.id}" class="themed-input" style="padding:6px; font-size:0.8rem;" oninput="triggerGlobalSave()"></div>
+                    <div><label style="font-size:0.5rem; color:#888;">3Pl</label><input type="number" value="${st.rate3Player||25}" id="r3_${st.id}" class="themed-input" style="padding:6px; font-size:0.8rem;" oninput="triggerGlobalSave()"></div>
+                    <div><label style="font-size:0.5rem; color:#888;">4Pl</label><input type="number" value="${st.rate4Player||30}" id="r4_${st.id}" class="themed-input" style="padding:6px; font-size:0.8rem;" oninput="triggerGlobalSave()"></div>
                 </div>
             `).join('');
 
+            // Removed individual save buttons, added oninput trigger
             let inventoryHtml = inventoryData.map((item, i) => `
-                <div class="admin-row" style="grid-template-columns: 1.5fr 1fr 1fr 60px auto;">
-                    <input type="text" value="${item.name}" id="inv_name_${i}" class="themed-input" style="font-size:0.8rem;">
-                    <input type="text" value="${item.category||'Food'}" id="inv_cat_${i}" class="themed-input" placeholder="Category" style="font-size:0.8rem;">
-                    <input type="number" value="${item.price}" id="inv_price_${i}" class="themed-input" step="1" style="font-size:0.8rem;">
+                <div class="admin-row" style="grid-template-columns: 1.5fr 1fr 1fr 60px;">
+                    <input type="text" value="${item.name}" id="inv_name_${i}" class="themed-input" style="font-size:0.8rem;" oninput="triggerGlobalSave()">
+                    <input type="text" value="${item.category||'Food'}" id="inv_cat_${i}" class="themed-input" placeholder="Category" style="font-size:0.8rem;" oninput="triggerGlobalSave()">
+                    <input type="number" value="${item.price}" id="inv_price_${i}" class="themed-input" step="1" style="font-size:0.8rem;" oninput="triggerGlobalSave()">
                     <div style="text-align:center;">
-                        <label style="font-size:0.5rem; color:#888; display:block;">Q-Slot</label>
-                        <input type="checkbox" id="inv_short_${i}" ${item.isShortcut ? 'checked' : ''} style="transform:scale(1.2); margin-top:5px; accent-color:#ff6a00;">
+                        <label style="font-size:0.5rem; color:#888; display:block;">Quick</label>
+                        <input type="checkbox" id="inv_short_${i}" ${item.isShortcut ? 'checked' : ''} style="transform:scale(1.2); margin-top:5px; accent-color:#ff6a00;" onchange="triggerGlobalSave()">
                     </div>
-                    <button class="action-button small-btn ghost-btn" onclick="updateInventory(${i})">Save</button>
                 </div>
             `).join('');
             
             bodyField.innerHTML = `
                 <div class="finance-tracker">
-                    <div class="finance-card"><div class="finance-label">Gross Loot</div><div class="finance-amt">₹${totalRev.toFixed(2)}</div></div>
-                    <div class="finance-card"><div class="finance-label">Server Upkeep</div><div class="finance-amt color-red">₹${totalExp.toFixed(2)}</div></div>
-                    <div class="finance-card ${profitClass.split(' ')[0]}"><div class="finance-label">Net Score</div><div class="finance-amt ${profitClass.split(' ')[1]}">₹${netProfit.toFixed(2)}</div></div>
+                    <div class="finance-card"><div class="finance-label">Gross Revenue</div><div class="finance-amt">₹${totalRev.toFixed(2)}</div></div>
+                    <div class="finance-card"><div class="finance-label">Expenses</div><div class="finance-amt color-red">₹${totalExp.toFixed(2)}</div></div>
+                    <div class="finance-card ${profitClass.split(' ')[0]}"><div class="finance-label">Net Profit</div><div class="finance-amt ${profitClass.split(' ')[1]}">₹${netProfit.toFixed(2)}</div></div>
                 </div>
 
-                <div class="section-title" style="font-size: 0.85rem;">Server Expenses Logs</div>
+                <div class="section-title" style="font-size: 0.85rem;">Expense Logs</div>
                 <div class="admin-row" style="grid-template-columns: 2fr 1fr auto;">
-                    <input type="text" id="new_exp_desc" class="themed-input" placeholder="Upkeep Record (e.g. Utility)">
+                    <input type="text" id="new_exp_desc" class="themed-input" placeholder="Expense Record (e.g. Utility)">
                     <input type="number" id="new_exp_amt" class="themed-input" placeholder="Cost (₹)">
                     <button class="action-button release-button small-btn" onclick="addExpense()">Write</button>
                 </div>
-                <button class="action-button ghost-btn small-btn" style="margin-bottom:25px;" onclick="exportLedgerCSV()">📥 Extract Ledger Database (.CSV)</button>
+                <button class="action-button ghost-btn small-btn" style="margin-bottom:25px;" onclick="exportLedgerCSV()">📥 Extract Ledger (.CSV)</button>
 
-                <div class="section-title" style="font-size: 0.85rem;">Server Rent Tariffs (₹)</div>
-                <div style="max-height: 200px; overflow-y: auto; margin-bottom: 25px; padding-right:5px;">${stationsHtml}</div>
+                <div class="section-title" style="font-size: 0.85rem;">Station Hourly Rates (₹)</div>
+                <div style="max-height: 250px; overflow-y: auto; margin-bottom: 5px; padding-right:5px;">
+                    ${stationsHtml}
+                </div>
+                <!-- ADD STATION BUTTON -->
+                <button class="action-button ghost-btn small-btn" style="margin-bottom: 25px;" onclick="addNewStation()">➕ Add New Playstation</button>
 
-                <div class="section-title" style="font-size: 0.85rem;">Loot Box Configurator</div>
+                <div class="section-title" style="font-size: 0.85rem;">Inventory Configurator</div>
                 <div style="max-height: 200px; overflow-y: auto; margin-bottom: 10px; padding-right:5px;">${inventoryHtml}</div>
                 
-                <div class="section-title" style="margin-top: 15px; font-size: 0.85rem;">Define Supply Drop</div>
+                <div class="section-title" style="margin-top: 15px; font-size: 0.85rem;">Define New Item</div>
                 <div class="admin-row" style="grid-template-columns: 1.5fr 1fr 1fr auto;">
                     <input type="text" id="new_item_name" class="themed-input" placeholder="Item Name">
-                    <input type="text" id="new_item_cat" class="themed-input" placeholder="Class">
-                    <input type="number" id="new_item_price" class="themed-input" placeholder="Value">
-                    <button class="action-button success-btn small-btn" onclick="addNewInventory()">Define</button>
+                    <input type="text" id="new_item_cat" class="themed-input" placeholder="Category">
+                    <input type="number" id="new_item_price" class="themed-input" placeholder="Price">
+                    <button class="action-button success-btn small-btn" onclick="addNewInventory()">Add</button>
+                </div>
+                
+                <!-- STICKY GLOBAL SAVE BAR -->
+                <div id="global-save-bar">
+                    <button class="action-button success-btn" style="font-size: 1.1rem; letter-spacing: 2px;" onclick="saveAllAdminChanges()">💾 Save All Changes</button>
                 </div>
             `;
             document.getElementById('modal-overlay').classList.add('active');
         }
 
-        // --- Config Updaters ---
-        function updateRates(id) {
-            const st = stationsData.find(s => s.id === id);
-            st.rate1Player = parseFloat(document.getElementById(`r1_${id}`).value) || 15;
-            st.rate2Player = parseFloat(document.getElementById(`r2_${id}`).value) || 20;
-            st.rate3Player = parseFloat(document.getElementById(`r3_${id}`).value) || 25;
-            st.rate4Player = parseFloat(document.getElementById(`r4_${id}`).value) || 30;
-            saveSystemData(); alert(`Node P${id} matrix updated.`);
-        }
-
-        function updateInventory(i) {
-            inventoryData[i].name = document.getElementById(`inv_name_${i}`).value;
-            inventoryData[i].category = document.getElementById(`inv_cat_${i}`).value || 'Misc';
-            inventoryData[i].price = parseFloat(document.getElementById(`inv_price_${i}`).value) || 0;
-            inventoryData[i].isShortcut = document.getElementById(`inv_short_${i}`).checked;
-            saveSystemData(); alert('Supply matrix updated.');
+        // --- Config Actions ---
+        function addNewStation() {
+            const newId = stationsData.length > 0 ? Math.max(...stationsData.map(s => s.id)) + 1 : 1;
+            stationsData.push(createStation(newId));
+            saveSystemData();
+            refreshDashboardVisuals();
+            openAdminModal(); 
         }
 
         function addNewInventory() {
@@ -809,21 +845,21 @@
         // --- CSV Ledger Export ---
         function exportLedgerCSV() {
             let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "Type,Date,Description/Node,Amount (INR)\n";
+            csvContent += "Type,Date,Description/Station,Amount (INR)\n";
             
             systemAuditLogs.forEach(log => {
                 const total = log.statements && log.statements.grandTotal ? log.statements.grandTotal : 0;
-                csvContent += `Income,${log.dateStr},Server P${log.stationId},${total.toFixed(2)}\n`;
+                csvContent += `Income,${log.dateStr},Station P${log.stationId},${total.toFixed(2)}\n`;
             });
             
             expenseLogs.forEach(exp => {
-                csvContent += `Upkeep,${exp.date},${exp.desc},-${parseFloat(exp.amount).toFixed(2)}\n`;
+                csvContent += `Expense,${exp.date},${exp.desc},-${parseFloat(exp.amount).toFixed(2)}\n`;
             });
 
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `WGZ_Server_Ledger_${currentLocationId}_${new Date().toLocaleDateString().replace(/\//g, '-')}.csv`);
+            link.setAttribute("download", `WGZ_Ledger_${currentLocationId}_${new Date().toLocaleDateString().replace(/\//g, '-')}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -833,16 +869,16 @@
         function openSystemLogsModal() {
             document.getElementById('mainMenu').classList.remove('show');
             const bodyField = document.getElementById('modal-injected-body');
-            document.getElementById('modal-title-field').textContent = "📜 Match History Logs";
+            document.getElementById('modal-title-field').textContent = "📜 Session Register Logs";
             if (systemAuditLogs.length === 0) {
-                bodyField.innerHTML = `<p style="text-align:center; padding:30px; color:#555;">No match records extracted.</p>`;
+                bodyField.innerHTML = `<p style="text-align:center; padding:30px; color:#555;">No records extracted.</p>`;
             } else {
                 let rows = systemAuditLogs.map(log => {
                     let totalItems = log.foodHistory ? log.foodHistory.reduce((s, f) => s + f.qty, 0) : 0;
                     let grandTotal = log.statements && log.statements.grandTotal ? log.statements.grandTotal : 0;
                     return `<tr><td>P${log.stationId}</td><td>${log.duration}m</td><td style="max-width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${log.playerNames||log.players}</td><td>${totalItems} Itm</td><td style="color:#ff8c00; font-weight:700;">₹${grandTotal.toFixed(2)}</td><td><button class="action-button small-btn ghost-btn" style="padding: 4px 8px; margin:0;" onclick="renderBillReceipt('${log.id}', false)">Read</button></td></tr>`;
                 }).join('');
-                bodyField.innerHTML = `<div class="log-table-wrapper" style="max-height:60vh; overflow-y:auto; border: 1px solid rgba(255,255,255,0.05); border-radius:10px;"><table class="log-table"><thead><tr><th>Node</th><th>Time</th><th>Tags</th><th>Loot</th><th>Bounty</th><th>File</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+                bodyField.innerHTML = `<div class="log-table-wrapper" style="max-height:60vh; overflow-y:auto; border: 1px solid rgba(255,255,255,0.05); border-radius:10px;"><table class="log-table"><thead><tr><th>Station</th><th>Time</th><th>Names</th><th>Items</th><th>Total</th><th>File</th></tr></thead><tbody>${rows}</tbody></table></div>`;
             }
             document.getElementById('modal-overlay').classList.add('active');
         }
