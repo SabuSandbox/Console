@@ -252,18 +252,15 @@
         // ==========================================
         // 1. FIREBASE CONFIGURATION
         // ==========================================
-        // 
-        
-        firebaseConfig = {
-  apiKey: "AIzaSyDjLHWHnD02-pR7d6q5pWfsiD4H4_enIuQ",
-  authDomain: "console-c1bd3.firebaseapp.com",
-  projectId: "console-c1bd3",
-  storageBucket: "console-c1bd3.firebasestorage.app",
-  messagingSenderId: "422195108380",
-  appId: "1:422195108380:web:9a92fcfe293c8eca8c5dd9",
-  measurementId: "G-6C0BPQDW8G"
-};
-    
+        const firebaseConfig = {
+          apiKey: "AIzaSyDjLHWHnD02-pR7d6q5pWfsiD4H4_enIuQ",
+          authDomain: "console-c1bd3.firebaseapp.com",
+          projectId: "console-c1bd3",
+          storageBucket: "console-c1bd3.firebasestorage.app",
+          messagingSenderId: "422195108380",
+          appId: "1:422195108380:web:9a92fcfe293c8eca8c5dd9",
+          measurementId: "G-6C0BPQDW8G"
+        };
 
         let db, auth;
         try {
@@ -394,7 +391,8 @@
         }
 
         async function handleLogin() {
-            const email = document.getElementById('staff-email').value;
+            // Added .trim() to ensure no spaces are accidentally typed in the login box
+            const email = document.getElementById('staff-email').value.trim(); 
             const pass = document.getElementById('staff-password').value;
             const errLabel = document.getElementById('login-error');
 
@@ -403,14 +401,25 @@
             if (auth) {
                 try {
                     const cred = await auth.signInWithEmailAndPassword(email, pass);
-                    const userDoc = await db.collection('Users').doc(cred.user.uid).get();
+                    
+                    // ATTEMPT 1: Look for the UID in the 'users' collection
+                    let userDoc = await db.collection('users').doc(cred.user.uid).get();
+                    
+                    // ATTEMPT 2: Bulletproof Fallback - Look for the Email Address as the ID
+                    if (!userDoc.exists) {
+                        userDoc = await db.collection('users').doc(email).get();
+                    }
+
                     if(userDoc.exists) {
                         const data = userDoc.data();
                         sessionStorage.setItem('wgz_isLoggedIn', 'true');
-                        sessionStorage.setItem('wgz_locId', data.location);
-                        sessionStorage.setItem('wgz_role', data.role);
+                        
+                        // Captures 'location_id' perfectly
+                        sessionStorage.setItem('wgz_locId', data.location_id || 'ALL'); 
+                        sessionStorage.setItem('wgz_role', data.role || 'master');
+                        
                         checkLoginState();
-                    } else throw new Error("Role profile not found.");
+                    } else throw new Error("Role profile not found. Please check Document ID.");
                 } catch(err) { errLabel.textContent = "Error: " + err.message; errLabel.style.display = 'block'; }
             } else {
                 sessionStorage.setItem('wgz_isLoggedIn', 'true');
