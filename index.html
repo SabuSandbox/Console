@@ -391,7 +391,7 @@
         }
 
         async function handleLogin() {
-            // Added .trim() to ensure no spaces are accidentally typed in the login box
+            // Trim whitespace
             const email = document.getElementById('staff-email').value.trim(); 
             const pass = document.getElementById('staff-password').value;
             const errLabel = document.getElementById('login-error');
@@ -416,7 +416,7 @@
                         
                         // Captures 'location_id' perfectly
                         sessionStorage.setItem('wgz_locId', data.location_id || 'ALL'); 
-                        sessionStorage.setItem('wgz_role', data.role || 'master');
+                        sessionStorage.setItem('wgz_role', data.role || 'manager');
                         
                         checkLoginState();
                     } else throw new Error("Role profile not found. Please check Document ID.");
