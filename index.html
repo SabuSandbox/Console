@@ -22,93 +22,35 @@
 
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { color: #ffffff; min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 20px; overflow-x: hidden; background-color: #090014; user-select: none; -webkit-user-select: none; }
+        body { color: #ffffff; min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 20px; overflow-x: hidden; background-color: #05010a; user-select: none; -webkit-user-select: none; }
         input, select, textarea { user-select: auto; -webkit-user-select: auto; }
         .hidden { display: none !important; }
 
-        /* --- NEON CYBERPUNK GRID BACKGROUND --- */
-        #tech-background {
+        /* --- DEEP GALAXY & STARFIELD EFFECT --- */
+        #galaxy-background {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -2; 
-            background-color: #090014;
+            background-color: #05010a; 
             background-image: 
-                radial-gradient(circle at 50% 0%, #2a0052 0%, transparent 70%),
-                linear-gradient(rgba(0, 255, 255, 0.07) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 0, 255, 0.07) 1px, transparent 1px);
-            background-size: 100% 100%, 40px 40px, 40px 40px;
+                /* Glowing Nebula Clouds */
+                radial-gradient(circle at 15% 50%, rgba(255, 0, 255, 0.15) 0%, transparent 40%), 
+                radial-gradient(circle at 85% 20%, rgba(0, 255, 255, 0.15) 0%, transparent 50%), 
+                radial-gradient(circle at 50% 100%, rgba(138, 43, 226, 0.2) 0%, transparent 50%), 
+                /* Multi-Layered Stars */
+                radial-gradient(1.5px 1.5px at 20px 30px, #ffffff, rgba(0,0,0,0)), 
+                radial-gradient(2px 2px at 90px 40px, #e8d5ff, rgba(0,0,0,0)), 
+                radial-gradient(1px 1px at 160px 120px, #ffffff, rgba(0,0,0,0)), 
+                radial-gradient(2.5px 2.5px at 250px 150px, #00ffff, rgba(0,0,0,0)), 
+                radial-gradient(1px 1px at 300px 50px, #ffffff, rgba(0,0,0,0)), 
+                radial-gradient(2px 2px at 350px 250px, #ffffff, rgba(0,0,0,0));
+            background-repeat: repeat; 
+            background-size: 100% 100%, 100% 100%, 100% 100%, 250px 250px, 350px 350px, 400px 400px, 200px 200px, 450px 450px, 300px 300px;
+            animation: starDrift 100s linear infinite;
         }
 
-        /* --- INDEPENDENT ROAMING ARCADE ANIMATIONS --- */
-        #retro-animations { 
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
-            z-index: -1; pointer-events: none; opacity: 0.6; overflow: hidden;
+        @keyframes starDrift { 
+            0% { background-position: 0% 0%, 0% 0%, 0% 0%, 0px 0px, 0px 0px, 0px 0px, 0px 0px, 0px 0px, 0px 0px; } 
+            100% { background-position: 0% 0%, 0% 0%, 0% 0%, -250px -250px, -350px -350px, -400px -400px, -200px -200px, -450px -450px, -300px -300px; } 
         }
-        
-        .arcade-entity { position: absolute; font-size: 3rem; }
-
-        /* Pacman - Horizontal Left to Right */
-        .entity-pacman {
-            top: 40%; 
-            animation: moveLR 20s linear infinite; 
-            filter: drop-shadow(0 0 20px #ffcc00);
-        }
-        .pacman {
-            width: 0; height: 0; margin-top: 10px;
-            border-right: 22px solid transparent; border-top: 22px solid #ffcc00;
-            border-left: 22px solid #ffcc00; border-bottom: 22px solid #ffcc00;
-            border-radius: 50%; animation: chomp 0.3s ease-in-out infinite;
-        }
-
-        /* Blinky (Red) - Vertical Top to Bottom */
-        .entity-blinky { 
-            left: 15%; 
-            animation: moveTB 18s linear infinite 2s; 
-            filter: hue-rotate(0deg) saturate(4) drop-shadow(0 0 15px #ff003c); 
-        }   
-
-        /* Pinky (Pink) - Horizontal Right to Left */
-        .entity-pinky { 
-            bottom: 15%; 
-            animation: moveRL 22s linear infinite 5s; 
-            filter: hue-rotate(300deg) saturate(4) drop-shadow(0 0 15px #ff00ff); 
-        } 
-
-        /* Inky (Cyan) - Diagonal Top-Left to Bottom-Right */
-        .entity-inky { 
-            animation: diagTLBR 25s linear infinite; 
-            filter: hue-rotate(180deg) saturate(4) drop-shadow(0 0 15px #00ffff); 
-        } 
-
-        /* Clyde (Orange) - Vertical Bottom to Top */
-        .entity-clyde { 
-            right: 15%; 
-            animation: moveBT 20s linear infinite 10s; 
-            filter: hue-rotate(45deg) saturate(4) drop-shadow(0 0 15px #ff8800); 
-        }  
-
-        /* New Element 1: Space Invader - Top Sweeping Patrol */
-        .entity-invader {
-            top: 5%; left: -10vw;
-            animation: sweepLR 35s ease-in-out infinite alternate;
-            filter: hue-rotate(90deg) saturate(5) drop-shadow(0 0 20px #39ff14);
-        }
-
-        /* New Element 2: Rocket - Fast Vertical Shot */
-        .entity-ship {
-            left: 50%;
-            animation: rocketShoot 12s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite 8s;
-            filter: drop-shadow(0 0 15px #00ffff);
-            transform: rotate(-45deg);
-        }
-
-        /* Animation Keyframes */
-        @keyframes chomp { 0%, 100% { border-right: 22px solid transparent; } 50% { border-right: 22px solid #ffcc00; } }
-        @keyframes moveLR { 0% { left: -10vw; transform: scaleX(1); } 100% { left: 110vw; transform: scaleX(1); } }
-        @keyframes moveRL { 0% { left: 110vw; transform: scaleX(-1); } 100% { left: -10vw; transform: scaleX(-1); } }
-        @keyframes moveTB { 0% { top: -10vh; } 100% { top: 110vh; } }
-        @keyframes moveBT { 0% { top: 110vh; } 100% { top: -10vh; } }
-        @keyframes diagTLBR { 0% { top: -10vh; left: -10vw; } 100% { top: 110vh; left: 110vw; } }
-        @keyframes sweepLR { 0% { left: -10vw; } 100% { left: 110vw; } }
-        @keyframes rocketShoot { 0% { top: 110vh; } 100% { top: -20vh; } }
 
         /* --- Login Screen --- */
         #login-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
@@ -164,6 +106,7 @@
         .timer-safe { color: #00ffff; text-shadow: 0 0 15px rgba(0,255,255,0.6); } 
         .timer-warning { color: #ffcc00; text-shadow: 0 0 15px rgba(255,204,0,0.6); }
         .timer-critical { color: #ff4444; text-shadow: 0 0 20px rgba(255, 68, 68, 0.8); animation: blinker 1s linear infinite; }
+        @keyframes blinker { 50% { opacity: 0.4; } }
 
         /* --- View: Admin Tabs --- */
         .admin-nav { display: flex; gap: 15px; border-bottom: 2px solid rgba(0, 255, 255, 0.3); padding-bottom: 15px; margin-bottom: 20px; overflow-x: auto; }
@@ -235,18 +178,9 @@
 </head>
 <body>
 
+    <!-- DEEP SPACE GALAXY BACKGROUND -->
     <div id="tech-background"></div>
-    
-    <div id="retro-animations">
-        <!-- Independent Arcade Entities -->
-        <div class="arcade-entity entity-pacman"><div class="pacman"></div></div>
-        <div class="arcade-entity entity-blinky">👻</div>
-        <div class="arcade-entity entity-pinky">👻</div>
-        <div class="arcade-entity entity-inky">👻</div>
-        <div class="arcade-entity entity-clyde">👻</div>
-        <div class="arcade-entity entity-invader">👾</div>
-        <div class="arcade-entity entity-ship">🚀</div>
-    </div>
+    <div id="galaxy-background"></div>
 
     <!-- STAFF LOGIN OVERLAY -->
     <div id="login-screen">
@@ -255,7 +189,7 @@
             <h2 class="login-title">System Auth</h2>
             <input type="text" id="staff-username" class="themed-input" style="text-align:center;" placeholder="Username">
             <input type="password" id="staff-password" class="themed-input" style="text-align:center;" placeholder="Passcode">
-            <button class="action-button" style="font-size:1.1rem; padding:15px; margin-top:20px;" onclick="handleLogin()">ENTER ARCADE</button>
+            <button class="action-button" style="font-size:1.1rem; padding:15px; margin-top:20px;" onclick="handleLogin()">ENTER SERVER</button>
             <p id="login-error" style="color:#ff4444; font-size:0.85rem; font-weight:bold; display:none; text-align:center; text-shadow: 0 0 5px red;"></p>
         </div>
     </div>
