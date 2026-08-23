@@ -37,25 +37,20 @@
             background-size: 100% 100%, 40px 40px, 40px 40px;
         }
 
-        /* --- ZIG-ZAG ARCADE CHASE ANIMATION --- */
-        #arcade-track { 
+        /* --- INDEPENDENT ROAMING ARCADE ANIMATIONS --- */
+        #retro-animations { 
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
-            z-index: -1; pointer-events: none; opacity: 0.6; 
+            z-index: -1; pointer-events: none; opacity: 0.6; overflow: hidden;
         }
         
-        .arcade-entity { 
-            position: absolute; font-size: 3rem;
-            /* Both Pacman and Ghosts share the exact same zig-zag animation */
-            animation: zigzagChase 25s linear infinite; 
-        }
+        .arcade-entity { position: absolute; font-size: 3rem; }
 
-        /* Delays keep them perfectly spaced while tracing the exact same path */
-        .pacman-wrapper { animation-delay: -6s; filter: drop-shadow(0 0 20px #ffcc00); }
-        .ghost-blinky   { animation-delay: -5.3s; filter: hue-rotate(0deg) saturate(4) drop-shadow(0 0 15px #ff003c); }   
-        .ghost-pinky    { animation-delay: -4.6s; filter: hue-rotate(300deg) saturate(4) drop-shadow(0 0 15px #ff00ff); } 
-        .ghost-inky     { animation-delay: -3.9s; filter: hue-rotate(180deg) saturate(4) drop-shadow(0 0 15px #00ffff); } 
-        .ghost-clyde    { animation-delay: -3.2s; filter: hue-rotate(45deg) saturate(4) drop-shadow(0 0 15px #ff8800); }  
-        
+        /* Pacman - Horizontal Left to Right */
+        .entity-pacman {
+            top: 40%; 
+            animation: moveLR 20s linear infinite; 
+            filter: drop-shadow(0 0 20px #ffcc00);
+        }
         .pacman {
             width: 0; height: 0; margin-top: 10px;
             border-right: 22px solid transparent; border-top: 22px solid #ffcc00;
@@ -63,17 +58,57 @@
             border-radius: 50%; animation: chomp 0.3s ease-in-out infinite;
         }
 
-        /* The sweeping random zig-zag path across the screen */
-        @keyframes zigzagChase { 
-            0%   { left: -10vw; bottom: 10%; }
-            15%  { left: 10vw;  bottom: 60%; }
-            30%  { left: 30vw;  bottom: 20%; }
-            45%  { left: 50vw;  bottom: 80%; }
-            60%  { left: 70vw;  bottom: 30%; }
-            75%  { left: 90vw;  bottom: 70%; }
-            100% { left: 120vw; bottom: 40%; }
+        /* Blinky (Red) - Vertical Top to Bottom */
+        .entity-blinky { 
+            left: 15%; 
+            animation: moveTB 18s linear infinite 2s; 
+            filter: hue-rotate(0deg) saturate(4) drop-shadow(0 0 15px #ff003c); 
+        }   
+
+        /* Pinky (Pink) - Horizontal Right to Left */
+        .entity-pinky { 
+            bottom: 15%; 
+            animation: moveRL 22s linear infinite 5s; 
+            filter: hue-rotate(300deg) saturate(4) drop-shadow(0 0 15px #ff00ff); 
+        } 
+
+        /* Inky (Cyan) - Diagonal Top-Left to Bottom-Right */
+        .entity-inky { 
+            animation: diagTLBR 25s linear infinite; 
+            filter: hue-rotate(180deg) saturate(4) drop-shadow(0 0 15px #00ffff); 
+        } 
+
+        /* Clyde (Orange) - Vertical Bottom to Top */
+        .entity-clyde { 
+            right: 15%; 
+            animation: moveBT 20s linear infinite 10s; 
+            filter: hue-rotate(45deg) saturate(4) drop-shadow(0 0 15px #ff8800); 
+        }  
+
+        /* New Element 1: Space Invader - Top Sweeping Patrol */
+        .entity-invader {
+            top: 5%; left: -10vw;
+            animation: sweepLR 35s ease-in-out infinite alternate;
+            filter: hue-rotate(90deg) saturate(5) drop-shadow(0 0 20px #39ff14);
         }
+
+        /* New Element 2: Rocket - Fast Vertical Shot */
+        .entity-ship {
+            left: 50%;
+            animation: rocketShoot 12s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite 8s;
+            filter: drop-shadow(0 0 15px #00ffff);
+            transform: rotate(-45deg);
+        }
+
+        /* Animation Keyframes */
         @keyframes chomp { 0%, 100% { border-right: 22px solid transparent; } 50% { border-right: 22px solid #ffcc00; } }
+        @keyframes moveLR { 0% { left: -10vw; transform: scaleX(1); } 100% { left: 110vw; transform: scaleX(1); } }
+        @keyframes moveRL { 0% { left: 110vw; transform: scaleX(-1); } 100% { left: -10vw; transform: scaleX(-1); } }
+        @keyframes moveTB { 0% { top: -10vh; } 100% { top: 110vh; } }
+        @keyframes moveBT { 0% { top: 110vh; } 100% { top: -10vh; } }
+        @keyframes diagTLBR { 0% { top: -10vh; left: -10vw; } 100% { top: 110vh; left: 110vw; } }
+        @keyframes sweepLR { 0% { left: -10vw; } 100% { left: 110vw; } }
+        @keyframes rocketShoot { 0% { top: 110vh; } 100% { top: -20vh; } }
 
         /* --- Login Screen --- */
         #login-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
@@ -202,12 +237,15 @@
 
     <div id="tech-background"></div>
     
-    <div id="arcade-track">
-        <div class="arcade-entity pacman-wrapper"><div class="pacman"></div></div>
-        <div class="arcade-entity ghost-blinky">👻</div>
-        <div class="arcade-entity ghost-pinky">👻</div>
-        <div class="arcade-entity ghost-inky">👻</div>
-        <div class="arcade-entity ghost-clyde">👻</div>
+    <div id="retro-animations">
+        <!-- Independent Arcade Entities -->
+        <div class="arcade-entity entity-pacman"><div class="pacman"></div></div>
+        <div class="arcade-entity entity-blinky">👻</div>
+        <div class="arcade-entity entity-pinky">👻</div>
+        <div class="arcade-entity entity-inky">👻</div>
+        <div class="arcade-entity entity-clyde">👻</div>
+        <div class="arcade-entity entity-invader">👾</div>
+        <div class="arcade-entity entity-ship">🚀</div>
     </div>
 
     <!-- STAFF LOGIN OVERLAY -->
@@ -472,7 +510,7 @@
         }
 
         // ==========================================
-        // 4. AUTH & NAVIGATION
+        // 4. CUSTOM DATABASE LOGIN & NAVIGATION
         // ==========================================
         function checkLoginState() {
             const isLoggedIn = sessionStorage.getItem('wgz_isLoggedIn');
@@ -605,7 +643,7 @@
                     inUseGrid.appendChild(card);
                 } else {
                     card.innerHTML = `
-                        <div style="text-align:center; width:100%;"><div class="card-number" style="color: #666;">P${station.id}</div></div>
+                        <div style="text-align:center; width:100%;"><div class="card-number" style="color: #444;">P${station.id}</div></div>
                         <div style="width: 100%; display:flex; flex-direction:column; gap:8px;">
                             <button class="action-button success-btn small-btn" onclick="event.stopPropagation(); launchStationConsole(${station.id})">🚀 Initialize</button>
                             ${station.lastSessionLogId ? `<button class="action-button ghost-btn small-btn" onclick="event.stopPropagation(); renderBillReceipt('${station.lastSessionLogId}', false)">📜 Last Bill</button>` : ''}
