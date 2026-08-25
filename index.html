@@ -22,7 +22,7 @@
 
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { color: #ffffff; min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 20px; overflow-x: hidden; background-color: #05010a; user-select: none; -webkit-user-select: none; }
+        body { color: #ffffff; min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 20px; overflow-x: hidden; background-color: #090014; user-select: none; -webkit-user-select: none; }
         input, select, textarea { user-select: auto; -webkit-user-select: auto; }
         .hidden { display: none !important; }
 
@@ -44,7 +44,6 @@
             background-size: 100% 100%, 100% 100%, 100% 100%, 250px 250px, 350px 350px, 400px 400px, 200px 200px, 450px 450px, 300px 300px;
             animation: starDrift 100s linear infinite;
         }
-
         @keyframes starDrift { 
             0% { background-position: 0% 0%, 0% 0%, 0% 0%, 0px 0px, 0px 0px, 0px 0px, 0px 0px, 0px 0px, 0px 0px; } 
             100% { background-position: 0% 0%, 0% 0%, 0% 0%, -250px -250px, -350px -350px, -400px -400px, -200px -200px, -450px -450px, -300px -300px; } 
@@ -61,6 +60,10 @@
         .themed-input:focus { border-color: #00ffff; box-shadow: 0 0 15px rgba(0,255,255,0.5), inset 0 0 10px rgba(0,255,255,0.3); }
         .themed-input::placeholder { color: #888; font-weight: normal; }
         .themed-input option, .themed-input optgroup { background-color: #1a002a; color: #00ffff; }
+        
+        /* Checkboxes */
+        .checkbox-label { display: flex; align-items: center; gap: 10px; color: #ccc; font-size: 0.85rem; cursor: pointer; }
+        .checkbox-label input { transform: scale(1.4); accent-color: #00ffff; cursor: pointer; }
 
         /* --- Global Layout & Glassmorphism --- */
         .glass-panel { background: rgba(15, 5, 25, 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(0, 255, 255, 0.2); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255,0,255,0.1); }
@@ -73,10 +76,8 @@
         .header-subtitle { font-size: 0.9rem; color: #ff00ff; letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; font-weight: bold; text-shadow: 0 0 10px rgba(255,0,255,0.6); }
         
         .location-switcher { background: rgba(0,0,0,0.8); border: 1px solid #00ffff; color: #00ffff; padding: 8px 15px; border-radius: 8px; font-weight: bold; outline: none; box-shadow: 0 0 10px rgba(0,255,255,0.2); }
-        .location-switcher:focus { border-color: #ff00ff; box-shadow: 0 0 15px rgba(255,0,255,0.4); }
-        .location-switcher option { background: #1a002a; }
 
-        /* --- Dropdown Menu --- */
+        /* --- Dropdown Menus --- */
         .dropdown-container { position: relative; }
         .menu-btn { background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(8px); border: 1px solid #ff00ff; padding: 10px 18px; border-radius: 8px; color: #ff00ff; font-size: 1.4rem; cursor: pointer; display: flex; align-items: center; transition: 0.2s; box-shadow: 0 0 10px rgba(255,0,255,0.2); }
         .menu-btn:hover { border-color: #00ffff; color: #00ffff; box-shadow: 0 0 15px rgba(0,255,255,0.5); }
@@ -86,6 +87,15 @@
         .dropdown-item:hover { background: rgba(255, 0, 255, 0.2); color: #fff; text-shadow: 0 0 10px #ff00ff; }
         .logout-item { color: #ff4444; border-bottom: none; }
         .logout-item:hover { background: rgba(255, 0, 0, 0.2); color: #ff4444; text-shadow: 0 0 10px #ff4444; }
+
+        /* 3 Dots Menu for User List */
+        .action-dots-btn { background: none; border: none; color: #00ffff; font-size: 1.5rem; cursor: pointer; padding: 0 10px; transition: 0.2s; }
+        .action-dots-btn:hover { color: #fff; text-shadow: 0 0 10px #00ffff; }
+        .action-menu { display: none; position: absolute; right: 30px; background: #0b001a; border: 1px solid #00ffff; border-radius: 8px; z-index: 100; flex-direction: column; box-shadow: 0 10px 20px rgba(0,0,0,0.8); }
+        .action-menu.show { display: flex; }
+        .action-menu button { background: none; border: none; color: #fff; padding: 12px 15px; text-align: left; cursor: pointer; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; border-bottom: 1px solid rgba(0,255,255,0.2); transition: 0.2s; }
+        .action-menu button:hover { background: rgba(0,255,255,0.2); text-shadow: 0 0 8px #00ffff; }
+        .action-menu button:last-child { border-bottom: none; }
 
         /* --- Full Page Views --- */
         .view-section { border-radius: 30px; padding: 40px; display: flex; flex-direction: column; gap: 30px; position: relative; z-index: 10; min-height: 70vh; animation: fadeIn 0.3s ease; border: 1px solid rgba(255,0,255,0.2); box-shadow: inset 0 0 30px rgba(0,255,255,0.05); }
@@ -111,10 +121,8 @@
         .admin-tab-btn { background: rgba(0,0,0,0.6); color: #00ffff; border: 1px solid rgba(0,255,255,0.3); padding: 12px 25px; border-radius: 10px; font-family: 'Orbitron', sans-serif; font-size: 0.9rem; font-weight: bold; text-transform: uppercase; cursor: pointer; transition: 0.3s; white-space: nowrap; }
         .admin-tab-btn:hover { background: rgba(0, 255, 255, 0.1); box-shadow: 0 0 15px rgba(0,255,255,0.4); }
         .admin-tab-btn.active { background: rgba(255, 0, 255, 0.2); color: #fff; border-color: #ff00ff; box-shadow: 0 0 20px rgba(255, 0, 255, 0.5); text-shadow: 0 0 10px #fff; }
-        
         .admin-tab-content { display: none; animation: fadeIn 0.3s ease; }
         .admin-tab-content.active { display: block; }
-
         .admin-row { display: grid; gap: 15px; align-items: center; margin-bottom: 12px; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 12px; border: 1px solid rgba(0,255,255,0.2); box-shadow: inset 0 0 10px rgba(255,0,255,0.1); }
         
         /* Global Save Bar */
@@ -143,16 +151,12 @@
         .action-button { width: 100%; background: linear-gradient(90deg, #8a2be2, #ff00ff); border: 1px solid #00ffff; border-radius: 8px; padding: 12px; color: white; font-family: 'Orbitron', sans-serif; font-weight: 700; text-transform: uppercase; cursor: pointer; transition: 0.3s; letter-spacing: 2px; box-shadow: 0 0 15px rgba(255,0,255,0.4); text-shadow: 0 0 5px #fff; }
         .action-button:hover { background: linear-gradient(90deg, #ff00ff, #00ffff); border-color: #fff; box-shadow: 0 0 25px rgba(0,255,255,0.6); transform: translateY(-2px); }
         .action-button.small-btn { padding: 10px; font-size: 0.8rem; border-radius: 6px; letter-spacing: 1px; }
-        
         .quick-btn { background: rgba(0,0,0,0.6); border: 1px solid #00ffff; flex: 1; color: #00ffff; box-shadow: none; text-shadow: none; }
         .quick-btn:hover { background: rgba(0, 255, 255, 0.2); border-color: #ff00ff; color: #fff; box-shadow: 0 0 15px rgba(255,0,255,0.4); text-shadow: 0 0 10px #fff; }
-        
         .release-button { background: linear-gradient(90deg, #cc0000, #ff0000); border-color: #ff4444; box-shadow: 0 0 15px rgba(255,0,0,0.5); }
         .release-button:hover { background: linear-gradient(90deg, #ff0000, #ff6666); box-shadow: 0 0 25px rgba(255,0,0,0.8); }
-        
         .success-btn { background: linear-gradient(90deg, #00cc00, #39ff14); color: #000; border: 1px solid #fff; box-shadow: 0 0 15px rgba(57,255,20,0.5); text-shadow: none; }
         .success-btn:hover { background: linear-gradient(90deg, #39ff14, #00ffff); color: #000; box-shadow: 0 0 25px rgba(0,255,255,0.8); }
-        
         .ghost-btn { background: transparent; border: 1px solid #ff00ff; color: #ff00ff; box-shadow: none; text-shadow: 0 0 5px #ff00ff; }
         .ghost-btn:hover { border-color: #00ffff; color: #00ffff; background: rgba(0,255,255,0.1); box-shadow: 0 0 15px rgba(0,255,255,0.3); text-shadow: 0 0 10px #00ffff; }
 
@@ -173,6 +177,7 @@
 </head>
 <body>
 
+    <!-- DEEP SPACE GALAXY BACKGROUND -->
     <div id="tech-background"></div>
     <div id="galaxy-background"></div>
 
@@ -195,20 +200,31 @@
             <p style="color: #aaa; font-size: 0.8rem; text-align: center; margin-bottom: 10px;">Security dictates you must establish a new passcode.</p>
             <input type="password" id="new-pwd-1" class="themed-input" style="text-align:center;" placeholder="New Passcode">
             <input type="password" id="new-pwd-2" class="themed-input" style="text-align:center;" placeholder="Confirm Passcode">
-            <button class="action-button success-btn" style="font-size:1rem; padding:12px; margin-top:10px;" onclick="submitNewPassword()">LOCK IN SECRETS</button>
-            <button class="action-button ghost-btn small-btn" onclick="handleLogout()">Cancel & Logout</button>
+            <button class="action-button success-btn" style="font-size:1rem; padding:12px; margin-top:10px;" onclick="submitNewPassword()">RESET PASSCODE</button>
+            <button class="action-button ghost-btn small-btn" onclick="cancelPasswordChange()">Cancel</button>
             <p id="pwd-error" style="color:#ff4444; font-size:0.85rem; font-weight:bold; display:none; text-align:center;"></p>
+        </div>
+    </div>
+
+    <!-- RESET PASSWORD PROMPT OVERLAY (FOR MASTER ADMIN) -->
+    <div id="reset-prompt-screen" class="fullscreen-overlay hidden">
+        <div class="login-box glass-panel" style="max-width: 350px;">
+            <h2 class="login-title" style="font-size: 1.2rem; color: #ff00ff;">Force Pwd Reset</h2>
+            <p style="color: #aaa; font-size: 0.75rem; text-align: center;">Enter a temporary passcode. The user will be forced to change it on next login.</p>
+            <input type="password" id="master-temp-pwd" class="themed-input" style="text-align:center;" placeholder="Temp Passcode">
+            <button class="action-button release-button" style="font-size:0.9rem; padding:10px; margin-top:10px;" onclick="confirmMasterReset()">FORCE RESET</button>
+            <button class="action-button ghost-btn small-btn" onclick="closeResetPrompt()">Cancel</button>
         </div>
     </div>
 
     <!-- MAIN APP DASHBOARD WRAPPER -->
     <div class="dashboard-wrapper hidden" id="main-app">
         <header class="header-panel glass-panel">
-            <div class="header-brand" onclick="navigateTo('stations')">
+            <div class="header-brand" onclick="navigateHome()">
                 <img src="wgz_prple_logo_3.png" alt="Logo" class="header-logo-small">
                 <div>
                     <h1 class="header-title">Wonder Gamezone</h1>
-                    <div class="header-subtitle" id="header-loc-title">Loading Branch...</div>
+                    <div class="header-subtitle" id="header-loc-title">Loading...</div>
                 </div>
             </div>
             
@@ -219,19 +235,13 @@
 
                 <div class="dropdown-container">
                     <button class="menu-btn" onclick="toggleMenu(event)">☰</button>
-                    <div class="dropdown-content glass-panel" id="mainMenu">
-                        <div class="dropdown-item" onclick="navigateTo('stations')">🎮 Live Stations</div>
-                        <div class="dropdown-item" onclick="navigateTo('admin')">⚙️ Admin Cockpit</div>
-                        <div class="dropdown-item" onclick="navigateTo('logs')">📜 Session Register</div>
-                        <div class="dropdown-item hidden" id="master-portal-btn" onclick="navigateTo('master')">👑 Master Portal</div>
-                        <div class="dropdown-item" onclick="showChangePasswordScreen(false)">🔑 Change Passcode</div>
-                        <div class="dropdown-item logout-item" onclick="handleLogout()">🚪 Logout App</div>
-                    </div>
+                    <!-- Dynamically populated based on role -->
+                    <div class="dropdown-content glass-panel" id="mainMenu"></div>
                 </div>
             </div>
         </header>
 
-        <!-- VIEW 1: STATIONS DASHBOARD -->
+        <!-- VIEW 1: STATIONS DASHBOARD (HIDDEN FROM MASTER) -->
         <main id="view-stations" class="view-section glass-panel">
             <div>
                 <div class="section-title">🎮 Active Stations</div>
@@ -243,14 +253,13 @@
             </div>
         </main>
 
-        <!-- VIEW 2: ADMIN COCKPIT -->
+        <!-- VIEW 2: ADMIN COCKPIT (HIDDEN FROM MASTER) -->
         <main id="view-admin" class="view-section glass-panel hidden">
             <div class="view-header">
                 <h2 class="section-title" style="font-size: 1.8rem; margin:0; border:none; text-shadow: 0 0 15px #00ffff;">⚙️ Admin Cockpit</h2>
-                <button class="action-button ghost-btn small-btn" style="width: auto; padding: 10px 20px;" onclick="navigateTo('stations')">← Back to Stations</button>
+                <button class="action-button ghost-btn small-btn" style="width: auto; padding: 10px 20px;" onclick="navigateHome()">← Back to Stations</button>
             </div>
 
-            <!-- Admin Tabs Navigation -->
             <div class="admin-nav">
                 <button class="admin-tab-btn active" id="btn-tab-finance" onclick="switchAdminTab('finances')">Financial Ledger</button>
                 <button class="admin-tab-btn" id="btn-tab-rates" onclick="switchAdminTab('rates')">Station Rates</button>
@@ -305,53 +314,79 @@
             </div>
         </main>
 
-        <!-- VIEW 3: SESSION REGISTER -->
+        <!-- VIEW 3: SESSION REGISTER (HIDDEN FROM MASTER) -->
         <main id="view-logs" class="view-section glass-panel hidden">
             <div class="view-header">
                 <h2 class="section-title" style="font-size: 1.8rem; margin:0; border:none; text-shadow: 0 0 15px #00ffff;">📜 Session Register</h2>
-                <button class="action-button ghost-btn small-btn" style="width: auto; padding: 10px 20px;" onclick="navigateTo('stations')">← Back to Stations</button>
+                <button class="action-button ghost-btn small-btn" style="width: auto; padding: 10px 20px;" onclick="navigateHome()">← Back to Stations</button>
             </div>
             <div id="logs-full-table"></div>
         </main>
 
-        <!-- VIEW 4: MASTER PORTAL -->
+        <!-- VIEW 4: MASTER PORTAL (EXCLUSIVE TO MASTER) -->
         <main id="view-master" class="view-section glass-panel hidden">
-            <div class="view-header">
-                <h2 class="section-title" style="font-size: 1.8rem; margin:0; border:none; text-shadow: 0 0 15px #ff00ff; color:#ff00ff;">👑 Master Portal</h2>
-                <button class="action-button ghost-btn small-btn" style="width: auto; padding: 10px 20px;" onclick="navigateTo('stations')">← Back to Stations</button>
+            <div class="view-header" style="justify-content: flex-start; gap: 20px;">
+                <h2 class="section-title" style="font-size: 2rem; margin:0; border:none; text-shadow: 0 0 15px #ff00ff; color:#ff00ff;">👑 Master Command Portal</h2>
             </div>
 
-            <!-- Master Tabs -->
-            <div class="admin-nav">
-                <button class="admin-tab-btn active" id="btn-tab-users" onclick="switchMasterTab('users')">Manage Users</button>
-                <button class="admin-tab-btn" id="btn-tab-locations" onclick="switchMasterTab('locations')">Manage Locations</button>
+            <!-- Master Tabs Navigation -->
+            <div class="admin-nav" style="border-bottom-color: rgba(255,0,255,0.3);">
+                <button class="admin-tab-btn active" id="btn-tab-users" onclick="switchMasterTab('users')">👥 User Management</button>
+                <button class="admin-tab-btn" id="btn-tab-locations" onclick="switchMasterTab('locations')">📍 Location Management</button>
+                <button class="admin-tab-btn" id="btn-tab-roles" onclick="switchMasterTab('roles')">🛡️ Role Management</button>
             </div>
 
             <!-- Tab: Users -->
             <div id="tab-users" class="admin-tab-content active">
-                <div class="section-title" style="font-size:1rem;">Add New User Account</div>
-                <div class="admin-row" style="grid-template-columns: 1fr 1fr 1fr auto;">
-                    <input type="text" id="new_user_name" class="themed-input" placeholder="Username">
-                    <select id="new_user_role" class="themed-input"><option value="manager">Manager</option><option value="master">Master Admin</option></select>
-                    <select id="new_user_loc" class="themed-input" title="Target Location"></select>
-                    <button class="action-button success-btn small-btn" style="width:auto; padding:0 30px;" onclick="createNewUser()">Create</button>
+                <div class="section-title" style="font-size:1rem; color:#ff00ff; text-shadow:none;">Provision New User</div>
+                <div class="admin-row" style="grid-template-columns: 1fr 1fr 1fr auto; border-color: rgba(255,0,255,0.2);">
+                    <input type="text" id="new_user_name" class="themed-input" placeholder="Username (e.g. staff_pune)">
+                    <select id="new_user_role" class="themed-input"></select>
+                    <select id="new_user_loc" class="themed-input"></select>
+                    <button class="action-button success-btn small-btn" style="width:auto; padding:0 30px;" onclick="createNewUser()">Create User</button>
                 </div>
-                <p style="color:#aaa; font-size:0.7rem; margin-top:-5px; margin-bottom:20px;">*New accounts are created with default passcode: <strong>admin123</strong> and will be forced to change it upon first login.</p>
+                <p style="color:#aaa; font-size:0.75rem; margin-top:-5px; margin-bottom:25px;">*New accounts are created with default passcode: <strong style="color:#00ffff;">admin123</strong>. They will be forced to change it on first login.</p>
 
-                <div class="section-title" style="font-size:1rem;">System Accounts</div>
+                <div class="section-title" style="font-size:1rem; color:#ff00ff; text-shadow:none;">System Roster</div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 80px 40px; gap:15px; padding:0 15px; margin-bottom:10px;">
+                    <span style="color:#ff00ff; font-size:0.75rem; font-weight:bold; text-transform:uppercase;">Username</span>
+                    <span style="color:#ff00ff; font-size:0.75rem; font-weight:bold; text-transform:uppercase;">Role</span>
+                    <span style="color:#ff00ff; font-size:0.75rem; font-weight:bold; text-transform:uppercase;">Location</span>
+                    <span style="color:#ff00ff; font-size:0.75rem; font-weight:bold; text-transform:uppercase;">Status</span>
+                    <span></span>
+                </div>
                 <div id="master-users-list"></div>
             </div>
 
             <!-- Tab: Locations -->
             <div id="tab-locations" class="admin-tab-content">
-                <div class="section-title" style="font-size:1rem;">Add New Location</div>
-                <div class="admin-row" style="grid-template-columns: 1fr 1fr auto;">
+                <div class="section-title" style="font-size:1rem; color:#ff00ff; text-shadow:none;">Establish New Location</div>
+                <div class="admin-row" style="grid-template-columns: 1fr 1fr auto; border-color: rgba(255,0,255,0.2);">
                     <input type="text" id="new_loc_id" class="themed-input" placeholder="Location ID (e.g. loc_pune_01)">
-                    <input type="text" id="new_loc_name" class="themed-input" placeholder="Display Name (e.g. Pune 01)">
-                    <button class="action-button success-btn small-btn" style="width:auto; padding:0 30px;" onclick="createNewLocation()">Establish Location</button>
+                    <input type="text" id="new_loc_name" class="themed-input" placeholder="Display Name (e.g. Pune City 01)">
+                    <button class="action-button success-btn small-btn" style="width:auto; padding:0 30px;" onclick="createNewLocation()">Establish</button>
                 </div>
-                <div class="section-title" style="font-size:1rem; margin-top:30px;">Active System Locations</div>
+                <div class="section-title" style="font-size:1rem; margin-top:30px; color:#ff00ff; text-shadow:none;">Active Branches</div>
                 <div id="master-locations-list" style="display:grid; gap:10px;"></div>
+            </div>
+
+            <!-- Tab: Roles -->
+            <div id="tab-roles" class="admin-tab-content">
+                <div class="section-title" style="font-size:1rem; color:#ff00ff; text-shadow:none;">Define New Role Policy</div>
+                <div class="admin-row" style="grid-template-columns: 1fr; border-color: rgba(255,0,255,0.2);">
+                    <input type="text" id="new_role_name" class="themed-input" placeholder="Role Name (e.g. shift_manager)">
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-top:10px; background:rgba(0,0,0,0.4); padding:15px; border-radius:8px;">
+                        <label class="checkbox-label"><input type="checkbox" id="perm_live_manage"> Live Station: Make Entry & Manage</label>
+                        <label class="checkbox-label"><input type="checkbox" id="perm_live_end"> Live Station: End Session</label>
+                        <label class="checkbox-label"><input type="checkbox" id="perm_ledger"> Overview: Financial Ledger</label>
+                        <label class="checkbox-label"><input type="checkbox" id="perm_station_rates"> Station: Add New / Maintain Rates</label>
+                        <label class="checkbox-label"><input type="checkbox" id="perm_inventory"> Inventory: Add Item / Maintain Stock</label>
+                    </div>
+                    <button class="action-button success-btn small-btn" style="width:200px; margin-top:10px;" onclick="createNewRole()">Save Role Policy</button>
+                </div>
+                
+                <div class="section-title" style="font-size:1rem; margin-top:30px; color:#ff00ff; text-shadow:none;">System Role Policies</div>
+                <div id="master-roles-list" style="display:grid; gap:10px;"></div>
             </div>
         </main>
 
@@ -406,6 +441,8 @@
         let loggedInUserId = null;
         
         let systemLocations = []; 
+        let systemRoles = [];
+        let forceResetTargetUser = null; // Temp holder for master reset
 
         let inventoryData = [
             { id: 'inv_1', name: 'Classic Burger', category: 'Food', price: 7.00, stock: 10, isShortcut: false },
@@ -465,8 +502,10 @@
                         stationsData.push(newSt);
                     }
                 });
-                refreshDashboardVisuals();
-                if(document.getElementById('view-admin').classList.contains('hidden') === false) renderAdminView();
+                if(currentUserRole !== 'master') {
+                    refreshDashboardVisuals();
+                    if(document.getElementById('view-admin').classList.contains('hidden') === false) renderAdminView();
+                }
             });
         }
 
@@ -490,48 +529,68 @@
             const savedExp = localStorage.getItem(`wgz_expenses_${currentLocationId}`);
             if (savedExp) expenseLogs = JSON.parse(savedExp);
 
-            refreshDashboardVisuals(); 
+            if(currentUserRole !== 'master') refreshDashboardVisuals(); 
         }
 
-        // --- Global Location Fetcher ---
-        async function fetchSystemLocations() {
+        async function fetchSystemConfig() {
             if (!db) return;
             try {
-                const locSnap = await db.collection('system_config').doc('locations').get();
-                if(locSnap.exists) {
-                    systemLocations = locSnap.data().list || [];
-                    populateLocationDropdowns();
-                } else {
-                    // Fallback defaults if document doesn't exist yet
-                    systemLocations = [
-                        {id: 'loc_delhi_01', name: 'Delhi 01'},
-                        {id: 'loc_gurugram_01', name: 'Gurugram 01'},
-                        {id: 'loc_mumbai_01', name: 'Mumbai 01'}
-                    ];
+                const configSnap = await db.collection('system_config').get();
+                configSnap.forEach(doc => {
+                    if(doc.id === 'locations') systemLocations = doc.data().list || [];
+                    if(doc.id === 'roles') systemRoles = doc.data().list || [];
+                });
+                
+                // Fallbacks if not found
+                if(systemLocations.length === 0) {
+                    systemLocations = [{id: 'loc_delhi_01', name: 'Delhi 01'}];
                     await db.collection('system_config').doc('locations').set({ list: systemLocations });
-                    populateLocationDropdowns();
                 }
-            } catch(e) { console.error("Error fetching locations:", e); }
+                if(systemRoles.length === 0) {
+                    systemRoles = [{name: 'manager', perms: {}}];
+                    await db.collection('system_config').doc('roles').set({ list: systemRoles });
+                }
+
+                populateMasterDropdowns();
+            } catch(e) { console.error("Error fetching config:", e); }
         }
 
-        function populateLocationDropdowns() {
-            const masterSwitcher = document.getElementById('master-location-switcher');
-            const userLocSelect = document.getElementById('new_user_loc');
+        function populateMasterDropdowns() {
+            const locOptions = systemLocations.map(l => `<option value="${l.id}">${l.name}</option>`).join('');
+            const roleOptions = `<option value="master">master</option>` + systemRoles.map(r => `<option value="${r.name}">${r.name}</option>`).join('');
             
-            let optionsHTML = systemLocations.map(loc => `<option value="${loc.id}">${loc.name}</option>`).join('');
+            const switcher = document.getElementById('master-location-switcher');
+            if(switcher) { switcher.innerHTML = locOptions; if(currentLocationId !== 'ALL') switcher.value = currentLocationId; }
             
-            if(masterSwitcher) {
-                masterSwitcher.innerHTML = optionsHTML;
-                if(currentLocationId !== 'ALL') masterSwitcher.value = currentLocationId;
-            }
-            if(userLocSelect) {
-                userLocSelect.innerHTML = `<option value="ALL">ALL (Master Access)</option>` + optionsHTML;
-            }
+            const uLoc = document.getElementById('new_user_loc');
+            if(uLoc) uLoc.innerHTML = `<option value="ALL">ALL (Master Access)</option>` + locOptions;
+            
+            const uRole = document.getElementById('new_user_role');
+            if(uRole) uRole.innerHTML = roleOptions;
         }
 
         // ==========================================
-        // 4. CUSTOM DATABASE LOGIN & SECURITY
+        // 4. CUSTOM LOGIN, SECURITY & NAVIGATION
         // ==========================================
+        function buildMenu() {
+            const menu = document.getElementById('mainMenu');
+            if (currentUserRole === 'master') {
+                menu.innerHTML = `
+                    <div class="dropdown-item" onclick="navigateTo('master')">👑 Master Portal</div>
+                    <div class="dropdown-item" onclick="showChangePasswordScreen(false)">🔑 Change Passcode</div>
+                    <div class="dropdown-item logout-item" onclick="handleLogout()">🚪 Disconnect</div>
+                `;
+            } else {
+                menu.innerHTML = `
+                    <div class="dropdown-item" onclick="navigateTo('stations')">🎮 Live Stations</div>
+                    <div class="dropdown-item" onclick="navigateTo('admin')">⚙️ Admin Cockpit</div>
+                    <div class="dropdown-item" onclick="navigateTo('logs')">📜 Session Register</div>
+                    <div class="dropdown-item" onclick="showChangePasswordScreen(false)">🔑 Change Passcode</div>
+                    <div class="dropdown-item logout-item" onclick="handleLogout()">🚪 Disconnect</div>
+                `;
+            }
+        }
+
         function checkLoginState() {
             const isLoggedIn = sessionStorage.getItem('wgz_isLoggedIn');
             if (isLoggedIn === 'true') {
@@ -543,19 +602,19 @@
                 document.getElementById('change-password-screen').classList.add('hidden');
                 document.getElementById('main-app').classList.remove('hidden');
                 
-                fetchSystemLocations();
+                fetchSystemConfig();
+                buildMenu();
 
                 if (currentUserRole === 'master') {
-                    document.getElementById('master-location-switcher').classList.remove('hidden');
-                    document.getElementById('master-portal-btn').classList.remove('hidden');
+                    document.getElementById('master-location-switcher').classList.add('hidden'); // Master doesn't need to switch locs to see their portal
+                    document.getElementById('header-loc-title').textContent = `SYSTEM OVERLORD`;
+                    navigateTo('master');
                 } else {
                     document.getElementById('master-location-switcher').classList.add('hidden');
-                    document.getElementById('master-portal-btn').classList.add('hidden');
+                    document.getElementById('header-loc-title').textContent = `Branch: ${currentLocationId.replace('loc_', '').toUpperCase()}`;
+                    loadLocalFallback(); bootCloudListeners(); 
+                    navigateTo('stations');
                 }
-
-                document.getElementById('header-loc-title').textContent = `Branch: ${currentLocationId.replace('loc_', '').toUpperCase()}`;
-                loadLocalFallback(); bootCloudListeners(); 
-                navigateTo('stations');
             } else {
                 document.getElementById('login-screen').classList.remove('hidden');
                 document.getElementById('change-password-screen').classList.add('hidden');
@@ -572,22 +631,16 @@
 
             if (db) {
                 try {
-                    // Step 1: Find User by Username
+                    // Check username first
                     const userQuery = await db.collection('users').where('username', '==', username).get();
-                    
                     if (!userQuery.empty) {
                         const userDoc = userQuery.docs[0];
                         const data = userDoc.data();
                         const docId = userDoc.id;
 
-                        // Step 2: Check if Locked
-                        if (data.isLocked) {
-                            throw new Error("ACCOUNT LOCKED. Contact Master Admin.");
-                        }
+                        if (data.isLocked) throw new Error("ACCOUNT LOCKED. Contact Master Admin.");
 
-                        // Step 3: Check Password
                         if (data.password === pass) {
-                            // Reset failed attempts on success
                             if(data.failedAttempts > 0) await db.collection('users').doc(docId).update({ failedAttempts: 0 });
 
                             sessionStorage.setItem('wgz_isLoggedIn', 'true');
@@ -595,11 +648,8 @@
                             sessionStorage.setItem('wgz_locId', data.location_id || 'ALL'); 
                             sessionStorage.setItem('wgz_role', data.role || 'manager');
                             
-                            if (data.requiresPasswordChange) {
-                                showChangePasswordScreen(true);
-                            } else {
-                                checkLoginState();
-                            }
+                            if (data.requiresPasswordChange) showChangePasswordScreen(true);
+                            else checkLoginState();
                         } else {
                             // Incorrect Password -> Increment Failures
                             let attempts = (data.failedAttempts || 0) + 1;
@@ -614,15 +664,16 @@
             }
         }
 
-        function showChangePasswordScreen(isForced) {
+        let isForcedChange = false;
+        function showChangePasswordScreen(forced) {
+            isForcedChange = forced;
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('main-app').classList.add('hidden');
             document.getElementById('change-password-screen').classList.remove('hidden');
             
             const err = document.getElementById('pwd-error');
-            err.style.display = 'block';
-            err.style.color = '#ffcc00';
-            err.textContent = isForced ? "Your account requires a mandatory password update." : "Enter a new secure passcode.";
+            err.style.display = 'block'; err.style.color = '#00ffff';
+            err.textContent = forced ? "Mandatory Update: You must set a new passcode." : "Enter a new secure passcode.";
         }
 
         async function submitNewPassword() {
@@ -636,23 +687,16 @@
             if(p1.length < 6) { errLabel.textContent = "Passcode must be at least 6 characters."; errLabel.style.color='#ff4444'; return; }
 
             try {
-                await db.collection('users').doc(docId).update({
-                    password: p1,
-                    requiresPasswordChange: false
-                });
+                await db.collection('users').doc(docId).update({ password: p1, requiresPasswordChange: false });
                 alert("Passcode updated securely.");
-                checkLoginState(); // Will now route to dashboard
-            } catch (e) {
-                errLabel.textContent = "System Error updating passcode."; errLabel.style.color='#ff4444';
-            }
+                document.getElementById('new-pwd-1').value = ''; document.getElementById('new-pwd-2').value = '';
+                checkLoginState();
+            } catch (e) { errLabel.textContent = "System Error updating passcode."; errLabel.style.color='#ff4444'; }
         }
 
-        function switchLocation(newLocId) {
-            if(unsubscribeStations) unsubscribeStations();
-            currentLocationId = newLocId;
-            sessionStorage.setItem('wgz_locId', newLocId);
-            document.getElementById('header-loc-title').textContent = `Branch: ${systemLocations.find(l=>l.id===newLocId)?.name || newLocId}`;
-            loadLocalFallback(); bootCloudListeners(); navigateTo('stations');
+        function cancelPasswordChange() {
+            if(isForcedChange) handleLogout();
+            else checkLoginState();
         }
 
         function handleLogout() {
@@ -662,7 +706,6 @@
             document.getElementById('change-password-screen').classList.add('hidden');
             document.getElementById('login-screen').classList.remove('hidden');
             
-            // Clear inputs
             document.getElementById('staff-username').value = '';
             document.getElementById('staff-password').value = '';
             document.getElementById('new-pwd-1').value = '';
@@ -671,6 +714,11 @@
         }
 
         // --- View Controller ---
+        function navigateHome() {
+            if(currentUserRole === 'master') navigateTo('master');
+            else navigateTo('stations');
+        }
+
         function navigateTo(viewId) {
             document.getElementById('mainMenu').classList.remove('show');
             document.getElementById('view-stations').classList.add('hidden');
@@ -679,45 +727,18 @@
             document.getElementById('view-master').classList.add('hidden');
             document.getElementById('global-save-bar').classList.remove('active');
 
-            if(viewId === 'stations') {
-                document.getElementById('view-stations').classList.remove('hidden');
-                refreshDashboardVisuals();
-            } else if (viewId === 'admin') {
-                document.getElementById('view-admin').classList.remove('hidden');
-                renderAdminView();
-            } else if (viewId === 'logs') {
-                document.getElementById('view-logs').classList.remove('hidden');
-                renderLogsView();
-            } else if (viewId === 'master' && currentUserRole === 'master') {
+            if(viewId === 'master' && currentUserRole === 'master') {
                 document.getElementById('view-master').classList.remove('hidden');
                 renderMasterView();
+            } else if(currentUserRole !== 'master') {
+                if(viewId === 'stations') { document.getElementById('view-stations').classList.remove('hidden'); refreshDashboardVisuals(); }
+                else if (viewId === 'admin') { document.getElementById('view-admin').classList.remove('hidden'); renderAdminView(); }
+                else if (viewId === 'logs') { document.getElementById('view-logs').classList.remove('hidden'); renderLogsView(); }
             }
         }
 
-        function switchAdminTab(tabId) {
-            document.getElementById('btn-tab-finance').classList.remove('active');
-            document.getElementById('btn-tab-rates').classList.remove('active');
-            document.getElementById('btn-tab-inventory').classList.remove('active');
-            document.getElementById('tab-finances').classList.remove('active');
-            document.getElementById('tab-rates').classList.remove('active');
-            document.getElementById('tab-inventory').classList.remove('active');
-            
-            document.getElementById(`btn-tab-${tabId}`).classList.add('active');
-            document.getElementById(`tab-${tabId}`).classList.add('active');
-        }
-
-        function switchMasterTab(tabId) {
-            document.getElementById('btn-tab-users').classList.remove('active');
-            document.getElementById('btn-tab-locations').classList.remove('active');
-            document.getElementById('tab-users').classList.remove('active');
-            document.getElementById('tab-locations').classList.remove('active');
-            
-            document.getElementById(`btn-tab-${tabId}`).classList.add('active');
-            document.getElementById(`tab-${tabId}`).classList.add('active');
-        }
-
         // ==========================================
-        // 5. RENDERING STATIONS WORKFLOW
+        // 5. STATIONS & LOGIC (Hidden from Master)
         // ==========================================
         function formatTime(totalSeconds) {
             if (totalSeconds < 0) totalSeconds = 0;
@@ -727,14 +748,17 @@
             return `${hrs}:${mins}:${secs}`;
         }
         function toggleMenu(e) { e.stopPropagation(); document.getElementById('mainMenu').classList.toggle('show'); }
-        window.onclick = function(e) { if (!e.target.matches('.menu-btn')) document.querySelectorAll(".dropdown-content").forEach(d => d.classList.remove('show')); }
+        window.onclick = function(e) { 
+            if (!e.target.matches('.menu-btn')) document.querySelectorAll(".dropdown-content").forEach(d => d.classList.remove('show')); 
+            if (!e.target.matches('.action-dots-btn')) document.querySelectorAll(".action-menu").forEach(d => d.classList.remove('show'));
+        }
 
         function refreshDashboardVisuals() {
+            if(currentUserRole === 'master') return;
             stationsData.sort((a,b) => a.id - b.id);
             const inUseGrid = document.getElementById('in-use-grid');
             const availableGrid = document.getElementById('available-grid');
             if(!inUseGrid || !availableGrid) return;
-
             inUseGrid.innerHTML = ''; availableGrid.innerHTML = '';
 
             stationsData.forEach(station => {
@@ -763,9 +787,7 @@
             });
         }
 
-        // ==========================================
-        // 6. MODALS & PRICING LOGIC
-        // ==========================================
+        // --- Modals ---
         function closeTopModal() { document.getElementById('modal-overlay').classList.remove('active'); }
         function hideActiveModal(e) { if (e.target.id === 'modal-overlay') closeTopModal(); }
 
@@ -777,21 +799,13 @@
 
             if (station.status === 'AVAILABLE') {
                 bodyField.innerHTML = `
-                    <div class="form-group">
-                        <label>Session Duration</label>
+                    <div class="form-group"><label>Session Duration</label>
                         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                            <select id="setup-hours" class="themed-input">
-                                <option value="0">0 Hours</option><option value="1" selected>1 Hour</option><option value="2">2 Hours</option>
-                                <option value="3">3 Hours</option><option value="4">4 Hours</option><option value="5">5 Hours</option>
-                            </select>
-                            <select id="setup-mins" class="themed-input">
-                                <option value="0">00 Mins</option><option value="15">15 Mins</option><option value="30">30 Mins</option><option value="45">45 Mins</option>
-                            </select>
+                            <select id="setup-hours" class="themed-input"><option value="0">0 Hours</option><option value="1" selected>1 Hour</option><option value="2">2 Hours</option><option value="3">3 Hours</option></select>
+                            <select id="setup-mins" class="themed-input"><option value="0">00 Mins</option><option value="15">15 Mins</option><option value="30">30 Mins</option><option value="45">45 Mins</option></select>
                         </div>
                     </div>
-                    <div class="form-group"><label>Occupancy</label>
-                        <select id="setup-players" class="themed-input"><option value="1">1 Person</option><option value="2">2 Persons</option><option value="3">3 Persons</option><option value="4">4 Persons</option></select>
-                    </div>
+                    <div class="form-group"><label>Occupancy</label><select id="setup-players" class="themed-input"><option value="1">1 Person</option><option value="2">2 Persons</option><option value="3">3 Persons</option><option value="4">4 Persons</option></select></div>
                     <button class="action-button" style="margin-top:10px;" onclick="commitNewSession()">▶ Start Session</button>
                 `;
             } else renderActiveStationPanel(station);
@@ -805,26 +819,20 @@
                     <span><button class="action-button small-btn release-button" style="padding:4px 8px; width:auto; box-shadow:none; margin-right:5px;" onclick="decreaseFoodItem(${station.id}, '${f.id}')">➖</button>${f.name} (x${f.qty})</span>
                     <span style="color:#00ffff; font-weight:bold;">₹${(f.price * f.qty).toFixed(2)}</span>
                 </div>`).join('');
-
-            const groupedInventory = inventoryData.reduce((acc, item) => {
-                if (item.stock > 0) { if (!acc[item.category]) acc[item.category] = []; acc[item.category].push(item); }
-                return acc;
-            }, {});
-
+            const groupedInventory = inventoryData.reduce((acc, item) => { if (item.stock > 0) { if (!acc[item.category]) acc[item.category] = []; acc[item.category].push(item); } return acc; }, {});
             let inventoryOptions = Object.keys(groupedInventory).map(category => {
                 let options = groupedInventory[category].map(item => `<option value="${item.id}">${item.name} (₹${item.price.toFixed(2)})</option>`).join('');
                 return `<optgroup label="--- ${category.toUpperCase()} ---">${options}</optgroup>`;
             }).join('');
-
             let shortcutButtonsHtml = inventoryData.filter(item => item.isShortcut && item.stock > 0).map(item => `<button class="action-button small-btn quick-btn" onclick="quickAddItem('${item.name}')">⚡ ${item.name}</button>`).join('');
 
             bodyField.innerHTML = `
                 <div class="form-group"><input type="text" id="player-names-input" class="themed-input" placeholder="Enter Player Names..." value="${station.playerNames || ''}" onchange="updatePlayerNames(${station.id}, this.value)"></div>
                 <div class="metrics-grid">
                     <div class="metric-item"><div style="font-size: 0.65rem; color: #ff00ff; text-transform:uppercase; font-weight:bold;">Time Remaining</div><div id="modal-live-timer" style="color:#00ffff; font-size:1.3rem; font-family:'Orbitron'; font-weight:bold; text-shadow: 0 0 10px #00ffff;">${formatTime(station.timeRemaining)}</div></div>
-                    <div class="metric-item"><div style="font-size: 0.65rem; color: #ff00ff; text-transform:uppercase; font-weight:bold;">Occupants</div><div style="font-size:1.2rem; font-weight:bold; color:#fff;">${station.playersCount} Person(s)</div></div>
+                    <div class="metric-item"><div style="font-size: 0.65rem; color: #ff00ff; text-transform:uppercase; font-weight:bold;">Occupants</div><div style="font-size:1.2rem; font-weight:bold; color:#fff;">${station.playersCount}</div></div>
                 </div>
-                <div style="display:flex; gap:10px; margin-bottom: 16px; flex-wrap:wrap;">${shortcutButtonsHtml || '<span style="font-size:0.7rem; color:#666;">No shortcuts configured.</span>'}</div>
+                <div style="display:flex; gap:10px; margin-bottom: 16px; flex-wrap:wrap;">${shortcutButtonsHtml || '<span style="font-size:0.7rem; color:#666;">No shortcuts.</span>'}</div>
                 <div class="form-group"><div class="history-list-box">${foodRowsHtml}</div></div>
                 <div class="form-group nested-row">
                     <select id="catering-select" class="themed-input"><option value="none">-- Select Item --</option>${inventoryOptions}</select>
@@ -849,55 +857,37 @@
             const foodCost = (station.foodHistory || []).reduce((sum, item) => sum + ((parseFloat(item.price)||0) * (parseInt(item.qty)||0)), 0);
             return { appliedRate: activeRate, playCost: playCost, foodCost: foodCost, grandTotal: (playCost + foodCost) };
         }
-
-        function recalculateLivePanelBill() {
-            if (!targetedActiveStationId) return;
-            const station = stationsData.find(s => s.id === targetedActiveStationId);
-            document.getElementById('panel-bill-display').textContent = `₹${calculateTotalBalanceSheet(station).grandTotal.toFixed(2)}`;
-        }
-
+        function recalculateLivePanelBill() { if (!targetedActiveStationId) return; document.getElementById('panel-bill-display').textContent = `₹${calculateTotalBalanceSheet(stationsData.find(s => s.id === targetedActiveStationId)).grandTotal.toFixed(2)}`; }
         function updatePlayerNames(stationId, val) { const st = stationsData.find(s => s.id === stationId); if(st) { st.playerNames = val; saveSystemData(); refreshDashboardVisuals(); } }
-        
         function commitNewSession() {
             const st = stationsData.find(s => s.id === targetedActiveStationId);
             const dur = ((parseInt(document.getElementById('setup-hours').value) || 0) * 60) + (parseInt(document.getElementById('setup-mins').value) || 0);
-            if (dur <= 0) return alert("Please specify session duration.");
+            if (dur <= 0) return alert("Specify duration.");
             st.status = 'IN_USE'; st.timeRemaining = dur * 60; st.durationMinutes = dur; st.playersCount = parseInt(document.getElementById('setup-players').value);
             st.startTimestamp = new Date(); st.endTimestamp = new Date(st.startTimestamp.getTime() + dur * 60000); st.foodHistory = []; st.playerNames = '';
             saveSystemData(); refreshDashboardVisuals(); closeTopModal();
         }
-
         function quickAddItem(itemName) {
             const st = stationsData.find(s => s.id === targetedActiveStationId); const item = inventoryData.find(i => i.name === itemName);
             if (!item || item.stock <= 0) return alert("Out of stock!");
-            item.stock -= 1; const match = st.foodHistory.find(f => f.name === item.name);
-            if (match) match.qty += 1; else st.foodHistory.push({ id: item.id, name: item.name, price: item.price, qty: 1 });
+            item.stock -= 1; const match = st.foodHistory.find(f => f.name === item.name); if (match) match.qty += 1; else st.foodHistory.push({ id: item.id, name: item.name, price: item.price, qty: 1 });
             saveSystemData(); renderActiveStationPanel(st);
         }
-
         function appendFoodToSession() {
             const st = stationsData.find(s => s.id === targetedActiveStationId); const invId = document.getElementById('catering-select').value; const qty = parseInt(document.getElementById('catering-qty').value) || 0;
             if (invId === 'none' || qty <= 0) return; const item = inventoryData.find(i => i.id === invId);
-            if (!item || qty > item.stock) return alert("Insufficient inventory!");
-            item.stock -= qty; const match = st.foodHistory.find(f => f.name === item.name);
-            if (match) match.qty += qty; else st.foodHistory.push({ id: item.id, name: item.name, price: item.price, qty: qty });
+            if (!item || qty > item.stock) return alert("Insufficient stock.");
+            item.stock -= qty; const match = st.foodHistory.find(f => f.name === item.name); if (match) match.qty += qty; else st.foodHistory.push({ id: item.id, name: item.name, price: item.price, qty: qty });
             saveSystemData(); renderActiveStationPanel(st);
         }
-
         function decreaseFoodItem(stationId, foodId) {
             const st = stationsData.find(s => s.id === stationId); const foodIdx = st.foodHistory.findIndex(f => f.id === foodId);
-            if (foodIdx > -1) {
-                st.foodHistory[foodIdx].qty -= 1; const item = inventoryData.find(i => i.id === foodId); if (item) item.stock += 1;
-                if (st.foodHistory[foodIdx].qty <= 0) st.foodHistory.splice(foodIdx, 1);
-                saveSystemData(); renderActiveStationPanel(st);
-            }
+            if (foodIdx > -1) { st.foodHistory[foodIdx].qty -= 1; const item = inventoryData.find(i => i.id === foodId); if (item) item.stock += 1; if (st.foodHistory[foodIdx].qty <= 0) st.foodHistory.splice(foodIdx, 1); saveSystemData(); renderActiveStationPanel(st); }
         }
-
         function endSessionManually() {
             const st = stationsData.find(s => s.id === targetedActiveStationId); const sheet = calculateTotalBalanceSheet(st);
             const logEntry = { id: 'LOG_' + Date.now(), stationId: st.id, duration: st.durationMinutes, players: st.playersCount, playerNames: st.playerNames, foodHistory: JSON.parse(JSON.stringify(st.foodHistory)), statements: sheet, dateStr: new Date().toLocaleDateString() };
-            pushLogToCloud(logEntry);
-            st.status = 'AVAILABLE'; st.timeRemaining = 0; st.startTimestamp = null; st.endTimestamp = null; st.foodHistory = []; st.lastSessionLogId = logEntry.id;
+            pushLogToCloud(logEntry); st.status = 'AVAILABLE'; st.timeRemaining = 0; st.startTimestamp = null; st.endTimestamp = null; st.foodHistory = []; st.lastSessionLogId = logEntry.id;
             saveSystemData(); refreshDashboardVisuals(); renderBillReceipt(logEntry.id, true);
         }
 
@@ -913,7 +903,7 @@
                 <div style="text-align:left; background:rgba(0,0,0,0.8); padding:25px; border-radius:12px; border:1px solid #00ffff; box-shadow: inset 0 0 20px rgba(0,255,255,0.1);">
                     ${log.playerNames ? `<div style="color:#ff00ff; font-size:1.1rem; margin-bottom:15px; font-weight:bold; text-transform:uppercase; letter-spacing:2px; text-shadow: 0 0 10px #ff00ff;">Players: ${log.playerNames}</div>` : ''}
                     <div style="display:flex; justify-content:space-between; font-size:1.1rem; color:#fff; font-weight:bold; border-bottom:1px solid rgba(0,255,255,0.3); padding-bottom:15px; margin-bottom:15px;">
-                        <span>Play Time (${log.duration} Mins) @ ₹${log.statements.appliedRate}/hr</span><span style="color:#00ffff; text-shadow:0 0 10px #00ffff;">₹${log.statements.playCost.toFixed(2)}</span>
+                        <span>Play Time (${log.duration} Mins)</span><span style="color:#00ffff; text-shadow:0 0 10px #00ffff;">₹${log.statements.playCost.toFixed(2)}</span>
                     </div>
                     <div style="margin-top:15px; margin-bottom:10px; font-weight:bold; color:#ff00ff; text-transform:uppercase; font-size:0.9rem; letter-spacing: 1px;">Food & Inventory</div>
                     ${itemsHtml || '<div style="color:#666; font-size:0.8rem; font-style:italic;">No items ordered.</div>'}
@@ -926,43 +916,32 @@
         }
 
         // ==========================================
-        // 7. FULL PAGE ADMIN COCKPIT
+        // 6. ADMIN COCKPIT
         // ==========================================
-        function triggerGlobalSave() { document.getElementById('global-save-bar').classList.add('active'); }
+        function switchAdminTab(tabId) {
+            document.getElementById('btn-tab-finance').classList.remove('active'); document.getElementById('btn-tab-rates').classList.remove('active'); document.getElementById('btn-tab-inventory').classList.remove('active');
+            document.getElementById('tab-finances').classList.remove('active'); document.getElementById('tab-rates').classList.remove('active'); document.getElementById('tab-inventory').classList.remove('active');
+            document.getElementById(`btn-tab-${tabId}`).classList.add('active'); document.getElementById(`tab-${tabId}`).classList.add('active');
+        }
 
+        function triggerGlobalSave() { document.getElementById('global-save-bar').classList.add('active'); }
         function saveAllAdminChanges() {
             stationsData.forEach(st => {
                 const r1 = document.getElementById(`r1_${st.id}`);
-                if (r1) {
-                    st.rate1Player = parseFloat(r1.value) || 15;
-                    st.rate2Player = parseFloat(document.getElementById(`r2_${st.id}`).value) || 20;
-                    st.rate3Player = parseFloat(document.getElementById(`r3_${st.id}`).value) || 25;
-                    st.rate4Player = parseFloat(document.getElementById(`r4_${st.id}`).value) || 30;
-                }
+                if (r1) { st.rate1Player = parseFloat(r1.value)||15; st.rate2Player = parseFloat(document.getElementById(`r2_${st.id}`).value)||20; st.rate3Player = parseFloat(document.getElementById(`r3_${st.id}`).value)||25; st.rate4Player = parseFloat(document.getElementById(`r4_${st.id}`).value)||30; }
             });
-
             inventoryData.forEach((item, i) => {
                 const n = document.getElementById(`inv_name_${i}`);
-                if (n) {
-                    item.name = n.value;
-                    item.category = document.getElementById(`inv_cat_${i}`).value || 'Misc';
-                    item.price = parseFloat(document.getElementById(`inv_price_${i}`).value) || 0;
-                    item.isShortcut = document.getElementById(`inv_short_${i}`).checked;
-                }
+                if (n) { item.name = n.value; item.category = document.getElementById(`inv_cat_${i}`).value||'Misc'; item.price = parseFloat(document.getElementById(`inv_price_${i}`).value)||0; item.isShortcut = document.getElementById(`inv_short_${i}`).checked; }
             });
-
-            saveSystemData();
-            document.getElementById('global-save-bar').classList.remove('active');
-            alert('All configurations saved successfully!');
+            saveSystemData(); document.getElementById('global-save-bar').classList.remove('active'); alert('Configurations saved!');
         }
 
         function renderAdminView() {
             const totalRev = systemAuditLogs.reduce((sum, log) => sum + ((log.statements && log.statements.grandTotal) ? log.statements.grandTotal : 0), 0);
             const totalExp = expenseLogs.reduce((sum, exp) => sum + parseFloat(exp.amount), 0);
-            const netProfit = totalRev - totalExp;
-            const profitClass = netProfit >= 0 ? 'profit color-orange' : 'loss color-red';
+            const netProfit = totalRev - totalExp; const profitClass = netProfit >= 0 ? 'profit color-orange' : 'loss color-red';
 
-            // Finance Tab Injection
             document.getElementById('finance-dashboard-injection').innerHTML = `
                 <div class="finance-tracker">
                     <div class="finance-card"><div class="finance-label">Gross Revenue</div><div class="finance-amt">₹${totalRev.toFixed(2)}</div></div>
@@ -972,10 +951,8 @@
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-top:30px;">
                     <div style="color:#00ffff; font-size:1rem; text-shadow: 0 0 5px #00ffff;">Download a complete ledger of all transactions.</div>
                     <button class="action-button ghost-btn small-btn" style="width:auto; padding:15px 30px; font-size: 1rem;" onclick="exportLedgerCSV()">📥 Extract Ledger (.CSV)</button>
-                </div>
-            `;
+                </div>`;
 
-            // Rates Tab Injection
             document.getElementById('admin-rates-list').innerHTML = stationsData.map(st => `
                 <div class="admin-row" style="grid-template-columns: 50px 1fr 1fr 1fr 1fr;">
                     <div style="color:#ff00ff; font-weight:900; font-size:1.3rem; text-shadow: 0 0 10px #ff00ff;">P${st.id}</div>
@@ -983,131 +960,128 @@
                     <input type="number" value="${st.rate2Player||20}" id="r2_${st.id}" class="themed-input" oninput="triggerGlobalSave()">
                     <input type="number" value="${st.rate3Player||25}" id="r3_${st.id}" class="themed-input" oninput="triggerGlobalSave()">
                     <input type="number" value="${st.rate4Player||30}" id="r4_${st.id}" class="themed-input" oninput="triggerGlobalSave()">
-                </div>
-            `).join('');
+                </div>`).join('');
 
-            // Inventory Tab Injection
             document.getElementById('admin-inventory-list').innerHTML = inventoryData.map((item, i) => `
                 <div class="admin-row" style="grid-template-columns: 1.5fr 1fr 1fr 80px;">
                     <input type="text" value="${item.name}" id="inv_name_${i}" class="themed-input" oninput="triggerGlobalSave()">
                     <input type="text" value="${item.category||'Food'}" id="inv_cat_${i}" class="themed-input" oninput="triggerGlobalSave()">
                     <input type="number" value="${item.price}" id="inv_price_${i}" class="themed-input" step="1" oninput="triggerGlobalSave()">
-                    <div style="text-align:center;">
-                        <input type="checkbox" id="inv_short_${i}" ${item.isShortcut ? 'checked' : ''} style="transform:scale(1.8); accent-color:#00ffff;" onchange="triggerGlobalSave()">
-                    </div>
-                </div>
-            `).join('');
+                    <div style="text-align:center;"><input type="checkbox" id="inv_short_${i}" ${item.isShortcut ? 'checked' : ''} style="transform:scale(1.8); accent-color:#00ffff;" onchange="triggerGlobalSave()"></div>
+                </div>`).join('');
         }
 
-        // --- Config Actions ---
-        function addNewStation() {
-            const newId = stationsData.length > 0 ? Math.max(...stationsData.map(s => s.id)) + 1 : 1;
-            stationsData.push(createStation(newId));
-            saveSystemData(); renderAdminView();
-            triggerGlobalSave();
-        }
-
-        function addNewInventory() {
-            const name = document.getElementById('new_item_name').value;
-            const cat = document.getElementById('new_item_cat').value || 'Misc';
-            const price = parseFloat(document.getElementById('new_item_price').value);
-            if (name && !isNaN(price)) {
-                inventoryData.push({ id: `inv_${Date.now()}`, name: name, category: cat, price: price, stock: 100, isShortcut: false });
-                saveSystemData(); renderAdminView();
-                document.getElementById('new_item_name').value = '';
-                document.getElementById('new_item_price').value = '';
-            }
-        }
-
-        function addExpense() {
-            const desc = document.getElementById('new_exp_desc').value;
-            const amt = parseFloat(document.getElementById('new_exp_amt').value);
-            if (desc && !isNaN(amt)) {
-                expenseLogs.push({ id: `EXP_${Date.now()}`, desc: desc, amount: amt, date: new Date().toLocaleDateString() });
-                saveSystemData(); renderAdminView();
-                document.getElementById('new_exp_desc').value = '';
-                document.getElementById('new_exp_amt').value = '';
-                alert("Expense logged successfully!");
-            }
-        }
+        function addNewStation() { const newId = stationsData.length > 0 ? Math.max(...stationsData.map(s => s.id)) + 1 : 1; stationsData.push(createStation(newId)); saveSystemData(); renderAdminView(); triggerGlobalSave(); }
+        function addNewInventory() { const name = document.getElementById('new_item_name').value; const cat = document.getElementById('new_item_cat').value || 'Misc'; const price = parseFloat(document.getElementById('new_item_price').value); if (name && !isNaN(price)) { inventoryData.push({ id: `inv_${Date.now()}`, name: name, category: cat, price: price, stock: 100, isShortcut: false }); saveSystemData(); renderAdminView(); document.getElementById('new_item_name').value = ''; document.getElementById('new_item_price').value = ''; } }
+        function addExpense() { const desc = document.getElementById('new_exp_desc').value; const amt = parseFloat(document.getElementById('new_exp_amt').value); if (desc && !isNaN(amt)) { expenseLogs.push({ id: `EXP_${Date.now()}`, desc: desc, amount: amt, date: new Date().toLocaleDateString() }); saveSystemData(); renderAdminView(); document.getElementById('new_exp_desc').value = ''; document.getElementById('new_exp_amt').value = ''; alert("Expense logged!"); } }
 
         function exportLedgerCSV() {
             let csvContent = "data:text/csv;charset=utf-8,Type,Date,Description/Station,Amount (INR)\n";
             systemAuditLogs.forEach(log => { csvContent += `Income,${log.dateStr},Station P${log.stationId},${(log.statements?.grandTotal || 0).toFixed(2)}\n`; });
             expenseLogs.forEach(exp => { csvContent += `Expense,${exp.date},${exp.desc},-${parseFloat(exp.amount).toFixed(2)}\n`; });
-            const link = document.createElement("a"); link.setAttribute("href", encodeURI(csvContent)); link.setAttribute("download", `WGZ_Ledger_${currentLocationId}_${new Date().toLocaleDateString().replace(/\//g, '-')}.csv`);
-            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+            const link = document.createElement("a"); link.setAttribute("href", encodeURI(csvContent)); link.setAttribute("download", `WGZ_Ledger_${currentLocationId}_${new Date().toLocaleDateString().replace(/\//g, '-')}.csv`); document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
 
-        // ==========================================
-        // 8. FULL PAGE SESSION REGISTER
-        // ==========================================
         function renderLogsView() {
             const tableBox = document.getElementById('logs-full-table');
-            if (systemAuditLogs.length === 0) {
-                tableBox.innerHTML = `<p style="text-align:center; padding:50px; color:#00ffff; font-size:1.2rem; text-shadow:0 0 10px #00ffff;">No session records extracted.</p>`;
-            } else {
+            if (systemAuditLogs.length === 0) tableBox.innerHTML = `<p style="text-align:center; padding:50px; color:#00ffff; font-size:1.2rem; text-shadow:0 0 10px #00ffff;">No session records extracted.</p>`;
+            else {
                 let rows = systemAuditLogs.map(log => {
-                    let totalItems = log.foodHistory ? log.foodHistory.reduce((s, f) => s + f.qty, 0) : 0;
-                    let grandTotal = log.statements?.grandTotal || 0;
-                    return `<tr>
-                        <td style="font-weight:900; color:#ff00ff; text-shadow:0 0 5px #ff00ff;">P${log.stationId}</td>
-                        <td>${log.dateStr}</td>
-                        <td style="color:#00ffff;">${log.duration}m</td>
-                        <td style="font-weight:bold;">${log.playerNames||log.players}</td>
-                        <td>${totalItems} Items</td>
-                        <td style="color:#39ff14; font-weight:900; text-shadow:0 0 10px rgba(57,255,20,0.5);">₹${grandTotal.toFixed(2)}</td>
-                        <td><button class="action-button small-btn ghost-btn" style="padding: 8px 15px; margin:0; width:auto;" onclick="renderBillReceipt('${log.id}', false)">View Receipt</button></td>
-                    </tr>`;
+                    let totalItems = log.foodHistory ? log.foodHistory.reduce((s, f) => s + f.qty, 0) : 0; let grandTotal = log.statements?.grandTotal || 0;
+                    return `<tr><td style="font-weight:900; color:#ff00ff; text-shadow:0 0 5px #ff00ff;">P${log.stationId}</td><td>${log.dateStr}</td><td style="color:#00ffff;">${log.duration}m</td><td style="font-weight:bold;">${log.playerNames||log.players}</td><td>${totalItems} Items</td><td style="color:#39ff14; font-weight:900; text-shadow:0 0 10px rgba(57,255,20,0.5);">₹${grandTotal.toFixed(2)}</td><td><button class="action-button small-btn ghost-btn" style="padding: 8px 15px; margin:0; width:auto;" onclick="renderBillReceipt('${log.id}', false)">View Receipt</button></td></tr>`;
                 }).join('');
-                tableBox.innerHTML = `
-                    <div style="background:rgba(10,0,20,0.8); border-radius:15px; border:1px solid #00ffff; overflow:hidden; box-shadow: 0 0 20px rgba(0,255,255,0.1);">
-                        <table class="log-table" style="margin-top:0;">
-                            <thead><tr><th>Station</th><th>Date</th><th>Duration</th><th>Names</th><th>Items</th><th>Total</th><th>Action</th></tr></thead>
-                            <tbody>${rows}</tbody>
-                        </table>
-                    </div>`;
+                tableBox.innerHTML = `<div style="background:rgba(10,0,20,0.8); border-radius:15px; border:1px solid #00ffff; overflow:hidden; box-shadow: 0 0 20px rgba(0,255,255,0.1);"><table class="log-table" style="margin-top:0;"><thead><tr><th>Station</th><th>Date</th><th>Duration</th><th>Names</th><th>Items</th><th>Total</th><th>Action</th></tr></thead><tbody>${rows}</tbody></table></div>`;
             }
         }
 
         // ==========================================
-        // 9. MASTER ADMIN PORTAL
+        // 7. MASTER ADMIN PORTAL (EXCLUSIVE)
         // ==========================================
+        function switchMasterTab(tabId) {
+            document.getElementById('btn-tab-users').classList.remove('active'); document.getElementById('btn-tab-locations').classList.remove('active'); document.getElementById('btn-tab-roles').classList.remove('active');
+            document.getElementById('tab-users').classList.remove('active'); document.getElementById('tab-locations').classList.remove('active'); document.getElementById('tab-roles').classList.remove('active');
+            document.getElementById(`btn-tab-${tabId}`).classList.add('active'); document.getElementById(`tab-${tabId}`).classList.add('active');
+        }
+
         async function renderMasterView() {
             if(!db || currentUserRole !== 'master') return;
 
-            // Fetch and Render Users
+            // 1. Render Users
             const userSnap = await db.collection('users').get();
             let usersHtml = userSnap.docs.map(doc => {
                 const data = doc.data();
                 const statusColor = data.isLocked ? '#ff4444' : '#39ff14';
                 const statusText = data.isLocked ? 'LOCKED' : 'Active';
                 
-                let actions = data.isLocked 
-                    ? `<button class="action-button success-btn small-btn" style="padding:6px; margin-right:5px; width:auto;" onclick="unlockUser('${doc.id}')">🔓 Unlock</button>` 
-                    : ``;
-                
-                actions += `<button class="action-button release-button small-btn" style="padding:6px; width:auto;" onclick="resetUserPwd('${doc.id}')">🔄 Reset Pwd</button>`;
-
                 return `
-                <div class="admin-row" style="grid-template-columns: 1fr 1fr 1fr 100px auto; align-items:center;">
+                <div class="admin-row" style="grid-template-columns: 1fr 1fr 1fr 100px 40px; align-items:center; border-color: rgba(255,0,255,0.2);">
                     <div style="color:#00ffff; font-weight:bold;">${data.username}</div>
                     <div style="color:#ccc; font-size:0.8rem; text-transform:uppercase;">${data.role}</div>
                     <div style="color:#ccc; font-size:0.8rem;">${data.location_id}</div>
                     <div style="color:${statusColor}; font-weight:bold; font-size:0.8rem; text-shadow:0 0 10px ${statusColor};">${statusText}</div>
-                    <div style="display:flex; justify-content:flex-end;">${actions}</div>
+                    <div class="dropdown-container">
+                        <button class="action-dots-btn" onclick="toggleActionMenu(event, 'menu-${doc.id}')">⋮</button>
+                        <div class="action-menu" id="menu-${doc.id}">
+                            <button onclick="editUserPlaceholder()">✏️ Edit Info</button>
+                            <button onclick="toggleLockUser('${doc.id}', ${data.isLocked})">${data.isLocked ? '🔓 Unlock' : '🔒 Lock'}</button>
+                            <button onclick="promptResetPassword('${doc.id}', '${data.username}')">🔑 Reset Passcode</button>
+                        </div>
+                    </div>
                 </div>`;
             }).join('');
             document.getElementById('master-users-list').innerHTML = usersHtml;
 
-            // Render Locations
-            let locsHtml = systemLocations.map(loc => `
-                <div class="admin-row" style="grid-template-columns: 1fr 1.5fr; padding: 10px 15px;">
+            // 2. Render Locations
+            document.getElementById('master-locations-list').innerHTML = systemLocations.map(loc => `
+                <div class="admin-row" style="grid-template-columns: 1fr 1.5fr; padding: 12px 15px; border-color: rgba(255,0,255,0.2);">
                     <div style="color:#ff00ff; font-weight:bold;">${loc.id}</div>
                     <div style="color:#00ffff; font-weight:bold;">${loc.name}</div>
                 </div>
             `).join('');
-            document.getElementById('master-locations-list').innerHTML = locsHtml;
+
+            // 3. Render Roles
+            document.getElementById('master-roles-list').innerHTML = systemRoles.map(r => `
+                <div class="admin-row" style="grid-template-columns: 1fr; border-color: rgba(255,0,255,0.2); padding: 12px 15px;">
+                    <div style="color:#39ff14; font-weight:bold; text-transform:uppercase; text-shadow:0 0 10px #39ff14;">${r.name}</div>
+                    <div style="color:#aaa; font-size:0.75rem; margin-top:5px;">Permissions mapped successfully.</div>
+                </div>
+            `).join('');
+        }
+
+        // Action Menu Logic
+        function toggleActionMenu(e, id) {
+            e.stopPropagation();
+            document.querySelectorAll(".action-menu").forEach(d => { if(d.id !== id) d.classList.remove('show'); });
+            document.getElementById(id).classList.toggle('show');
+        }
+
+        function editUserPlaceholder() { alert("User edit feature coming soon."); }
+
+        async function toggleLockUser(docId, isCurrentlyLocked) {
+            try {
+                await db.collection('users').doc(docId).update({ isLocked: !isCurrentlyLocked, failedAttempts: 0 });
+                renderMasterView();
+            } catch(e) { alert("Error updating lock status."); }
+        }
+
+        function promptResetPassword(docId, username) {
+            forceResetTargetUser = docId;
+            document.getElementById('master-temp-pwd').value = '';
+            document.getElementById('reset-prompt-screen').classList.remove('hidden');
+        }
+
+        function closeResetPrompt() { document.getElementById('reset-prompt-screen').classList.add('hidden'); forceResetTargetUser = null; }
+
+        async function confirmMasterReset() {
+            if(!forceResetTargetUser) return;
+            const newPwd = document.getElementById('master-temp-pwd').value;
+            if(!newPwd || newPwd.length < 6) return alert("Temp passcode must be at least 6 characters.");
+
+            try {
+                await db.collection('users').doc(forceResetTargetUser).update({ password: newPwd, requiresPasswordChange: true, isLocked: false, failedAttempts: 0 });
+                alert("Passcode reset successfully. User will be forced to change it on next login.");
+                closeResetPrompt(); renderMasterView();
+            } catch(e) { alert("Error resetting passcode."); }
         }
 
         async function createNewUser() {
@@ -1118,38 +1092,16 @@
             if(!username) return alert("Enter a username.");
             
             try {
-                // Check if username exists
                 const existing = await db.collection('users').where('username', '==', username).get();
                 if(!existing.empty) return alert("Username already exists.");
 
                 await db.collection('users').add({
-                    username: username,
-                    password: 'admin123',
-                    role: role,
-                    location_id: loc,
-                    failedAttempts: 0,
-                    isLocked: false,
-                    requiresPasswordChange: true
+                    username: username, password: 'admin123', role: role, location_id: loc,
+                    failedAttempts: 0, isLocked: false, requiresPasswordChange: true
                 });
                 alert(`User ${username} created! Default passcode is: admin123`);
-                document.getElementById('new_user_name').value = '';
-                renderMasterView();
+                document.getElementById('new_user_name').value = ''; renderMasterView();
             } catch(e) { alert("Error creating user."); }
-        }
-
-        async function unlockUser(docId) {
-            try {
-                await db.collection('users').doc(docId).update({ isLocked: false, failedAttempts: 0 });
-                alert("Account Unlocked."); renderMasterView();
-            } catch(e) { alert("Error unlocking account."); }
-        }
-
-        async function resetUserPwd(docId) {
-            if(!confirm("Reset this user's passcode to 'admin123'?")) return;
-            try {
-                await db.collection('users').doc(docId).update({ password: 'admin123', requiresPasswordChange: true, isLocked: false, failedAttempts: 0 });
-                alert("Passcode reset to admin123. User will be forced to change it on next login."); renderMasterView();
-            } catch(e) { alert("Error resetting passcode."); }
         }
 
         async function createNewLocation() {
@@ -1162,18 +1114,40 @@
             systemLocations.push({ id: id, name: name });
             try {
                 await db.collection('system_config').doc('locations').set({ list: systemLocations });
-                populateLocationDropdowns();
-                alert("Location added successfully.");
-                document.getElementById('new_loc_id').value = '';
-                document.getElementById('new_loc_name').value = '';
-                renderMasterView();
+                populateMasterDropdowns();
+                alert("Location established.");
+                document.getElementById('new_loc_id').value = ''; document.getElementById('new_loc_name').value = ''; renderMasterView();
             } catch(e) { alert("Error adding location."); }
         }
 
+        async function createNewRole() {
+            const name = document.getElementById('new_role_name').value.trim();
+            if(!name) return alert("Role Name required.");
+            if(systemRoles.find(r => r.name === name)) return alert("Role already exists.");
+
+            const perms = {
+                live_manage: document.getElementById('perm_live_manage').checked,
+                live_end: document.getElementById('perm_live_end').checked,
+                ledger: document.getElementById('perm_ledger').checked,
+                station_rates: document.getElementById('perm_station_rates').checked,
+                inventory: document.getElementById('perm_inventory').checked
+            };
+
+            systemRoles.push({ name: name, perms: perms });
+            try {
+                await db.collection('system_config').doc('roles').set({ list: systemRoles });
+                populateMasterDropdowns(); alert("Role Policy Created.");
+                document.getElementById('new_role_name').value = '';
+                document.querySelectorAll('#tab-roles input[type="checkbox"]').forEach(c => c.checked = false);
+                renderMasterView();
+            } catch(e) { alert("Error saving role."); }
+        }
+
         // ==========================================
-        // 10. TICK ENGINE
+        // 8. TICK ENGINE
         // ==========================================
         setInterval(() => {
+            if(currentUserRole === 'master') return;
             const now = new Date();
             stationsData.forEach(station => {
                 if (station.status === 'IN_USE' && station.endTimestamp) {
