@@ -129,7 +129,7 @@
         #global-save-bar { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(150%); width: 90%; max-width: 800px; background: rgba(10,0,20,0.95); padding: 15px; border-radius: 15px; border: 2px solid #39ff14; box-shadow: 0 15px 35px rgba(0,0,0,0.9), 0 0 30px rgba(57, 255, 20, 0.4); z-index: 999; opacity: 0; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; justify-content: space-between; align-items: center; }
         #global-save-bar.active { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-        /* --- Modals (Station Actions Only) --- */
+        /* --- Modals --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px); z-index: 9999; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.3s; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
         .modal-container { position: relative; border-radius: 16px; width: 90%; max-width: 700px; padding: 30px; max-height: 90vh; overflow-y: auto; background: rgba(10, 0, 20, 0.95); border: 2px solid #00ffff; box-shadow: 0 0 50px rgba(0,255,255,0.3), inset 0 0 30px rgba(255,0,255,0.2); }
@@ -334,6 +334,7 @@
                 <button class="admin-tab-btn active" id="btn-tab-users" onclick="switchMasterTab('users')">👥 User Management</button>
                 <button class="admin-tab-btn" id="btn-tab-locations" onclick="switchMasterTab('locations')">📍 Location Management</button>
                 <button class="admin-tab-btn" id="btn-tab-roles" onclick="switchMasterTab('roles')">🛡️ Role Management</button>
+                <button class="admin-tab-btn" id="btn-tab-masterlogs" onclick="switchMasterTab('masterlogs')">🌍 Global Logs</button>
             </div>
 
             <!-- Tab: Users -->
@@ -388,6 +389,12 @@
                 <div class="section-title" style="font-size:1rem; margin-top:30px; color:#ff00ff; text-shadow:none;">System Role Policies</div>
                 <div id="master-roles-list" style="display:grid; gap:10px;"></div>
             </div>
+
+            <!-- Tab: Global Logs -->
+            <div id="tab-masterlogs" class="admin-tab-content">
+                <div class="section-title" style="font-size:1rem; color:#ff00ff; text-shadow:none;">Global Transaction Feed</div>
+                <div id="master-logs-table"></div>
+            </div>
         </main>
 
     </div>
@@ -398,7 +405,7 @@
         <button class="action-button success-btn" style="width:auto; padding:12px 30px; font-size: 1rem; letter-spacing: 1px;" onclick="saveAllAdminChanges()">💾 Commit Changes</button>
     </div>
 
-    <!-- Terminal Modal -->
+    <!-- Generic Modal for Forms / Terminals -->
     <div class="modal-overlay" id="modal-overlay" onclick="hideActiveModal(event)">
         <div class="modal-container glass-panel" onclick="event.stopPropagation()">
             <div class="modal-header">
@@ -442,7 +449,7 @@
         
         let systemLocations = []; 
         let systemRoles = [];
-        let forceResetTargetUser = null; // Temp holder for master reset
+        let forceResetTargetUser = null; 
 
         let inventoryData = [
             { id: 'inv_1', name: 'Classic Burger', category: 'Food', price: 7.00, stock: 10, isShortcut: false },
@@ -541,7 +548,6 @@
                     if(doc.id === 'roles') systemRoles = doc.data().list || [];
                 });
                 
-                // Fallbacks if not found
                 if(systemLocations.length === 0) {
                     systemLocations = [{id: 'loc_delhi_01', name: 'Delhi 01'}];
                     await db.collection('system_config').doc('locations').set({ list: systemLocations });
@@ -550,7 +556,6 @@
                     systemRoles = [{name: 'manager', perms: {}}];
                     await db.collection('system_config').doc('roles').set({ list: systemRoles });
                 }
-
                 populateMasterDropdowns();
             } catch(e) { console.error("Error fetching config:", e); }
         }
@@ -606,7 +611,7 @@
                 buildMenu();
 
                 if (currentUserRole === 'master') {
-                    document.getElementById('master-location-switcher').classList.add('hidden'); // Master doesn't need to switch locs to see their portal
+                    document.getElementById('master-location-switcher').classList.add('hidden'); 
                     document.getElementById('header-loc-title').textContent = `SYSTEM OVERLORD`;
                     navigateTo('master');
                 } else {
@@ -631,7 +636,6 @@
 
             if (db) {
                 try {
-                    // Check username first
                     const userQuery = await db.collection('users').where('username', '==', username).get();
                     if (!userQuery.empty) {
                         const userDoc = userQuery.docs[0];
@@ -651,7 +655,6 @@
                             if (data.requiresPasswordChange) showChangePasswordScreen(true);
                             else checkLoginState();
                         } else {
-                            // Incorrect Password -> Increment Failures
                             let attempts = (data.failedAttempts || 0) + 1;
                             let locked = attempts >= 5;
                             await db.collection('users').doc(docId).update({ failedAttempts: attempts, isLocked: locked });
@@ -787,7 +790,6 @@
             });
         }
 
-        // --- Modals ---
         function closeTopModal() { document.getElementById('modal-overlay').classList.remove('active'); }
         function hideActiveModal(e) { if (e.target.id === 'modal-overlay') closeTopModal(); }
 
@@ -859,6 +861,7 @@
         }
         function recalculateLivePanelBill() { if (!targetedActiveStationId) return; document.getElementById('panel-bill-display').textContent = `₹${calculateTotalBalanceSheet(stationsData.find(s => s.id === targetedActiveStationId)).grandTotal.toFixed(2)}`; }
         function updatePlayerNames(stationId, val) { const st = stationsData.find(s => s.id === stationId); if(st) { st.playerNames = val; saveSystemData(); refreshDashboardVisuals(); } }
+        
         function commitNewSession() {
             const st = stationsData.find(s => s.id === targetedActiveStationId);
             const dur = ((parseInt(document.getElementById('setup-hours').value) || 0) * 60) + (parseInt(document.getElementById('setup-mins').value) || 0);
@@ -919,9 +922,12 @@
         // 6. ADMIN COCKPIT
         // ==========================================
         function switchAdminTab(tabId) {
-            document.getElementById('btn-tab-finance').classList.remove('active'); document.getElementById('btn-tab-rates').classList.remove('active'); document.getElementById('btn-tab-inventory').classList.remove('active');
-            document.getElementById('tab-finances').classList.remove('active'); document.getElementById('tab-rates').classList.remove('active'); document.getElementById('tab-inventory').classList.remove('active');
-            document.getElementById(`btn-tab-${tabId}`).classList.add('active'); document.getElementById(`tab-${tabId}`).classList.add('active');
+            ['finances', 'rates', 'inventory'].forEach(id => {
+                document.getElementById(`btn-tab-${id}`).classList.remove('active');
+                document.getElementById(`tab-${id}`).classList.remove('active');
+            });
+            document.getElementById(`btn-tab-${tabId}`).classList.add('active'); 
+            document.getElementById(`tab-${tabId}`).classList.add('active');
         }
 
         function triggerGlobalSave() { document.getElementById('global-save-bar').classList.add('active'); }
@@ -998,9 +1004,13 @@
         // 7. MASTER ADMIN PORTAL (EXCLUSIVE)
         // ==========================================
         function switchMasterTab(tabId) {
-            document.getElementById('btn-tab-users').classList.remove('active'); document.getElementById('btn-tab-locations').classList.remove('active'); document.getElementById('btn-tab-roles').classList.remove('active');
-            document.getElementById('tab-users').classList.remove('active'); document.getElementById('tab-locations').classList.remove('active'); document.getElementById('tab-roles').classList.remove('active');
-            document.getElementById(`btn-tab-${tabId}`).classList.add('active'); document.getElementById(`tab-${tabId}`).classList.add('active');
+            ['users', 'locations', 'roles', 'masterlogs'].forEach(id => {
+                document.getElementById(`btn-tab-${id}`).classList.remove('active');
+                document.getElementById(`tab-${id}`).classList.remove('active');
+            });
+            document.getElementById(`btn-tab-${tabId}`).classList.add('active'); 
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            if(tabId === 'masterlogs') fetchMasterLogs();
         }
 
         async function renderMasterView() {
@@ -1022,7 +1032,7 @@
                     <div class="dropdown-container">
                         <button class="action-dots-btn" onclick="toggleActionMenu(event, 'menu-${doc.id}')">⋮</button>
                         <div class="action-menu" id="menu-${doc.id}">
-                            <button onclick="editUserPlaceholder()">✏️ Edit Info</button>
+                            <button onclick="editUserPrompt('${doc.id}')">✏️ Edit Info</button>
                             <button onclick="toggleLockUser('${doc.id}', ${data.isLocked})">${data.isLocked ? '🔓 Unlock' : '🔒 Lock'}</button>
                             <button onclick="promptResetPassword('${doc.id}', '${data.username}')">🔑 Reset Passcode</button>
                         </div>
@@ -1033,17 +1043,21 @@
 
             // 2. Render Locations
             document.getElementById('master-locations-list').innerHTML = systemLocations.map(loc => `
-                <div class="admin-row" style="grid-template-columns: 1fr 1.5fr; padding: 12px 15px; border-color: rgba(255,0,255,0.2);">
+                <div class="admin-row" style="grid-template-columns: 1fr 1.5fr auto; padding: 12px 15px; border-color: rgba(255,0,255,0.2);">
                     <div style="color:#ff00ff; font-weight:bold;">${loc.id}</div>
                     <div style="color:#00ffff; font-weight:bold;">${loc.name}</div>
+                    <button class="action-button ghost-btn small-btn" style="padding:6px 15px; width:auto;" onclick="editLocationPrompt('${loc.id}')">✏️ Edit</button>
                 </div>
             `).join('');
 
             // 3. Render Roles
             document.getElementById('master-roles-list').innerHTML = systemRoles.map(r => `
-                <div class="admin-row" style="grid-template-columns: 1fr; border-color: rgba(255,0,255,0.2); padding: 12px 15px;">
-                    <div style="color:#39ff14; font-weight:bold; text-transform:uppercase; text-shadow:0 0 10px #39ff14;">${r.name}</div>
-                    <div style="color:#aaa; font-size:0.75rem; margin-top:5px;">Permissions mapped successfully.</div>
+                <div class="admin-row" style="grid-template-columns: 1fr auto; border-color: rgba(255,0,255,0.2); padding: 12px 15px;">
+                    <div>
+                        <div style="color:#39ff14; font-weight:bold; text-transform:uppercase; text-shadow:0 0 10px #39ff14;">${r.name}</div>
+                        <div style="color:#aaa; font-size:0.75rem; margin-top:5px;">Permissions mapped successfully.</div>
+                    </div>
+                    <button class="action-button ghost-btn small-btn" style="padding:6px 15px; width:auto;" onclick="editRolePrompt('${r.name}')">✏️ Edit Policy</button>
                 </div>
             `).join('');
         }
@@ -1055,8 +1069,78 @@
             document.getElementById(id).classList.toggle('show');
         }
 
-        function editUserPlaceholder() { alert("User edit feature coming soon."); }
+        // --- Modals for Editing Master Entries ---
+        async function editUserPrompt(docId) {
+            const userDoc = await db.collection('users').doc(docId).get();
+            const data = userDoc.data();
+            const locOptions = `<option value="ALL">ALL (Master Access)</option>` + systemLocations.map(l => `<option value="${l.id}" ${l.id===data.location_id?'selected':''}>${l.name}</option>`).join('');
+            const roleOptions = `<option value="master" ${data.role==='master'?'selected':''}>Master Admin</option>` + systemRoles.map(r => `<option value="${r.name}" ${r.name===data.role?'selected':''}>${r.name}</option>`).join('');
 
+            const bodyField = document.getElementById('modal-injected-body');
+            document.getElementById('modal-title-field').textContent = `Edit User`;
+            bodyField.innerHTML = `
+                <div class="form-group"><label>Username</label><input type="text" id="edit_u_name" class="themed-input" value="${data.username}"></div>
+                <div class="form-group"><label>Role</label><select id="edit_u_role" class="themed-input">${roleOptions}</select></div>
+                <div class="form-group"><label>Location</label><select id="edit_u_loc" class="themed-input">${locOptions}</select></div>
+                <button class="action-button success-btn" style="margin-top:15px;" onclick="submitEditUser('${docId}')">Save Changes</button>
+            `;
+            document.getElementById('modal-overlay').classList.add('active');
+        }
+
+        async function submitEditUser(docId) {
+            const u = document.getElementById('edit_u_name').value.trim();
+            const r = document.getElementById('edit_u_role').value;
+            const l = document.getElementById('edit_u_loc').value;
+            if(!u) return alert("Username required");
+            try {
+                await db.collection('users').doc(docId).update({username: u, role: r, location_id: l});
+                closeTopModal(); renderMasterView(); alert("User updated successfully");
+            } catch(e) { alert("Error updating user."); }
+        }
+
+        function editLocationPrompt(id) {
+            const loc = systemLocations.find(l => l.id === id);
+            const name = prompt("Enter new Display Name for location " + id + ":", loc.name);
+            if(name && name.trim() !== '') {
+                loc.name = name.trim();
+                db.collection('system_config').doc('locations').set({ list: systemLocations }).then(() => {
+                    populateMasterDropdowns(); renderMasterView();
+                });
+            }
+        }
+
+        function editRolePrompt(name) {
+            const role = systemRoles.find(r => r.name === name);
+            const bodyField = document.getElementById('modal-injected-body');
+            document.getElementById('modal-title-field').textContent = `Edit Policy: ${name}`;
+            bodyField.innerHTML = `
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-top:10px; background:rgba(0,0,0,0.4); padding:15px; border-radius:8px;">
+                    <label class="checkbox-label"><input type="checkbox" id="edit_perm_live_manage" ${role.perms.live_manage?'checked':''}> Live Station: Make Entry & Manage</label>
+                    <label class="checkbox-label"><input type="checkbox" id="edit_perm_live_end" ${role.perms.live_end?'checked':''}> Live Station: End Session</label>
+                    <label class="checkbox-label"><input type="checkbox" id="edit_perm_ledger" ${role.perms.ledger?'checked':''}> Overview: Financial Ledger</label>
+                    <label class="checkbox-label"><input type="checkbox" id="edit_perm_station_rates" ${role.perms.station_rates?'checked':''}> Station: Maintain Rates</label>
+                    <label class="checkbox-label"><input type="checkbox" id="edit_perm_inventory" ${role.perms.inventory?'checked':''}> Inventory: Maintain Stock</label>
+                </div>
+                <button class="action-button success-btn" style="margin-top:15px;" onclick="submitEditRole('${name}')">Save Policy</button>
+            `;
+            document.getElementById('modal-overlay').classList.add('active');
+        }
+
+        function submitEditRole(name) {
+            const role = systemRoles.find(r => r.name === name);
+            role.perms = {
+                live_manage: document.getElementById('edit_perm_live_manage').checked,
+                live_end: document.getElementById('edit_perm_live_end').checked,
+                ledger: document.getElementById('edit_perm_ledger').checked,
+                station_rates: document.getElementById('edit_perm_station_rates').checked,
+                inventory: document.getElementById('edit_perm_inventory').checked
+            };
+            db.collection('system_config').doc('roles').set({ list: systemRoles }).then(() => {
+                closeTopModal(); renderMasterView();
+            });
+        }
+
+        // User Security Management
         async function toggleLockUser(docId, isCurrentlyLocked) {
             try {
                 await db.collection('users').doc(docId).update({ isLocked: !isCurrentlyLocked, failedAttempts: 0 });
@@ -1084,6 +1168,7 @@
             } catch(e) { alert("Error resetting passcode."); }
         }
 
+        // Creators
         async function createNewUser() {
             const username = document.getElementById('new_user_name').value.trim();
             const role = document.getElementById('new_user_role').value;
@@ -1114,8 +1199,7 @@
             systemLocations.push({ id: id, name: name });
             try {
                 await db.collection('system_config').doc('locations').set({ list: systemLocations });
-                populateMasterDropdowns();
-                alert("Location established.");
+                populateMasterDropdowns(); alert("Location established.");
                 document.getElementById('new_loc_id').value = ''; document.getElementById('new_loc_name').value = ''; renderMasterView();
             } catch(e) { alert("Error adding location."); }
         }
@@ -1141,6 +1225,51 @@
                 document.querySelectorAll('#tab-roles input[type="checkbox"]').forEach(c => c.checked = false);
                 renderMasterView();
             } catch(e) { alert("Error saving role."); }
+        }
+
+        // Global Logs Fetcher
+        async function fetchMasterLogs() {
+            if(!db) return;
+            document.getElementById('master-logs-table').innerHTML = `<p style="color:#00ffff;">Scanning all locations...</p>`;
+            let allLogs = [];
+            
+            for(let loc of systemLocations) {
+                try {
+                    const snap = await db.collection('locations').doc(loc.id).collection('logs').orderBy('id', 'desc').limit(30).get();
+                    snap.forEach(doc => {
+                        let data = doc.data();
+                        data.locName = loc.name;
+                        allLogs.push(data);
+                    });
+                } catch(e) {}
+            }
+            allLogs.sort((a,b) => b.id.localeCompare(a.id));
+
+            if(allLogs.length === 0) {
+                document.getElementById('master-logs-table').innerHTML = `<p style="color:#aaa;">No transactions recorded across locations.</p>`;
+                return;
+            }
+
+            let rows = allLogs.map(log => {
+                let totalItems = log.foodHistory ? log.foodHistory.reduce((s, f) => s + f.qty, 0) : 0;
+                let grandTotal = log.statements?.grandTotal || 0;
+                return `<tr>
+                    <td style="color:#00ffff; font-weight:bold;">${log.locName}</td>
+                    <td style="font-weight:900; color:#ff00ff; text-shadow:0 0 5px #ff00ff;">P${log.stationId}</td>
+                    <td>${log.dateStr}</td>
+                    <td style="color:#aaa;">${log.duration}m</td>
+                    <td>${totalItems} Itm</td>
+                    <td style="color:#39ff14; font-weight:900;">₹${grandTotal.toFixed(2)}</td>
+                </tr>`;
+            }).join('');
+
+            document.getElementById('master-logs-table').innerHTML = `
+                <div style="background:rgba(10,0,20,0.8); border-radius:15px; border:1px solid #00ffff; overflow:hidden; box-shadow: 0 0 20px rgba(0,255,255,0.1);">
+                    <table class="log-table" style="margin-top:0;">
+                        <thead><tr><th>Location</th><th>Station</th><th>Date</th><th>Dur.</th><th>Loot</th><th>Bounty</th></tr></thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                </div>`;
         }
 
         // ==========================================
