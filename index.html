@@ -31,11 +31,9 @@
             position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -2; 
             background-color: #05010a; 
             background-image: 
-                /* Glowing Nebula Clouds */
                 radial-gradient(circle at 15% 50%, rgba(255, 0, 255, 0.15) 0%, transparent 40%), 
                 radial-gradient(circle at 85% 20%, rgba(0, 255, 255, 0.15) 0%, transparent 50%), 
                 radial-gradient(circle at 50% 100%, rgba(138, 43, 226, 0.2) 0%, transparent 50%), 
-                /* Multi-Layered Stars */
                 radial-gradient(1.5px 1.5px at 20px 30px, #ffffff, rgba(0,0,0,0)), 
                 radial-gradient(2px 2px at 90px 40px, #e8d5ff, rgba(0,0,0,0)), 
                 radial-gradient(1px 1px at 160px 120px, #ffffff, rgba(0,0,0,0)), 
@@ -52,11 +50,11 @@
             100% { background-position: 0% 0%, 0% 0%, 0% 0%, -250px -250px, -350px -350px, -400px -400px, -200px -200px, -450px -450px, -300px -300px; } 
         }
 
-        /* --- Login Screen --- */
-        #login-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
+        /* --- Overlays (Login & Password Change) --- */
+        .fullscreen-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; background: rgba(5,1,10,0.8); backdrop-filter: blur(10px); }
         .login-box { background: rgba(10, 5, 20, 0.85); backdrop-filter: blur(20px); border: 2px solid #00ffff; border-radius: 20px; padding: 50px 40px; display: flex; flex-direction: column; align-items: center; gap: 15px; box-shadow: 0 0 30px rgba(0,255,255,0.3), inset 0 0 20px rgba(255,0,255,0.2); width: 100%; max-width: 400px; }
         .login-logo { width: 150px; margin-bottom: 10px; filter: drop-shadow(0 0 20px rgba(0,255,255,0.6)); }
-        .login-title { font-family: 'Orbitron', sans-serif; font-size: 1.8rem; text-transform: uppercase; background: linear-gradient(90deg, #00ffff, #ff00ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 3px; text-shadow: 0 0 20px rgba(255,0,255,0.5); }
+        .login-title { font-family: 'Orbitron', sans-serif; font-size: 1.8rem; text-transform: uppercase; background: linear-gradient(90deg, #00ffff, #ff00ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 3px; text-shadow: 0 0 20px rgba(255,0,255,0.5); text-align: center; }
         
         /* --- Neon Themed Inputs --- */
         .themed-input { width: 100%; background: rgba(0,0,0,0.8); border: 1px solid #ff00ff; border-radius: 8px; padding: 12px 15px; color: #00ffff; font-size: 1rem; font-weight: bold; outline: none; transition: 0.3s; box-shadow: inset 0 0 10px rgba(255,0,255,0.2); }
@@ -169,21 +167,17 @@
         .finance-card.loss { border-bottom: 4px solid #ff003c; box-shadow: 0 10px 20px rgba(255,0,60,0.2), inset 0 0 20px rgba(0,255,255,0.1); }
         .finance-label { font-size: 0.85rem; color: #00ffff; text-transform: uppercase; font-weight: bold; margin-bottom: 8px; letter-spacing: 2px; text-shadow: 0 0 10px rgba(0,255,255,0.5);}
         .finance-amt { font-family: 'Orbitron', sans-serif; font-size: 2.2rem; font-weight: 900; color: #fff; }
-        .color-orange { color: #39ff14; text-shadow: 0 0 15px rgba(57,255,20,0.8); }
-        .color-red { color: #ff003c; text-shadow: 0 0 15px rgba(255,0,60,0.8); }
         
-        /* Flex Header Title */
         .view-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
-    <!-- DEEP SPACE GALAXY BACKGROUND -->
     <div id="tech-background"></div>
     <div id="galaxy-background"></div>
 
     <!-- STAFF LOGIN OVERLAY -->
-    <div id="login-screen">
+    <div id="login-screen" class="fullscreen-overlay">
         <div class="login-box glass-panel">
             <img src="wgz_prple_logo_3.png" alt="Wonder GZ Logo" class="login-logo">
             <h2 class="login-title">System Auth</h2>
@@ -191,6 +185,19 @@
             <input type="password" id="staff-password" class="themed-input" style="text-align:center;" placeholder="Passcode">
             <button class="action-button" style="font-size:1.1rem; padding:15px; margin-top:20px;" onclick="handleLogin()">ENTER SERVER</button>
             <p id="login-error" style="color:#ff4444; font-size:0.85rem; font-weight:bold; display:none; text-align:center; text-shadow: 0 0 5px red;"></p>
+        </div>
+    </div>
+
+    <!-- CHANGE PASSWORD OVERLAY -->
+    <div id="change-password-screen" class="fullscreen-overlay hidden">
+        <div class="login-box glass-panel">
+            <h2 class="login-title" style="font-size: 1.4rem; color: #39ff14;">Update Passcode</h2>
+            <p style="color: #aaa; font-size: 0.8rem; text-align: center; margin-bottom: 10px;">Security dictates you must establish a new passcode.</p>
+            <input type="password" id="new-pwd-1" class="themed-input" style="text-align:center;" placeholder="New Passcode">
+            <input type="password" id="new-pwd-2" class="themed-input" style="text-align:center;" placeholder="Confirm Passcode">
+            <button class="action-button success-btn" style="font-size:1rem; padding:12px; margin-top:10px;" onclick="submitNewPassword()">LOCK IN SECRETS</button>
+            <button class="action-button ghost-btn small-btn" onclick="handleLogout()">Cancel & Logout</button>
+            <p id="pwd-error" style="color:#ff4444; font-size:0.85rem; font-weight:bold; display:none; text-align:center;"></p>
         </div>
     </div>
 
@@ -208,8 +215,6 @@
             <div style="display:flex; align-items:center; gap:15px;">
                 <select id="master-location-switcher" class="location-switcher hidden" onchange="switchLocation(this.value)">
                     <option value="loc_delhi_01">Delhi 01</option>
-                    <option value="loc_gurugram_01">Gurugram 01</option>
-                    <option value="loc_mumbai_01">Mumbai 01</option>
                 </select>
 
                 <div class="dropdown-container">
@@ -218,6 +223,8 @@
                         <div class="dropdown-item" onclick="navigateTo('stations')">🎮 Live Stations</div>
                         <div class="dropdown-item" onclick="navigateTo('admin')">⚙️ Admin Cockpit</div>
                         <div class="dropdown-item" onclick="navigateTo('logs')">📜 Session Register</div>
+                        <div class="dropdown-item hidden" id="master-portal-btn" onclick="navigateTo('master')">👑 Master Portal</div>
+                        <div class="dropdown-item" onclick="showChangePasswordScreen(false)">🔑 Change Passcode</div>
                         <div class="dropdown-item logout-item" onclick="handleLogout()">🚪 Logout App</div>
                     </div>
                 </div>
@@ -252,8 +259,7 @@
 
             <!-- Tab 1: Financials -->
             <div id="tab-finances" class="admin-tab-content active">
-                <div id="finance-dashboard-injection"></div> <!-- Injected via JS -->
-                
+                <div id="finance-dashboard-injection"></div> 
                 <div class="section-title" style="margin-top: 30px;">Log New Expense</div>
                 <div class="admin-row" style="grid-template-columns: 2fr 1fr auto;">
                     <input type="text" id="new_exp_desc" class="themed-input" placeholder="Expense Record (e.g. Utility Bills, Maintenance)">
@@ -308,15 +314,56 @@
             <div id="logs-full-table"></div>
         </main>
 
+        <!-- VIEW 4: MASTER PORTAL -->
+        <main id="view-master" class="view-section glass-panel hidden">
+            <div class="view-header">
+                <h2 class="section-title" style="font-size: 1.8rem; margin:0; border:none; text-shadow: 0 0 15px #ff00ff; color:#ff00ff;">👑 Master Portal</h2>
+                <button class="action-button ghost-btn small-btn" style="width: auto; padding: 10px 20px;" onclick="navigateTo('stations')">← Back to Stations</button>
+            </div>
+
+            <!-- Master Tabs -->
+            <div class="admin-nav">
+                <button class="admin-tab-btn active" id="btn-tab-users" onclick="switchMasterTab('users')">Manage Users</button>
+                <button class="admin-tab-btn" id="btn-tab-locations" onclick="switchMasterTab('locations')">Manage Locations</button>
+            </div>
+
+            <!-- Tab: Users -->
+            <div id="tab-users" class="admin-tab-content active">
+                <div class="section-title" style="font-size:1rem;">Add New User Account</div>
+                <div class="admin-row" style="grid-template-columns: 1fr 1fr 1fr auto;">
+                    <input type="text" id="new_user_name" class="themed-input" placeholder="Username">
+                    <select id="new_user_role" class="themed-input"><option value="manager">Manager</option><option value="master">Master Admin</option></select>
+                    <select id="new_user_loc" class="themed-input" title="Target Location"></select>
+                    <button class="action-button success-btn small-btn" style="width:auto; padding:0 30px;" onclick="createNewUser()">Create</button>
+                </div>
+                <p style="color:#aaa; font-size:0.7rem; margin-top:-5px; margin-bottom:20px;">*New accounts are created with default passcode: <strong>admin123</strong> and will be forced to change it upon first login.</p>
+
+                <div class="section-title" style="font-size:1rem;">System Accounts</div>
+                <div id="master-users-list"></div>
+            </div>
+
+            <!-- Tab: Locations -->
+            <div id="tab-locations" class="admin-tab-content">
+                <div class="section-title" style="font-size:1rem;">Add New Location</div>
+                <div class="admin-row" style="grid-template-columns: 1fr 1fr auto;">
+                    <input type="text" id="new_loc_id" class="themed-input" placeholder="Location ID (e.g. loc_pune_01)">
+                    <input type="text" id="new_loc_name" class="themed-input" placeholder="Display Name (e.g. Pune 01)">
+                    <button class="action-button success-btn small-btn" style="width:auto; padding:0 30px;" onclick="createNewLocation()">Establish Location</button>
+                </div>
+                <div class="section-title" style="font-size:1rem; margin-top:30px;">Active System Locations</div>
+                <div id="master-locations-list" style="display:grid; gap:10px;"></div>
+            </div>
+        </main>
+
     </div>
 
-    <!-- Global Save Bar (Moves outside Modal) -->
+    <!-- Global Save Bar -->
     <div id="global-save-bar">
         <span style="color:#fff; font-size:1.1rem; font-weight:bold; font-family:'Orbitron'; text-shadow: 0 0 10px #39ff14;">⚠️ Unsaved Configuration Changes</span>
         <button class="action-button success-btn" style="width:auto; padding:12px 30px; font-size: 1rem; letter-spacing: 1px;" onclick="saveAllAdminChanges()">💾 Commit Changes</button>
     </div>
 
-    <!-- Modals (Station Terminal & Bill Receipt Only) -->
+    <!-- Terminal Modal -->
     <div class="modal-overlay" id="modal-overlay" onclick="hideActiveModal(event)">
         <div class="modal-container glass-panel" onclick="event.stopPropagation()">
             <div class="modal-header">
@@ -356,6 +403,9 @@
         let unsubscribeStations = null;
         let currentLocationId = 'default_loc';
         let currentUserRole = 'manager';
+        let loggedInUserId = null;
+        
+        let systemLocations = []; 
 
         let inventoryData = [
             { id: 'inv_1', name: 'Classic Burger', category: 'Food', price: 7.00, stock: 10, isShortcut: false },
@@ -443,21 +493,64 @@
             refreshDashboardVisuals(); 
         }
 
+        // --- Global Location Fetcher ---
+        async function fetchSystemLocations() {
+            if (!db) return;
+            try {
+                const locSnap = await db.collection('system_config').doc('locations').get();
+                if(locSnap.exists) {
+                    systemLocations = locSnap.data().list || [];
+                    populateLocationDropdowns();
+                } else {
+                    // Fallback defaults if document doesn't exist yet
+                    systemLocations = [
+                        {id: 'loc_delhi_01', name: 'Delhi 01'},
+                        {id: 'loc_gurugram_01', name: 'Gurugram 01'},
+                        {id: 'loc_mumbai_01', name: 'Mumbai 01'}
+                    ];
+                    await db.collection('system_config').doc('locations').set({ list: systemLocations });
+                    populateLocationDropdowns();
+                }
+            } catch(e) { console.error("Error fetching locations:", e); }
+        }
+
+        function populateLocationDropdowns() {
+            const masterSwitcher = document.getElementById('master-location-switcher');
+            const userLocSelect = document.getElementById('new_user_loc');
+            
+            let optionsHTML = systemLocations.map(loc => `<option value="${loc.id}">${loc.name}</option>`).join('');
+            
+            if(masterSwitcher) {
+                masterSwitcher.innerHTML = optionsHTML;
+                if(currentLocationId !== 'ALL') masterSwitcher.value = currentLocationId;
+            }
+            if(userLocSelect) {
+                userLocSelect.innerHTML = `<option value="ALL">ALL (Master Access)</option>` + optionsHTML;
+            }
+        }
+
         // ==========================================
-        // 4. CUSTOM DATABASE LOGIN & NAVIGATION
+        // 4. CUSTOM DATABASE LOGIN & SECURITY
         // ==========================================
         function checkLoginState() {
             const isLoggedIn = sessionStorage.getItem('wgz_isLoggedIn');
             if (isLoggedIn === 'true') {
                 currentLocationId = sessionStorage.getItem('wgz_locId') || 'loc_default';
                 currentUserRole = sessionStorage.getItem('wgz_role') || 'manager';
+                loggedInUserId = sessionStorage.getItem('wgz_docId');
 
                 document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('change-password-screen').classList.add('hidden');
                 document.getElementById('main-app').classList.remove('hidden');
                 
+                fetchSystemLocations();
+
                 if (currentUserRole === 'master') {
                     document.getElementById('master-location-switcher').classList.remove('hidden');
-                    document.getElementById('master-location-switcher').value = currentLocationId === 'ALL' ? document.getElementById('master-location-switcher').value : currentLocationId;
+                    document.getElementById('master-portal-btn').classList.remove('hidden');
+                } else {
+                    document.getElementById('master-location-switcher').classList.add('hidden');
+                    document.getElementById('master-portal-btn').classList.add('hidden');
                 }
 
                 document.getElementById('header-loc-title').textContent = `Branch: ${currentLocationId.replace('loc_', '').toUpperCase()}`;
@@ -465,6 +558,7 @@
                 navigateTo('stations');
             } else {
                 document.getElementById('login-screen').classList.remove('hidden');
+                document.getElementById('change-password-screen').classList.add('hidden');
                 document.getElementById('main-app').classList.add('hidden');
             }
         }
@@ -478,20 +572,78 @@
 
             if (db) {
                 try {
-                    const userQuery = await db.collection('users').where('username', '==', username).where('password', '==', pass).get();
+                    // Step 1: Find User by Username
+                    const userQuery = await db.collection('users').where('username', '==', username).get();
+                    
                     if (!userQuery.empty) {
-                        const data = userQuery.docs[0].data();
-                        sessionStorage.setItem('wgz_isLoggedIn', 'true');
-                        sessionStorage.setItem('wgz_locId', data.location_id || 'ALL'); 
-                        sessionStorage.setItem('wgz_role', data.role || 'manager');
-                        checkLoginState();
-                    } else throw new Error("Invalid username or passcode.");
-                } catch(err) { errLabel.textContent = "Error: " + err.message; errLabel.style.display = 'block'; }
-            } else {
-                sessionStorage.setItem('wgz_isLoggedIn', 'true');
-                sessionStorage.setItem('wgz_locId', 'loc_local_test');
-                sessionStorage.setItem('wgz_role', 'master');
-                checkLoginState();
+                        const userDoc = userQuery.docs[0];
+                        const data = userDoc.data();
+                        const docId = userDoc.id;
+
+                        // Step 2: Check if Locked
+                        if (data.isLocked) {
+                            throw new Error("ACCOUNT LOCKED. Contact Master Admin.");
+                        }
+
+                        // Step 3: Check Password
+                        if (data.password === pass) {
+                            // Reset failed attempts on success
+                            if(data.failedAttempts > 0) await db.collection('users').doc(docId).update({ failedAttempts: 0 });
+
+                            sessionStorage.setItem('wgz_isLoggedIn', 'true');
+                            sessionStorage.setItem('wgz_docId', docId);
+                            sessionStorage.setItem('wgz_locId', data.location_id || 'ALL'); 
+                            sessionStorage.setItem('wgz_role', data.role || 'manager');
+                            
+                            if (data.requiresPasswordChange) {
+                                showChangePasswordScreen(true);
+                            } else {
+                                checkLoginState();
+                            }
+                        } else {
+                            // Incorrect Password -> Increment Failures
+                            let attempts = (data.failedAttempts || 0) + 1;
+                            let locked = attempts >= 5;
+                            await db.collection('users').doc(docId).update({ failedAttempts: attempts, isLocked: locked });
+                            
+                            if (locked) throw new Error("ACCOUNT LOCKED due to 5 failed attempts.");
+                            else throw new Error(`Invalid passcode. ${5 - attempts} attempts remaining.`);
+                        }
+                    } else throw new Error("Username not found in system.");
+                } catch(err) { errLabel.textContent = err.message; errLabel.style.display = 'block'; }
+            }
+        }
+
+        function showChangePasswordScreen(isForced) {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('main-app').classList.add('hidden');
+            document.getElementById('change-password-screen').classList.remove('hidden');
+            
+            const err = document.getElementById('pwd-error');
+            err.style.display = 'block';
+            err.style.color = '#ffcc00';
+            err.textContent = isForced ? "Your account requires a mandatory password update." : "Enter a new secure passcode.";
+        }
+
+        async function submitNewPassword() {
+            const p1 = document.getElementById('new-pwd-1').value;
+            const p2 = document.getElementById('new-pwd-2').value;
+            const errLabel = document.getElementById('pwd-error');
+            const docId = sessionStorage.getItem('wgz_docId');
+
+            if(!p1 || !p2) { errLabel.textContent = "Fill both fields."; errLabel.style.color='#ff4444'; return; }
+            if(p1 !== p2) { errLabel.textContent = "Passcodes do not match."; errLabel.style.color='#ff4444'; return; }
+            if(p1.length < 6) { errLabel.textContent = "Passcode must be at least 6 characters."; errLabel.style.color='#ff4444'; return; }
+
+            try {
+                await db.collection('users').doc(docId).update({
+                    password: p1,
+                    requiresPasswordChange: false
+                });
+                alert("Passcode updated securely.");
+                checkLoginState(); // Will now route to dashboard
+            } catch (e) {
+                errLabel.textContent = "System Error updating passcode."; errLabel.style.color='#ff4444';
             }
         }
 
@@ -499,7 +651,7 @@
             if(unsubscribeStations) unsubscribeStations();
             currentLocationId = newLocId;
             sessionStorage.setItem('wgz_locId', newLocId);
-            document.getElementById('header-loc-title').textContent = `Branch: ${newLocId.replace('loc_', '').toUpperCase()}`;
+            document.getElementById('header-loc-title').textContent = `Branch: ${systemLocations.find(l=>l.id===newLocId)?.name || newLocId}`;
             loadLocalFallback(); bootCloudListeners(); navigateTo('stations');
         }
 
@@ -507,7 +659,15 @@
             sessionStorage.clear();
             if(unsubscribeStations) unsubscribeStations();
             document.getElementById('mainMenu').classList.remove('show');
-            checkLoginState();
+            document.getElementById('change-password-screen').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('hidden');
+            
+            // Clear inputs
+            document.getElementById('staff-username').value = '';
+            document.getElementById('staff-password').value = '';
+            document.getElementById('new-pwd-1').value = '';
+            document.getElementById('new-pwd-2').value = '';
+            document.getElementById('login-error').style.display = 'none';
         }
 
         // --- View Controller ---
@@ -516,6 +676,7 @@
             document.getElementById('view-stations').classList.add('hidden');
             document.getElementById('view-admin').classList.add('hidden');
             document.getElementById('view-logs').classList.add('hidden');
+            document.getElementById('view-master').classList.add('hidden');
             document.getElementById('global-save-bar').classList.remove('active');
 
             if(viewId === 'stations') {
@@ -527,17 +688,31 @@
             } else if (viewId === 'logs') {
                 document.getElementById('view-logs').classList.remove('hidden');
                 renderLogsView();
+            } else if (viewId === 'master' && currentUserRole === 'master') {
+                document.getElementById('view-master').classList.remove('hidden');
+                renderMasterView();
             }
         }
 
         function switchAdminTab(tabId) {
-            document.querySelectorAll('.admin-tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.admin-tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById('btn-tab-finance').classList.remove('active');
+            document.getElementById('btn-tab-rates').classList.remove('active');
+            document.getElementById('btn-tab-inventory').classList.remove('active');
+            document.getElementById('tab-finances').classList.remove('active');
+            document.getElementById('tab-rates').classList.remove('active');
+            document.getElementById('tab-inventory').classList.remove('active');
             
-            if(tabId === 'finances') document.getElementById('btn-tab-finance').classList.add('active');
-            if(tabId === 'rates') document.getElementById('btn-tab-rates').classList.add('active');
-            if(tabId === 'inventory') document.getElementById('btn-tab-inventory').classList.add('active');
+            document.getElementById(`btn-tab-${tabId}`).classList.add('active');
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+        }
+
+        function switchMasterTab(tabId) {
+            document.getElementById('btn-tab-users').classList.remove('active');
+            document.getElementById('btn-tab-locations').classList.remove('active');
+            document.getElementById('tab-users').classList.remove('active');
+            document.getElementById('tab-locations').classList.remove('active');
             
+            document.getElementById(`btn-tab-${tabId}`).classList.add('active');
             document.getElementById(`tab-${tabId}`).classList.add('active');
         }
 
@@ -896,7 +1071,107 @@
         }
 
         // ==========================================
-        // 9. TICK ENGINE
+        // 9. MASTER ADMIN PORTAL
+        // ==========================================
+        async function renderMasterView() {
+            if(!db || currentUserRole !== 'master') return;
+
+            // Fetch and Render Users
+            const userSnap = await db.collection('users').get();
+            let usersHtml = userSnap.docs.map(doc => {
+                const data = doc.data();
+                const statusColor = data.isLocked ? '#ff4444' : '#39ff14';
+                const statusText = data.isLocked ? 'LOCKED' : 'Active';
+                
+                let actions = data.isLocked 
+                    ? `<button class="action-button success-btn small-btn" style="padding:6px; margin-right:5px; width:auto;" onclick="unlockUser('${doc.id}')">🔓 Unlock</button>` 
+                    : ``;
+                
+                actions += `<button class="action-button release-button small-btn" style="padding:6px; width:auto;" onclick="resetUserPwd('${doc.id}')">🔄 Reset Pwd</button>`;
+
+                return `
+                <div class="admin-row" style="grid-template-columns: 1fr 1fr 1fr 100px auto; align-items:center;">
+                    <div style="color:#00ffff; font-weight:bold;">${data.username}</div>
+                    <div style="color:#ccc; font-size:0.8rem; text-transform:uppercase;">${data.role}</div>
+                    <div style="color:#ccc; font-size:0.8rem;">${data.location_id}</div>
+                    <div style="color:${statusColor}; font-weight:bold; font-size:0.8rem; text-shadow:0 0 10px ${statusColor};">${statusText}</div>
+                    <div style="display:flex; justify-content:flex-end;">${actions}</div>
+                </div>`;
+            }).join('');
+            document.getElementById('master-users-list').innerHTML = usersHtml;
+
+            // Render Locations
+            let locsHtml = systemLocations.map(loc => `
+                <div class="admin-row" style="grid-template-columns: 1fr 1.5fr; padding: 10px 15px;">
+                    <div style="color:#ff00ff; font-weight:bold;">${loc.id}</div>
+                    <div style="color:#00ffff; font-weight:bold;">${loc.name}</div>
+                </div>
+            `).join('');
+            document.getElementById('master-locations-list').innerHTML = locsHtml;
+        }
+
+        async function createNewUser() {
+            const username = document.getElementById('new_user_name').value.trim();
+            const role = document.getElementById('new_user_role').value;
+            const loc = document.getElementById('new_user_loc').value;
+
+            if(!username) return alert("Enter a username.");
+            
+            try {
+                // Check if username exists
+                const existing = await db.collection('users').where('username', '==', username).get();
+                if(!existing.empty) return alert("Username already exists.");
+
+                await db.collection('users').add({
+                    username: username,
+                    password: 'admin123',
+                    role: role,
+                    location_id: loc,
+                    failedAttempts: 0,
+                    isLocked: false,
+                    requiresPasswordChange: true
+                });
+                alert(`User ${username} created! Default passcode is: admin123`);
+                document.getElementById('new_user_name').value = '';
+                renderMasterView();
+            } catch(e) { alert("Error creating user."); }
+        }
+
+        async function unlockUser(docId) {
+            try {
+                await db.collection('users').doc(docId).update({ isLocked: false, failedAttempts: 0 });
+                alert("Account Unlocked."); renderMasterView();
+            } catch(e) { alert("Error unlocking account."); }
+        }
+
+        async function resetUserPwd(docId) {
+            if(!confirm("Reset this user's passcode to 'admin123'?")) return;
+            try {
+                await db.collection('users').doc(docId).update({ password: 'admin123', requiresPasswordChange: true, isLocked: false, failedAttempts: 0 });
+                alert("Passcode reset to admin123. User will be forced to change it on next login."); renderMasterView();
+            } catch(e) { alert("Error resetting passcode."); }
+        }
+
+        async function createNewLocation() {
+            const id = document.getElementById('new_loc_id').value.trim();
+            const name = document.getElementById('new_loc_name').value.trim();
+
+            if(!id || !name) return alert("Fill out both location fields.");
+            if(systemLocations.find(l => l.id === id)) return alert("Location ID already exists.");
+
+            systemLocations.push({ id: id, name: name });
+            try {
+                await db.collection('system_config').doc('locations').set({ list: systemLocations });
+                populateLocationDropdowns();
+                alert("Location added successfully.");
+                document.getElementById('new_loc_id').value = '';
+                document.getElementById('new_loc_name').value = '';
+                renderMasterView();
+            } catch(e) { alert("Error adding location."); }
+        }
+
+        // ==========================================
+        // 10. TICK ENGINE
         // ==========================================
         setInterval(() => {
             const now = new Date();
