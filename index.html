@@ -406,12 +406,6 @@
                 <div class="section-title" style="font-size:1rem; color:#ff00ff; text-shadow:none;">Global Transaction Feed</div>
                 <div id="master-logs-table"></div>
             </div>
-            
-            <!-- Nuclear Option (Always visible to Master at bottom) -->
-            <div style="margin-top: 60px; padding-top: 20px; border-top: 1px dashed rgba(255,68,68,0.3); text-align: center;">
-                <div class="section-title" style="color:#ff4444; text-shadow:0 0 10px rgba(255,68,68,0.8); justify-content: center; font-size:1.1rem;">🚨 Danger Zone</div>
-                <button class="action-button release-button" style="width: auto; padding: 15px 40px; font-size: 1rem;" onclick="promptWipeData()">☢️ INITIATE SYSTEM WIPE</button>
-            </div>
         </main>
 
     </div>
@@ -598,7 +592,7 @@
             const menu = document.getElementById('mainMenu');
             if (currentUserRole === 'master') {
                 menu.innerHTML = `
-                    <div class="dropdown-item" onclick="navigateTo('master')">👑 Master Portal</div>
+                    <div class="dropdown-item" style="color:#ff4444; font-weight:bold;" onclick="promptWipeData()">☢️ Factory Reset</div>
                     <div class="dropdown-item" onclick="showChangePasswordScreen(false)">🔑 Change Passcode</div>
                     <div class="dropdown-item logout-item" onclick="handleLogout()">🚪 Disconnect</div>
                 `;
@@ -653,7 +647,6 @@
 
             if (db) {
                 try {
-                    // Check username first
                     const userQuery = await db.collection('users').where('username', '==', username).get();
                     if (!userQuery.empty) {
                         const userDoc = userQuery.docs[0];
@@ -673,7 +666,6 @@
                             if (data.requiresPasswordChange) showChangePasswordScreen(true);
                             else checkLoginState();
                         } else {
-                            // Incorrect Password -> Increment Failures
                             let attempts = (data.failedAttempts || 0) + 1;
                             let locked = attempts >= 5;
                             await db.collection('users').doc(docId).update({ failedAttempts: attempts, isLocked: locked });
@@ -692,6 +684,7 @@
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('main-app').classList.add('hidden');
             document.getElementById('change-password-screen').classList.remove('hidden');
+            document.getElementById('mainMenu').classList.remove('show');
             
             const err = document.getElementById('pwd-error');
             err.style.display = 'block'; err.style.color = '#00ffff';
@@ -1234,6 +1227,7 @@
 
         // --- System Purge ---
         function promptWipeData() {
+            document.getElementById('mainMenu').classList.remove('show');
             document.getElementById('wipe-master-pwd').value = '';
             document.getElementById('wipe-prompt-screen').classList.remove('hidden');
         }
