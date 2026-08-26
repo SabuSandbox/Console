@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Wonder Gamezone - Administration</title>
     
-    <meta name="theme-color" content="#090414">
+    <meta name="theme-color" content="#030108">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Wonder GZ">
@@ -23,154 +23,170 @@
     <style>
         /* --- GLOBAL RESET & TYPOGRAPHY --- */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { color: #ffffff; min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 20px; overflow-x: hidden; background-color: #070310; user-select: none; -webkit-user-select: none; }
+        body { color: #ffffff; min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 20px; overflow-x: hidden; background-color: #030108; user-select: none; -webkit-user-select: none; }
         input, select, textarea { user-select: auto; -webkit-user-select: auto; font-family: inherit; }
         .hidden { display: none !important; }
 
-        /* --- AMBIENT AURORA BACKGROUND (NORTHERN LIGHTS) --- */
-        #ambient-aurora {
+        /* --- DARK GALAXY & WAVE BACKGROUND --- */
+        #galaxy-background {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -3;
+            background-color: #030108;
+            background-image: 
+                radial-gradient(1.5px 1.5px at 15vw 20vh, rgba(255,255,255,0.8), rgba(0,0,0,0)), 
+                radial-gradient(2px 2px at 30vw 60vh, rgba(255,255,255,0.6), rgba(0,0,0,0)), 
+                radial-gradient(1px 1px at 60vw 40vh, rgba(255,255,255,0.9), rgba(0,0,0,0)), 
+                radial-gradient(1.5px 1.5px at 80vw 80vh, rgba(255,255,255,0.5), rgba(0,0,0,0)),
+                radial-gradient(2.5px 2.5px at 40vw 10vh, rgba(255,255,255,0.7), rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 90vw 15vh, rgba(255,255,255,0.6), rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 10vw 90vh, rgba(255,255,255,0.8), rgba(0,0,0,0));
+            background-size: 150px 150px, 200px 200px, 250px 250px, 100px 100px, 300px 300px, 350px 350px, 120px 120px;
+            animation: starDrift 150s linear infinite;
+        }
+        @keyframes starDrift { 
+            0% { background-position: 0px 0px, 0px 0px, 0px 0px, 0px 0px, 0px 0px, 0px 0px, 0px 0px; } 
+            100% { background-position: -300px -300px, -400px -400px, -500px -500px, -200px -200px, -600px -600px, -700px -700px, -240px -240px; } 
+        }
+
+        #color-waves {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2;
-            background-color: #05010f;
-            overflow: hidden;
+            background: linear-gradient(120deg, rgba(15, 0, 35, 0.4) 0%, rgba(5, 15, 30, 0.6) 30%, rgba(25, 0, 20, 0.5) 70%, rgba(0, 25, 35, 0.4) 100%);
+            background-size: 200% 200%;
+            animation: waveFlow 18s ease infinite alternate;
+            pointer-events: none;
         }
-        .aurora-blob {
-            position: absolute; border-radius: 50%;
-            filter: blur(90px); opacity: 0.65;
-            animation: drift 25s infinite alternate ease-in-out;
-        }
-        .blob-1 { width: 60vw; height: 60vh; background: #5700e8; top: -10vh; left: -10vw; animation-duration: 30s; }
-        .blob-2 { width: 50vw; height: 50vh; background: #00d2ff; bottom: -20vh; right: -10vw; animation-duration: 35s; animation-direction: alternate-reverse; }
-        .blob-3 { width: 70vw; height: 70vh; background: #d000ff; top: 20vh; left: 30vw; animation-duration: 28s; }
-        .blob-4 { width: 40vw; height: 40vh; background: #00ff88; bottom: 10vh; left: 10vw; animation-duration: 40s; opacity: 0.4; }
-        
-        @keyframes drift {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(15vw, 15vh) scale(1.15); }
+        @keyframes waveFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         /* --- HEAVY GLASSMORPHISM ENGINE --- */
         .glass-panel { 
-            background: rgba(20, 15, 30, 0.35); 
-            backdrop-filter: blur(24px) saturate(150%); -webkit-backdrop-filter: blur(24px) saturate(150%);
-            border: 1px solid rgba(255, 255, 255, 0.1); border-top: 1px solid rgba(255, 255, 255, 0.25); border-left: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.03);
-            border-radius: 24px;
+            background: rgba(15, 10, 25, 0.4); 
+            backdrop-filter: blur(20px) saturate(130%); -webkit-backdrop-filter: blur(20px) saturate(130%);
+            border: 1px solid rgba(255, 255, 255, 0.08); border-top: 1px solid rgba(255, 255, 255, 0.15); border-left: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.7), inset 0 0 15px rgba(255, 255, 255, 0.02);
+            border-radius: 20px;
         }
 
         /* --- OVERLAYS & PROMPTS --- */
-        .fullscreen-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; background: rgba(0,0,0,0.5); backdrop-filter: blur(12px); }
-        .login-box { padding: 45px 40px; display: flex; flex-direction: column; align-items: center; gap: 18px; width: 100%; max-width: 400px; }
-        .login-logo { width: 130px; margin-bottom: 5px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); }
-        .login-title { font-family: 'Orbitron', sans-serif; font-size: 1.4rem; text-transform: uppercase; color: #fff; letter-spacing: 3px; text-align: center; font-weight: 800; text-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .fullscreen-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); }
+        .login-box { padding: 50px 45px; display: flex; flex-direction: column; align-items: center; gap: 20px; width: 100%; max-width: 420px; }
+        .login-logo { width: 140px; margin-bottom: 5px; filter: drop-shadow(0 8px 12px rgba(0,0,0,0.6)); }
+        .login-title { font-family: 'Orbitron', sans-serif; font-size: 1.6rem; text-transform: uppercase; color: #fff; letter-spacing: 2.5px; text-align: center; font-weight: 800; text-shadow: 0 4px 10px rgba(0,0,0,0.6); }
         
         /* --- GLASS INPUTS & PASSWORD EYE --- */
-        .themed-input { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; padding: 14px 16px; color: #fff; font-size: 1rem; outline: none; transition: 0.3s; backdrop-filter: blur(10px); }
-        .themed-input:focus { border-color: rgba(255,255,255,0.6); background: rgba(0,0,0,0.6); box-shadow: 0 0 20px rgba(255,255,255,0.1); }
-        .themed-input::placeholder { color: rgba(255,255,255,0.5); }
-        .themed-input option, .themed-input optgroup { background-color: #1a1025; color: #fff; }
+        .themed-input { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; padding: 15px 18px; color: #fff; font-size: 1.1rem; outline: none; transition: 0.3s; backdrop-filter: blur(10px); }
+        .themed-input:focus { border-color: rgba(255,255,255,0.7); background: rgba(0,0,0,0.7); box-shadow: 0 0 20px rgba(255,255,255,0.15); }
+        .themed-input::placeholder { color: rgba(255,255,255,0.5); font-weight: 500; }
+        .themed-input option, .themed-input optgroup { background-color: #1a1025; color: #fff; font-size: 1rem; }
         
         .pwd-wrapper { position: relative; width: 100%; }
-        .pwd-wrapper .themed-input { padding-right: 45px; }
-        .pwd-toggle-btn { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; user-select: none; font-size: 1.2rem; opacity: 0.5; transition: 0.2s; filter: grayscale(100%); }
+        .pwd-wrapper .themed-input { padding-right: 50px; }
+        .pwd-toggle-btn { position: absolute; right: 18px; top: 50%; transform: translateY(-50%); cursor: pointer; user-select: none; font-size: 1.3rem; opacity: 0.5; transition: 0.2s; filter: grayscale(100%); }
         .pwd-toggle-btn:hover { opacity: 1; filter: grayscale(0%); }
 
-        .checkbox-label { display: flex; align-items: center; gap: 10px; color: #ddd; font-size: 0.9rem; cursor: pointer; transition: 0.2s; font-weight: 500; }
+        .checkbox-label { display: flex; align-items: center; gap: 12px; color: #ddd; font-size: 1rem; cursor: pointer; transition: 0.2s; font-weight: 500; }
         .checkbox-label:hover { color: #fff; }
-        .checkbox-label input { transform: scale(1.3); accent-color: #00d2ff; cursor: pointer; }
+        .checkbox-label input { transform: scale(1.4); accent-color: #00d2ff; cursor: pointer; }
 
         /* --- GLOBAL LAYOUT --- */
         .dashboard-wrapper { width: 100%; max-width: 1400px; display: flex; flex-direction: column; gap: 25px; padding-bottom: 50px; }
         
-        .header-panel { padding: 18px 35px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 50; }
-        .header-brand { display: flex; align-items: center; gap: 15px; cursor: pointer; }
-        .header-logo-small { width: 45px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.4)); }
-        .header-title { font-family: 'Orbitron', sans-serif; font-size: 1.6rem; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; margin: 0; color: #fff; text-shadow: 0 5px 15px rgba(0,0,0,0.5); }
-        .header-subtitle { font-size: 0.8rem; color: #00d2ff; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 2px; font-weight: 600; }
+        .header-panel { padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 50; }
+        .header-brand { display: flex; align-items: center; gap: 18px; cursor: pointer; }
+        .header-logo-small { width: 50px; filter: drop-shadow(0 5px 8px rgba(0,0,0,0.5)); }
+        .header-title { font-family: 'Orbitron', sans-serif; font-size: 1.8rem; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; margin: 0; color: #fff; text-shadow: 0 4px 12px rgba(0,0,0,0.6); }
+        .header-subtitle { font-size: 0.95rem; color: #00d2ff; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 4px; font-weight: 600; }
         
-        .location-switcher { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 10px 18px; border-radius: 10px; font-weight: 600; outline: none; transition: 0.3s; cursor: pointer; backdrop-filter: blur(10px); }
+        .location-switcher { background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.25); color: #fff; padding: 12px 20px; border-radius: 10px; font-size: 1rem; font-weight: 600; outline: none; transition: 0.3s; cursor: pointer; backdrop-filter: blur(10px); }
         .location-switcher:focus, .location-switcher:hover { border-color: #00d2ff; box-shadow: 0 0 15px rgba(0,210,255,0.3); }
 
         /* --- DROPDOWN MENUS --- */
         .dropdown-container { position: relative; }
-        .menu-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); padding: 10px 18px; border-radius: 10px; color: #fff; font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; transition: 0.3s; backdrop-filter: blur(10px); }
-        .menu-btn:hover { background: rgba(255,255,255,0.1); border-color: #fff; }
-        .dropdown-content { display: none; position: absolute; right: 0; top: 125%; min-width: 240px; flex-direction: column; overflow: hidden; z-index: 1000; }
+        .menu-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.25); padding: 10px 20px; border-radius: 10px; color: #fff; font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; transition: 0.3s; backdrop-filter: blur(10px); }
+        .menu-btn:hover { background: rgba(255,255,255,0.15); border-color: #fff; }
+        .dropdown-content { display: none; position: absolute; right: 0; top: 125%; min-width: 260px; flex-direction: column; overflow: hidden; z-index: 1000; }
         .dropdown-content.show { display: flex; }
-        .dropdown-item { padding: 16px 22px; cursor: pointer; font-weight: 600; font-size: 0.9rem; color: #eee; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; display: flex; align-items: center; gap: 10px; }
-        .dropdown-item:hover { background: rgba(255,255,255,0.1); color: #fff; padding-left: 28px; }
+        .dropdown-item { padding: 18px 24px; cursor: pointer; font-weight: 600; font-size: 1rem; color: #eee; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; display: flex; align-items: center; gap: 12px; }
+        .dropdown-item:hover { background: rgba(255,255,255,0.1); color: #fff; padding-left: 30px; }
         .logout-item { color: #ff5555; border-bottom: none; }
         .logout-item:hover { background: rgba(255, 85, 85, 0.15); color: #ff7777; }
 
-        /* 3 Dots Action Menu */
-        .action-dots-btn { background: none; border: none; color: #aaa; font-size: 1.5rem; cursor: pointer; padding: 0 10px; transition: 0.2s; }
+        /* 3 Dots Action Menu (FIXED) */
+        .action-dots-btn { background: none; border: none; color: #bbb; font-size: 1.6rem; cursor: pointer; padding: 0 15px; transition: 0.2s; }
         .action-dots-btn:hover { color: #fff; transform: scale(1.1); }
-        .action-menu { display: none; position: absolute; right: 40px; z-index: 100; flex-direction: column; min-width: 150px; }
+        .action-menu { 
+            display: none; position: absolute; right: 40px; top: 10px; z-index: 99999; flex-direction: column; 
+            min-width: 180px; background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; box-shadow: 0 15px 35px rgba(0,0,0,0.8); overflow: hidden; 
+        }
         .action-menu.show { display: flex; }
-        .action-menu button { background: transparent; border: none; color: #eee; padding: 14px 18px; text-align: left; cursor: pointer; font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; }
-        .action-menu button:hover { background: rgba(255,255,255,0.1); color: #fff; padding-left: 22px; }
+        .action-menu button { background: transparent; border: none; color: #eee; padding: 15px 20px; text-align: left; cursor: pointer; font-size: 0.95rem; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; }
+        .action-menu button:hover { background: rgba(255,255,255,0.1); color: #fff; padding-left: 25px; }
         .action-menu button:last-child { border-bottom: none; }
 
         /* --- FULL PAGE VIEWS --- */
         .view-section { padding: 45px; display: flex; flex-direction: column; gap: 35px; position: relative; z-index: 10; min-height: 75vh; animation: fadeIn 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); filter: blur(5px); } to { opacity: 1; transform: translateY(0); filter: blur(0); } }
         
-        .section-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 1.1rem; font-weight: 700; text-transform: uppercase; color: #fff; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; letter-spacing: 1.5px; }
+        .section-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 1.3rem; font-weight: 700; text-transform: uppercase; color: #fff; margin-bottom: 15px; display: flex; align-items: center; gap: 15px; letter-spacing: 1.5px; }
         .section-title::after { content: ""; flex-grow: 1; height: 1px; background: linear-gradient(90deg, rgba(255,255,255,0.2), transparent); }
         
         /* --- STATIONS GRID --- */
-        .stations-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
-        .card { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.1); border-top: 1px solid rgba(255, 255, 255, 0.2); border-radius: 18px; padding: 30px 20px; min-height: 240px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; gap: 12px; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 25px rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
-        .card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.4); box-shadow: 0 15px 35px rgba(0,0,0,0.7), 0 0 20px rgba(255,255,255,0.1); background: rgba(0, 0, 0, 0.6); }
-        .card-number { font-family: 'Orbitron', sans-serif; font-size: 4rem; font-weight: 800; color: #fff; line-height: 1; text-shadow: 0 5px 15px rgba(0,0,0,0.5); }
-        .card-players { background: rgba(255, 255, 255, 0.1); padding: 8px 16px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; color: #eee; margin-top: 10px; letter-spacing: 0.5px; border: 1px solid rgba(255,255,255,0.05); }
-        .card-timer { font-family: 'Orbitron', sans-serif; font-size: 2.2rem; font-weight: 600; letter-spacing: 1px; margin: 10px 0; }
+        .stations-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
+        .card { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); border-top: 1px solid rgba(255, 255, 255, 0.2); border-radius: 20px; padding: 35px 25px; min-height: 250px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; gap: 12px; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 25px rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
+        .card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.4); box-shadow: 0 15px 35px rgba(0,0,0,0.7), 0 0 20px rgba(255,255,255,0.1); background: rgba(0, 0, 0, 0.7); }
+        .card-number { font-family: 'Orbitron', sans-serif; font-size: 4.2rem; font-weight: 800; color: #fff; line-height: 1; text-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .card-players { background: rgba(255, 255, 255, 0.1); padding: 8px 18px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; color: #eee; margin-top: 12px; letter-spacing: 0.5px; border: 1px solid rgba(255,255,255,0.05); }
+        .card-timer { font-family: 'Orbitron', sans-serif; font-size: 2.4rem; font-weight: 600; letter-spacing: 1px; margin: 15px 0; }
         .timer-safe { color: #aaa; } 
         .timer-warning { color: #ffcc00; text-shadow: 0 0 15px rgba(255,204,0,0.4); }
         .timer-critical { color: #ff5555; animation: blinker 1s linear infinite; text-shadow: 0 0 15px rgba(255,85,85,0.5); }
 
         /* --- ADMIN TABS --- */
-        .admin-nav { display: flex; gap: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 25px; overflow-x: auto; }
-        .admin-tab-btn { background: transparent; color: #888; border: none; padding: 10px 15px; font-size: 0.9rem; font-weight: 700; text-transform: uppercase; cursor: pointer; transition: 0.3s; white-space: nowrap; border-bottom: 3px solid transparent; letter-spacing: 1px; }
+        .admin-nav { display: flex; gap: 20px; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 15px; margin-bottom: 25px; overflow-x: auto; }
+        .admin-tab-btn { background: transparent; color: #999; border: none; padding: 12px 18px; font-size: 1.05rem; font-weight: 700; text-transform: uppercase; cursor: pointer; transition: 0.3s; white-space: nowrap; border-bottom: 3px solid transparent; letter-spacing: 1px; }
         .admin-tab-btn:hover { color: #fff; }
         .admin-tab-btn.active { color: #fff; border-bottom-color: #00d2ff; text-shadow: 0 0 10px rgba(0,210,255,0.5); }
         .admin-tab-content { display: none; animation: fadeIn 0.3s ease; }
         .admin-tab-content.active { display: block; }
         
-        .admin-row { display: grid; gap: 15px; align-items: center; margin-bottom: 12px; background: rgba(0,0,0,0.3); padding: 15px 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); transition: 0.3s; backdrop-filter: blur(5px); }
-        .admin-row:hover { background: rgba(0,0,0,0.6); border-color: rgba(255,255,255,0.2); transform: scale(1.01); }
+        .admin-row { display: grid; gap: 15px; align-items: center; margin-bottom: 15px; background: rgba(0,0,0,0.4); padding: 18px 25px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); transition: 0.3s; backdrop-filter: blur(5px); }
+        .admin-row:hover { background: rgba(0,0,0,0.6); border-color: rgba(255,255,255,0.25); transform: scale(1.01); }
         
         /* Global Save Bar */
-        #global-save-bar { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(150%); width: 90%; max-width: 650px; padding: 18px 30px; z-index: 999; opacity: 0; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; justify-content: space-between; align-items: center; }
+        #global-save-bar { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(150%); width: 90%; max-width: 700px; padding: 20px 35px; z-index: 999; opacity: 0; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; justify-content: space-between; align-items: center; }
         #global-save-bar.active { transform: translateX(-50%) translateY(0); opacity: 1; }
 
         /* --- MODALS --- */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); backdrop-filter: blur(15px); z-index: 9999; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.3s; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); backdrop-filter: blur(15px); z-index: 9999; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.3s; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        .modal-container { position: relative; width: 90%; max-width: 680px; padding: 35px; max-height: 90vh; overflow-y: auto; }
+        .modal-container { position: relative; width: 90%; max-width: 720px; padding: 40px; max-height: 90vh; overflow-y: auto; }
         .modal-container::-webkit-scrollbar { width: 6px; background: transparent; }
         .modal-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 10px; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
-        .modal-header h2 { font-family: 'Orbitron', sans-serif; font-size: 1.3rem; font-weight: 700; text-transform: uppercase; color: #fff; letter-spacing: 2px; }
-        .close-btn { background: none; border: none; color: #888; font-size: 2.2rem; cursor: pointer; transition: 0.2s; line-height: 1; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 20px; }
+        .modal-header h2 { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; font-weight: 700; text-transform: uppercase; color: #fff; letter-spacing: 2px; }
+        .close-btn { background: none; border: none; color: #999; font-size: 2.4rem; cursor: pointer; transition: 0.2s; line-height: 1; }
         .close-btn:hover { color: #fff; transform: rotate(90deg); }
 
-        .form-group { margin-bottom: 18px; display: flex; flex-direction: column; gap: 8px; }
-        .form-group label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #aaa; letter-spacing: 1px; }
-        .nested-row { display: grid; grid-template-columns: 2fr 1fr auto; gap: 12px; align-items: flex-end; }
-        .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: rgba(0,0,0,0.4); padding: 18px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px; }
-        .history-list-box { background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; max-height: 160px; overflow-y: auto; margin-bottom: 20px; padding: 12px; }
-        .history-item { font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; padding: 10px 6px; color: #eee; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .form-group { margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px; }
+        .form-group label { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; color: #bbb; letter-spacing: 1px; }
+        .nested-row { display: grid; grid-template-columns: 2fr 1fr auto; gap: 15px; align-items: flex-end; }
+        .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; background: rgba(0,0,0,0.5); padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 25px; }
+        .history-list-box { background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; max-height: 180px; overflow-y: auto; margin-bottom: 25px; padding: 15px; }
+        .history-item { font-size: 1rem; display: flex; justify-content: space-between; align-items: center; padding: 12px 8px; color: #eee; border-bottom: 1px solid rgba(255,255,255,0.05); }
 
         /* --- GLASS BUTTONS --- */
-        .action-button { width: 100%; background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05)); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; padding: 14px; color: #fff; font-size: 0.9rem; font-weight: 700; text-transform: uppercase; cursor: pointer; transition: 0.3s; letter-spacing: 1.5px; backdrop-filter: blur(10px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .action-button { width: 100%; background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05)); border: 1px solid rgba(255,255,255,0.25); border-radius: 10px; padding: 16px; color: #fff; font-size: 1rem; font-weight: 700; text-transform: uppercase; cursor: pointer; transition: 0.3s; letter-spacing: 1.5px; backdrop-filter: blur(10px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
         .action-button:hover { background: linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.1)); border-color: rgba(255,255,255,0.5); transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
         .action-button:active { transform: translateY(1px); }
-        .action-button.small-btn { padding: 10px 16px; font-size: 0.8rem; border-radius: 8px; }
+        .action-button.small-btn { padding: 12px 18px; font-size: 0.9rem; border-radius: 8px; }
         
-        .quick-btn { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); flex: 1; color: #ccc; }
-        .quick-btn:hover { background: rgba(255,255,255,0.1); color: #fff; border-color: #fff; }
+        .quick-btn { background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); flex: 1; color: #ddd; }
+        .quick-btn:hover { background: rgba(255,255,255,0.15); color: #fff; border-color: #fff; }
         
-        .release-button { background: linear-gradient(135deg, rgba(255,50,50,0.3), rgba(255,50,50,0.1)); border-color: rgba(255,50,50,0.4); color: #fff; }
+        .release-button { background: linear-gradient(135deg, rgba(255,50,50,0.3), rgba(255,50,50,0.1)); border-color: rgba(255,50,50,0.5); color: #fff; }
         .release-button:hover { background: linear-gradient(135deg, rgba(255,50,50,0.5), rgba(255,50,50,0.2)); border-color: #ff5555; box-shadow: 0 5px 20px rgba(255,50,50,0.4); }
         
         .success-btn { background: rgba(255,255,255,0.9); color: #000; border: 1px solid #fff; }
@@ -180,32 +196,28 @@
         .ghost-btn:hover { background: rgba(255,255,255,0.1); border-color: #fff; }
 
         /* --- TABLES & FINANCE --- */
-        .log-table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: left; font-size: 0.9rem; margin-top: 10px;}
-        .log-table th { background: rgba(0,0,0,0.6); color: #aaa; padding: 16px 20px; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.2); letter-spacing: 1px; font-weight: 700; font-size: 0.8rem; }
+        .log-table { width: 100%; border-collapse: separate; border-spacing: 0; text-align: left; font-size: 1rem; margin-top: 15px;}
+        .log-table th { background: rgba(0,0,0,0.6); color: #aaa; padding: 18px 22px; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.2); letter-spacing: 1px; font-weight: 700; font-size: 0.9rem; }
         .log-table th:first-child { border-top-left-radius: 12px; } .log-table th:last-child { border-top-right-radius: 12px; }
-        .log-table td { padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #eee; background: rgba(0,0,0,0.3); transition: 0.2s; }
-        .log-table tr:hover td { background: rgba(255,255,255,0.05); }
+        .log-table td { padding: 18px 22px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #eee; background: rgba(0,0,0,0.4); transition: 0.2s; }
+        .log-table tr:hover td { background: rgba(255,255,255,0.1); }
         
-        .finance-tracker { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 30px; text-align: center; }
-        .finance-card { background: rgba(0,0,0,0.4); padding: 25px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(10px); transition: 0.3s; }
-        .finance-card:hover { transform: translateY(-5px); background: rgba(0,0,0,0.6); border-color: rgba(255,255,255,0.2); box-shadow: 0 15px 30px rgba(0,0,0,0.5); }
-        .finance-card.profit { border-bottom: 3px solid #00ff88; }
-        .finance-card.loss { border-bottom: 3px solid #ff5555; }
-        .finance-label { font-size: 0.8rem; color: #aaa; text-transform: uppercase; font-weight: 700; margin-bottom: 8px; letter-spacing: 1.5px;}
-        .finance-amt { font-family: 'Orbitron', sans-serif; font-size: 2.2rem; font-weight: 700; color: #fff; }
+        .finance-tracker { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 25px; margin-bottom: 35px; text-align: center; }
+        .finance-card { background: rgba(0,0,0,0.5); padding: 30px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); transition: 0.3s; }
+        .finance-card:hover { transform: translateY(-5px); background: rgba(0,0,0,0.7); border-color: rgba(255,255,255,0.3); box-shadow: 0 15px 30px rgba(0,0,0,0.6); }
+        .finance-card.profit { border-bottom: 4px solid #00ff88; }
+        .finance-card.loss { border-bottom: 4px solid #ff5555; }
+        .finance-label { font-size: 0.9rem; color: #aaa; text-transform: uppercase; font-weight: 700; margin-bottom: 10px; letter-spacing: 1.5px;}
+        .finance-amt { font-family: 'Orbitron', sans-serif; font-size: 2.6rem; font-weight: 700; color: #fff; }
         
         .view-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
     </style>
 </head>
 <body>
 
-    <!-- AMBIENT AURORA BACKGROUND -->
-    <div id="ambient-aurora">
-        <div class="aurora-blob blob-1"></div>
-        <div class="aurora-blob blob-2"></div>
-        <div class="aurora-blob blob-3"></div>
-        <div class="aurora-blob blob-4"></div>
-    </div>
+    <!-- DARK GALAXY & WAVE BACKGROUND -->
+    <div id="galaxy-background"></div>
+    <div id="color-waves"></div>
 
     <!-- STAFF LOGIN OVERLAY -->
     <div id="login-screen" class="fullscreen-overlay">
@@ -217,16 +229,16 @@
                 <input type="password" id="staff-password" class="themed-input" style="text-align:center;" placeholder="Passcode">
                 <span class="pwd-toggle-btn" onmousedown="showPwd('staff-password')" onmouseup="hidePwd('staff-password')" onmouseleave="hidePwd('staff-password')" ontouchstart="showPwd('staff-password')" ontouchend="hidePwd('staff-password')">👁️</span>
             </div>
-            <button class="action-button success-btn" style="font-size:1.1rem; padding:16px; margin-top:15px;" onclick="handleLogin()">Enter Server</button>
-            <p id="login-error" style="color:#ff7777; font-size:0.85rem; font-weight:600; display:none; text-align:center;"></p>
+            <button class="action-button success-btn" style="font-size:1.15rem; padding:18px; margin-top:15px;" onclick="handleLogin()">Enter Server</button>
+            <p id="login-error" style="color:#ff7777; font-size:0.95rem; font-weight:600; display:none; text-align:center;"></p>
         </div>
     </div>
 
     <!-- CHANGE PASSWORD OVERLAY -->
     <div id="change-password-screen" class="fullscreen-overlay hidden">
         <div class="login-box glass-panel">
-            <h2 class="login-title" style="font-size: 1.3rem;">Update Passcode</h2>
-            <p style="color: #ccc; font-size: 0.85rem; text-align: center; margin-bottom: 10px;">Security dictates you must establish a new passcode.</p>
+            <h2 class="login-title" style="font-size: 1.45rem;">Update Passcode</h2>
+            <p style="color: #ccc; font-size: 0.95rem; text-align: center; margin-bottom: 10px;">Security dictates you must establish a new passcode.</p>
             <div class="pwd-wrapper">
                 <input type="password" id="new-pwd-1" class="themed-input" style="text-align:center;" placeholder="New Passcode">
                 <span class="pwd-toggle-btn" onmousedown="showPwd('new-pwd-1')" onmouseup="hidePwd('new-pwd-1')" onmouseleave="hidePwd('new-pwd-1')" ontouchstart="showPwd('new-pwd-1')" ontouchend="hidePwd('new-pwd-1')">👁️</span>
@@ -235,36 +247,36 @@
                 <input type="password" id="new-pwd-2" class="themed-input" style="text-align:center;" placeholder="Confirm Passcode">
                 <span class="pwd-toggle-btn" onmousedown="showPwd('new-pwd-2')" onmouseup="hidePwd('new-pwd-2')" onmouseleave="hidePwd('new-pwd-2')" ontouchstart="showPwd('new-pwd-2')" ontouchend="hidePwd('new-pwd-2')">👁️</span>
             </div>
-            <button class="action-button success-btn" style="font-size:1rem; padding:14px; margin-top:10px;" onclick="submitNewPassword()">Confirm Setup</button>
+            <button class="action-button success-btn" style="font-size:1.1rem; padding:16px; margin-top:10px;" onclick="submitNewPassword()">Confirm Setup</button>
             <button class="action-button ghost-btn small-btn" onclick="cancelPasswordChange()">Cancel</button>
-            <p id="pwd-error" style="color:#ff7777; font-size:0.85rem; font-weight:600; display:none; text-align:center;"></p>
+            <p id="pwd-error" style="color:#ff7777; font-size:0.95rem; font-weight:600; display:none; text-align:center;"></p>
         </div>
     </div>
 
     <!-- MASTER PROMPTS OVERLAYS -->
     <div id="reset-prompt-screen" class="fullscreen-overlay hidden">
-        <div class="login-box glass-panel" style="max-width: 360px;">
-            <h2 class="login-title" style="font-size: 1.2rem;">Force Pwd Reset</h2>
-            <p style="color: #ccc; font-size: 0.8rem; text-align: center;">Enter temporary passcode. User must change it on next login.</p>
+        <div class="login-box glass-panel" style="max-width: 380px;">
+            <h2 class="login-title" style="font-size: 1.35rem;">Force Pwd Reset</h2>
+            <p style="color: #ccc; font-size: 0.9rem; text-align: center;">Enter temporary passcode. User must change it on next login.</p>
             <div class="pwd-wrapper">
                 <input type="password" id="master-temp-pwd" class="themed-input" style="text-align:center;" placeholder="Temp Passcode">
                 <span class="pwd-toggle-btn" onmousedown="showPwd('master-temp-pwd')" onmouseup="hidePwd('master-temp-pwd')" onmouseleave="hidePwd('master-temp-pwd')" ontouchstart="showPwd('master-temp-pwd')" ontouchend="hidePwd('master-temp-pwd')">👁️</span>
             </div>
-            <button class="action-button release-button" style="font-size:0.9rem; padding:12px; margin-top:10px;" onclick="confirmMasterReset()">Execute Reset</button>
+            <button class="action-button release-button" style="font-size:1.05rem; padding:14px; margin-top:10px;" onclick="confirmMasterReset()">Execute Reset</button>
             <button class="action-button ghost-btn small-btn" onclick="closeResetPrompt()">Cancel</button>
         </div>
     </div>
 
     <!-- DANGER ZONE: FACTORY WIPE PROMPT -->
     <div id="wipe-prompt-screen" class="fullscreen-overlay hidden">
-        <div class="login-box glass-panel" style="max-width: 420px; border-color:rgba(255,85,85,0.5); background:rgba(25,5,5,0.8);">
-            <h2 class="login-title" style="font-size: 1.5rem; color: #ff5555;">Factory Reset</h2>
-            <p style="color: #eee; font-size: 0.85rem; text-align: center; font-weight:600;">WARNING: This will obliterate ALL locations, logs, roles, and user accounts. This is permanent.</p>
+        <div class="login-box glass-panel" style="max-width: 440px; border-color:rgba(255,85,85,0.6); background:rgba(25,5,5,0.85);">
+            <h2 class="login-title" style="font-size: 1.7rem; color: #ff5555;">Factory Reset</h2>
+            <p style="color: #eee; font-size: 0.95rem; text-align: center; font-weight:600;">WARNING: This will obliterate ALL locations, logs, roles, and user accounts. This is permanent.</p>
             <div class="pwd-wrapper">
-                <input type="password" id="wipe-master-pwd" class="themed-input" style="text-align:center; border-color:rgba(255,85,85,0.4);" placeholder="Master Passcode Required">
+                <input type="password" id="wipe-master-pwd" class="themed-input" style="text-align:center; border-color:rgba(255,85,85,0.5);" placeholder="Master Passcode Required">
                 <span class="pwd-toggle-btn" onmousedown="showPwd('wipe-master-pwd')" onmouseup="hidePwd('wipe-master-pwd')" onmouseleave="hidePwd('wipe-master-pwd')" ontouchstart="showPwd('wipe-master-pwd')" ontouchend="hidePwd('wipe-master-pwd')">👁️</span>
             </div>
-            <button class="action-button release-button" style="font-size:1.1rem; padding:14px; margin-top:10px;" onclick="confirmWipeData()">Purge System</button>
+            <button class="action-button release-button" style="font-size:1.15rem; padding:16px; margin-top:10px;" onclick="confirmWipeData()">Purge System</button>
             <button class="action-button ghost-btn small-btn" onclick="closeWipePrompt()">Cancel</button>
         </div>
     </div>
@@ -280,7 +292,7 @@
                 </div>
             </div>
             
-            <div style="display:flex; align-items:center; gap:20px;">
+            <div style="display:flex; align-items:center; gap:25px;">
                 <select id="master-location-switcher" class="location-switcher hidden" onchange="switchLocation(this.value)">
                     <option value="loc_delhi_01">Delhi 01</option>
                 </select>
@@ -299,7 +311,7 @@
                 <div class="section-title">Active Stations</div>
                 <div class="stations-grid" id="in-use-grid"></div>
             </div>
-            <div style="margin-top: 20px;">
+            <div style="margin-top: 25px;">
                 <div class="section-title">Available Stations</div>
                 <div class="stations-grid" id="available-grid"></div>
             </div>
@@ -308,8 +320,8 @@
         <!-- VIEW 2: ADMIN COCKPIT (HIDDEN FROM MASTER) -->
         <main id="view-admin" class="view-section glass-panel hidden">
             <div class="view-header">
-                <h2 class="section-title" style="font-size: 1.5rem; margin:0; border:none;">Admin Cockpit</h2>
-                <button class="action-button ghost-btn small-btn" style="width: auto; padding: 10px 25px;" onclick="navigateHome()">← Back</button>
+                <h2 class="section-title" style="font-size: 1.7rem; margin:0; border:none; letter-spacing: 2px;">Admin Cockpit</h2>
+                <button class="action-button ghost-btn small-btn" style="width: auto; padding: 12px 25px;" onclick="navigateHome()">← Back</button>
             </div>
 
             <div class="admin-nav">
@@ -332,22 +344,22 @@
             <!-- Tab 2: Station Rates -->
             <div id="tab-rates" class="admin-tab-content">
                 <div class="view-header" style="margin-bottom: 15px;">
-                    <div class="section-title" style="margin:0; border:none; font-size:1.1rem;">Configure Station Pricing</div>
+                    <div class="section-title" style="margin:0; border:none; font-size:1.15rem;">Configure Station Pricing</div>
                     <button class="action-button ghost-btn small-btn" style="width:auto;" onclick="addNewStation()">+ Add New Station</button>
                 </div>
-                <div style="display:grid; grid-template-columns: 60px 1fr 1fr 1fr 1fr; gap:15px; padding:0 20px; margin-bottom:15px;">
-                    <span style="color:#aaa; font-size:0.8rem; font-weight:700; text-transform:uppercase;">ID</span>
-                    <span style="color:#aaa; font-size:0.8rem; font-weight:700; text-transform:uppercase;">1 Player (₹/hr)</span>
-                    <span style="color:#aaa; font-size:0.8rem; font-weight:700; text-transform:uppercase;">2 Players (₹/hr)</span>
-                    <span style="color:#aaa; font-size:0.8rem; font-weight:700; text-transform:uppercase;">3 Players (₹/hr)</span>
-                    <span style="color:#aaa; font-size:0.8rem; font-weight:700; text-transform:uppercase;">4 Players (₹/hr)</span>
+                <div style="display:grid; grid-template-columns: 60px 1fr 1fr 1fr 1fr; gap:20px; padding:0 25px; margin-bottom:15px;">
+                    <span style="color:#aaa; font-size:0.9rem; font-weight:700; text-transform:uppercase;">ID</span>
+                    <span style="color:#aaa; font-size:0.9rem; font-weight:700; text-transform:uppercase;">1 Player (₹/hr)</span>
+                    <span style="color:#aaa; font-size:0.9rem; font-weight:700; text-transform:uppercase;">2 Players (₹/hr)</span>
+                    <span style="color:#aaa; font-size:0.9rem; font-weight:700; text-transform:uppercase;">3 Players (₹/hr)</span>
+                    <span style="color:#aaa; font-size:0.9rem; font-weight:700; text-transform:uppercase;">4 Players (₹/hr)</span>
                 </div>
                 <div id="admin-rates-list"></div>
             </div>
 
             <!-- Tab 3: Inventory -->
             <div id="tab-inventory" class="admin-tab-content">
-                <div class="section-title" style="font-size:1.1rem;">Add New Supply Item</div>
+                <div class="section-title" style="font-size:1.15rem;">Add New Supply Item</div>
                 <div class="admin-row" style="grid-template-columns: 1.5fr 1fr 1fr auto;">
                     <input type="text" id="new_item_name" class="themed-input" placeholder="Item Name (e.g. Energy Drink)">
                     <input type="text" id="new_item_cat" class="themed-input" placeholder="Category (e.g. Beverages)">
@@ -355,12 +367,12 @@
                     <button class="action-button success-btn small-btn" style="width:auto; padding:0 40px;" onclick="addNewInventory()">Define Item</button>
                 </div>
 
-                <div class="section-title" style="margin-top: 40px; font-size:1.1rem;">Manage Existing Inventory</div>
-                <div style="display:grid; grid-template-columns: 1.5fr 1fr 1fr 80px; gap:15px; padding:0 20px; margin-bottom:15px;">
-                    <span style="color:#aaa; font-size:0.8rem; font-weight:700; text-transform:uppercase;">Item Name</span>
-                    <span style="color:#aaa; font-size:0.8rem; font-weight:700; text-transform:uppercase;">Category</span>
-                    <span style="color:#aaa; font-size:0.8rem; font-weight:700; text-transform:uppercase;">Price (₹)</span>
-                    <span style="color:#aaa; font-size:0.8rem; font-weight:700; text-transform:uppercase; text-align:center;">Q-Slot</span>
+                <div class="section-title" style="margin-top: 40px; font-size:1.15rem;">Manage Existing Inventory</div>
+                <div style="display:grid; grid-template-columns: 1.5fr 1fr 1fr 80px; gap:20px; padding:0 25px; margin-bottom:15px;">
+                    <span style="color:#aaa; font-size:0.9rem; font-weight:700; text-transform:uppercase;">Item Name</span>
+                    <span style="color:#aaa; font-size:0.9rem; font-weight:700; text-transform:uppercase;">Category</span>
+                    <span style="color:#aaa; font-size:0.9rem; font-weight:700; text-transform:uppercase;">Price (₹)</span>
+                    <span style="color:#aaa; font-size:0.9rem; font-weight:700; text-transform:uppercase; text-align:center;">Q-Slot</span>
                 </div>
                 <div id="admin-inventory-list"></div>
             </div>
@@ -369,43 +381,43 @@
         <!-- VIEW 3: SESSION REGISTER (HIDDEN FROM MASTER) -->
         <main id="view-logs" class="view-section glass-panel hidden">
             <div class="view-header">
-                <h2 class="section-title" style="font-size: 1.5rem; margin:0; border:none;">Session Register</h2>
-                <button class="action-button ghost-btn small-btn" style="width: auto; padding: 10px 25px;" onclick="navigateHome()">← Back</button>
+                <h2 class="section-title" style="font-size: 1.7rem; margin:0; border:none; letter-spacing: 2px;">Session Register</h2>
+                <button class="action-button ghost-btn small-btn" style="width: auto; padding: 12px 25px;" onclick="navigateHome()">← Back</button>
             </div>
             <div id="logs-full-table"></div>
         </main>
 
         <!-- VIEW 4: MASTER PORTAL (EXCLUSIVE TO MASTER) -->
         <main id="view-master" class="view-section glass-panel hidden">
-            <div class="view-header" style="justify-content: flex-start; gap: 20px;">
-                <h2 class="section-title" style="font-size: 1.8rem; margin:0; border:none;">Command Portal</h2>
+            <div class="view-header" style="justify-content: flex-start;">
+                <h2 class="section-title" style="font-size: 1.8rem; margin:0; border:none; letter-spacing: 2px; color: #fff;">Command Portal</h2>
             </div>
 
             <!-- Master Tabs Navigation -->
             <div class="admin-nav">
-                <button class="admin-tab-btn active" id="btn-tab-users" onclick="switchMasterTab('users')">User Management</button>
-                <button class="admin-tab-btn" id="btn-tab-locations" onclick="switchMasterTab('locations')">Location Management</button>
-                <button class="admin-tab-btn" id="btn-tab-roles" onclick="switchMasterTab('roles')">Role Management</button>
+                <button class="admin-tab-btn active" id="btn-tab-users" onclick="switchMasterTab('users')">Users</button>
+                <button class="admin-tab-btn" id="btn-tab-locations" onclick="switchMasterTab('locations')">Locations</button>
+                <button class="admin-tab-btn" id="btn-tab-roles" onclick="switchMasterTab('roles')">Roles</button>
                 <button class="admin-tab-btn" id="btn-tab-masterlogs" onclick="switchMasterTab('masterlogs')">Global Logs</button>
             </div>
 
             <!-- Tab: Users -->
             <div id="tab-users" class="admin-tab-content active">
-                <div class="section-title" style="font-size:1.1rem;">Provision New User</div>
+                <div class="section-title" style="font-size:1.15rem;">Provision New User</div>
                 <div class="admin-row" style="grid-template-columns: 1fr 1fr 1fr auto;">
                     <input type="text" id="new_user_name" class="themed-input" placeholder="Username (e.g. staff_pune)">
                     <select id="new_user_role" class="themed-input"></select>
                     <select id="new_user_loc" class="themed-input"></select>
-                    <button class="action-button success-btn small-btn" style="width:auto; padding:0 35px;" onclick="createNewUser()">Create User</button>
+                    <button class="action-button ghost-btn small-btn" style="width:auto; padding:0 35px;" onclick="createNewUser()">Create</button>
                 </div>
-                <p style="color:#aaa; font-size:0.8rem; margin-top:-5px; margin-bottom:30px;">*New accounts are created with default passcode: <strong>admin123</strong>. They will be forced to change it on first login.</p>
+                <p style="color:#888; font-size:0.85rem; margin-top:-5px; margin-bottom:30px;">*New accounts are created with default passcode: <strong style="color:#ccc;">admin123</strong>. Force changed on first login.</p>
 
-                <div class="section-title" style="font-size:1.1rem;">System Roster</div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 100px 40px; gap:15px; padding:0 20px; margin-bottom:15px;">
-                    <span style="color:#888; font-size:0.8rem; font-weight:700; text-transform:uppercase;">Username</span>
-                    <span style="color:#888; font-size:0.8rem; font-weight:700; text-transform:uppercase;">Role</span>
-                    <span style="color:#888; font-size:0.8rem; font-weight:700; text-transform:uppercase;">Location</span>
-                    <span style="color:#888; font-size:0.8rem; font-weight:700; text-transform:uppercase;">Status</span>
+                <div class="section-title" style="font-size:1.15rem;">System Roster</div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 100px 40px; gap:20px; padding:0 25px; margin-bottom:15px;">
+                    <span style="color:#aaa; font-size:0.9rem; font-weight:700; text-transform:uppercase;">Username</span>
+                    <span style="color:#aaa; font-size:0.9rem; font-weight:700; text-transform:uppercase;">Role</span>
+                    <span style="color:#aaa; font-size:0.9rem; font-weight:700; text-transform:uppercase;">Location</span>
+                    <span style="color:#aaa; font-size:0.9rem; font-weight:700; text-transform:uppercase;">Status</span>
                     <span></span>
                 </div>
                 <div id="master-users-list"></div>
@@ -413,38 +425,38 @@
 
             <!-- Tab: Locations -->
             <div id="tab-locations" class="admin-tab-content">
-                <div class="section-title" style="font-size:1.1rem;">Establish New Location</div>
+                <div class="section-title" style="font-size:1.15rem;">Establish New Location</div>
                 <div class="admin-row" style="grid-template-columns: 1fr 1fr auto;">
                     <input type="text" id="new_loc_id" class="themed-input" placeholder="Location ID (e.g. loc_pune_01)">
                     <input type="text" id="new_loc_name" class="themed-input" placeholder="Display Name (e.g. Pune City 01)">
-                    <button class="action-button success-btn small-btn" style="width:auto; padding:0 35px;" onclick="createNewLocation()">Establish</button>
+                    <button class="action-button ghost-btn small-btn" style="width:auto; padding:0 35px;" onclick="createNewLocation()">Add</button>
                 </div>
-                <div class="section-title" style="font-size:1.1rem; margin-top:40px;">Active Branches</div>
+                <div class="section-title" style="font-size:1.15rem; margin-top:40px;">Active Branches</div>
                 <div id="master-locations-list" style="display:grid; gap:12px;"></div>
             </div>
 
             <!-- Tab: Roles -->
             <div id="tab-roles" class="admin-tab-content">
-                <div class="section-title" style="font-size:1.1rem;">Define New Role Policy</div>
-                <div class="admin-row" style="grid-template-columns: 1fr; padding: 25px;">
+                <div class="section-title" style="font-size:1.15rem;">Define New Role Policy</div>
+                <div class="admin-row" style="grid-template-columns: 1fr; padding: 30px;">
                     <input type="text" id="new_role_name" class="themed-input" placeholder="Role Name (e.g. shift_manager)">
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:18px; margin-top:15px; background:rgba(0,0,0,0.4); padding:25px; border-radius:12px;">
-                        <label class="checkbox-label"><input type="checkbox" id="perm_live_manage"> Live Station: Make Entry & Manage</label>
+                        <label class="checkbox-label"><input type="checkbox" id="perm_live_manage"> Live Station: Manage</label>
                         <label class="checkbox-label"><input type="checkbox" id="perm_live_end"> Live Station: End Session</label>
                         <label class="checkbox-label"><input type="checkbox" id="perm_ledger"> Overview: Financial Ledger</label>
-                        <label class="checkbox-label"><input type="checkbox" id="perm_station_rates"> Station: Add New / Maintain Rates</label>
-                        <label class="checkbox-label"><input type="checkbox" id="perm_inventory"> Inventory: Add Item / Maintain Stock</label>
+                        <label class="checkbox-label"><input type="checkbox" id="perm_station_rates"> Station: Maintain Rates</label>
+                        <label class="checkbox-label"><input type="checkbox" id="perm_inventory"> Inventory: Maintain Stock</label>
                     </div>
-                    <button class="action-button success-btn small-btn" style="width:250px; margin-top:20px; padding: 12px;" onclick="createNewRole()">Save Role Policy</button>
+                    <button class="action-button ghost-btn small-btn" style="width:250px; margin-top:25px; padding: 14px;" onclick="createNewRole()">Save Policy</button>
                 </div>
                 
-                <div class="section-title" style="font-size:1.1rem; margin-top:40px;">System Role Policies</div>
+                <div class="section-title" style="font-size:1.15rem; margin-top:40px;">System Role Policies</div>
                 <div id="master-roles-list" style="display:grid; gap:12px;"></div>
             </div>
 
             <!-- Tab: Global Logs -->
             <div id="tab-masterlogs" class="admin-tab-content">
-                <div class="section-title" style="font-size:1.1rem;">Global Transaction Feed</div>
+                <div class="section-title" style="font-size:1.15rem;">Global Transaction Feed</div>
                 <div id="master-logs-table"></div>
             </div>
         </main>
@@ -453,8 +465,8 @@
 
     <!-- Global Save Bar -->
     <div id="global-save-bar" class="glass-panel">
-        <span style="color:#fff; font-size:1.1rem; font-weight:600;">Unsaved Configuration Changes</span>
-        <button class="action-button success-btn" style="width:auto; padding:12px 35px; font-size: 1rem;" onclick="saveAllAdminChanges()">Commit Changes</button>
+        <span style="color:#fff; font-size:1.15rem; font-weight:700;">Unsaved Configuration Changes</span>
+        <button class="action-button success-btn" style="width:auto; padding:14px 40px; font-size: 1.05rem;" onclick="saveAllAdminChanges()">Commit Changes</button>
     </div>
 
     <!-- Generic Modal for Forms / Terminals -->
@@ -836,7 +848,7 @@
                 } else {
                     card.innerHTML = `
                         <div style="text-align:center; width:100%;"><div class="card-number" style="color: #666;">P${station.id}</div></div>
-                        <div style="width: 100%; display:flex; flex-direction:column; gap:8px;">
+                        <div style="width: 100%; display:flex; flex-direction:column; gap:10px;">
                             <button class="action-button success-btn small-btn" onclick="event.stopPropagation(); launchStationConsole(${station.id})">Initialize</button>
                             ${station.lastSessionLogId ? `<button class="action-button ghost-btn small-btn" onclick="event.stopPropagation(); renderBillReceipt('${station.lastSessionLogId}', false)">Last Bill</button>` : ''}
                         </div>
@@ -858,13 +870,13 @@
             if (station.status === 'AVAILABLE') {
                 bodyField.innerHTML = `
                     <div class="form-group"><label>Session Duration</label>
-                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
                             <select id="setup-hours" class="themed-input"><option value="0">0 Hours</option><option value="1" selected>1 Hour</option><option value="2">2 Hours</option><option value="3">3 Hours</option></select>
                             <select id="setup-mins" class="themed-input"><option value="0">00 Mins</option><option value="15">15 Mins</option><option value="30">30 Mins</option><option value="45">45 Mins</option></select>
                         </div>
                     </div>
                     <div class="form-group"><label>Occupancy</label><select id="setup-players" class="themed-input"><option value="1">1 Person</option><option value="2">2 Persons</option><option value="3">3 Persons</option><option value="4">4 Persons</option></select></div>
-                    <button class="action-button" style="margin-top:10px;" onclick="commitNewSession()">Start Session</button>
+                    <button class="action-button" style="margin-top:15px;" onclick="commitNewSession()">Start Session</button>
                 `;
             } else renderActiveStationPanel(station);
             document.getElementById('modal-overlay').classList.add('active');
@@ -874,8 +886,8 @@
             const bodyField = document.getElementById('modal-injected-body');
             let foodRowsHtml = station.foodHistory.length === 0 ? '<div class="history-item">No items added yet.</div>' : station.foodHistory.map(f => `
                 <div class="history-item">
-                    <span><button class="action-button ghost-btn small-btn" style="padding:4px 10px; width:auto; margin-right:8px;" onclick="decreaseFoodItem(${station.id}, '${f.id}')">-</button>${f.name} (x${f.qty})</span>
-                    <span style="color:#fff; font-weight:600;">₹${(f.price * f.qty).toFixed(2)}</span>
+                    <span><button class="action-button ghost-btn small-btn" style="padding:5px 12px; width:auto; margin-right:10px;" onclick="decreaseFoodItem(${station.id}, '${f.id}')">-</button>${f.name} (x${f.qty})</span>
+                    <span style="color:#fff; font-weight:700;">₹${(f.price * f.qty).toFixed(2)}</span>
                 </div>`).join('');
             const groupedInventory = inventoryData.reduce((acc, item) => { if (item.stock > 0) { if (!acc[item.category]) acc[item.category] = []; acc[item.category].push(item); } return acc; }, {});
             let inventoryOptions = Object.keys(groupedInventory).map(category => {
@@ -887,21 +899,21 @@
             bodyField.innerHTML = `
                 <div class="form-group"><input type="text" id="player-names-input" class="themed-input" placeholder="Enter Player Names..." value="${station.playerNames || ''}" onchange="updatePlayerNames(${station.id}, this.value)"></div>
                 <div class="metrics-grid">
-                    <div style="display:flex; flex-direction:column; gap:4px;"><div style="font-size: 0.65rem; color: #888; text-transform:uppercase; font-weight:600;">Time Remaining</div><div id="modal-live-timer" style="color:#fff; font-size:1.4rem; font-family:'Orbitron'; font-weight:600;">${formatTime(station.timeRemaining)}</div></div>
-                    <div style="display:flex; flex-direction:column; gap:4px;"><div style="font-size: 0.65rem; color: #888; text-transform:uppercase; font-weight:600;">Occupants</div><div style="font-size:1.3rem; font-weight:600; color:#fff;">${station.playersCount}</div></div>
+                    <div style="display:flex; flex-direction:column; gap:5px;"><div style="font-size: 0.75rem; color: #888; text-transform:uppercase; font-weight:700;">Time Remaining</div><div id="modal-live-timer" style="color:#eee; font-size:1.5rem; font-family:'Orbitron'; font-weight:600;">${formatTime(station.timeRemaining)}</div></div>
+                    <div style="display:flex; flex-direction:column; gap:5px;"><div style="font-size: 0.75rem; color: #888; text-transform:uppercase; font-weight:700;">Occupants</div><div style="font-size:1.4rem; font-weight:700; color:#fff;">${station.playersCount}</div></div>
                 </div>
-                <div style="display:flex; gap:10px; margin-bottom: 16px; flex-wrap:wrap;">${shortcutButtonsHtml || '<span style="font-size:0.75rem; color:#666;">No shortcuts.</span>'}</div>
+                <div style="display:flex; gap:12px; margin-bottom: 20px; flex-wrap:wrap;">${shortcutButtonsHtml || '<span style="font-size:0.85rem; color:#666;">No shortcuts.</span>'}</div>
                 <div class="form-group"><div class="history-list-box">${foodRowsHtml}</div></div>
                 <div class="form-group nested-row">
                     <select id="catering-select" class="themed-input"><option value="none">-- Select Item --</option>${inventoryOptions}</select>
                     <input type="number" id="catering-qty" class="themed-input" min="1" value="1">
-                    <button class="action-button ghost-btn" style="margin:0; padding:10px;" onclick="appendFoodToSession()">Add</button>
+                    <button class="action-button ghost-btn" style="margin:0; padding:12px;" onclick="appendFoodToSession()">Add</button>
                 </div>
-                <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px; margin-top:20px;">
-                    <span style="color:#aaa; font-weight:600; font-size:1rem; text-transform:uppercase; letter-spacing:1px;">Accrued Balance:</span>
-                    <span id="panel-bill-display" style="font-size:1.8rem; color:#fff; font-weight:700;">₹0.00</span>
+                <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px; margin-top:25px;">
+                    <span style="color:#aaa; font-weight:700; font-size:1.15rem; text-transform:uppercase; letter-spacing:1.5px;">Accrued Balance:</span>
+                    <span id="panel-bill-display" style="font-size:2rem; color:#fff; font-weight:800;">₹0.00</span>
                 </div>
-                <button class="action-button release-button" style="margin-top:20px;" onclick="endSessionManually()">Settle & End Session</button>
+                <button class="action-button release-button" style="margin-top:25px;" onclick="endSessionManually()">Settle & End Session</button>
             `;
             recalculateLivePanelBill();
         }
@@ -955,21 +967,21 @@
             if(!log) return alert("Data purged or not found.");
             const bodyField = document.getElementById('modal-injected-body');
             document.getElementById('modal-title-field').textContent = `Bill - P${log.stationId}`;
-            let itemsHtml = log.foodHistory.map(i => `<div style="display:flex; justify-content:space-between; font-size:0.95rem; margin-bottom:8px;"><span style="color:#ccc;">${i.name} (x${i.qty})</span><span style="color:#fff; font-weight:600;">₹${(i.price * i.qty).toFixed(2)}</span></div>`).join('');
+            let itemsHtml = log.foodHistory.map(i => `<div style="display:flex; justify-content:space-between; font-size:1rem; margin-bottom:8px;"><span style="color:#ccc;">${i.name} (x${i.qty})</span><span style="color:#fff; font-weight:700;">₹${(i.price * i.qty).toFixed(2)}</span></div>`).join('');
             let actionBtn = showCloseAction ? `<button class="action-button success-btn" onclick="closeTopModal()">Acknowledge & Clear Station</button>` : `<button class="action-button ghost-btn" onclick="closeTopModal()">Close</button>`;
 
             bodyField.innerHTML = `
-                <div style="text-align:left; background:rgba(0,0,0,0.4); padding:25px; border-radius:12px; border:1px solid rgba(255,255,255,0.08);">
-                    ${log.playerNames ? `<div style="color:#fff; font-size:1.1rem; margin-bottom:15px; font-weight:600; letter-spacing:1px;">Players: ${log.playerNames}</div>` : ''}
-                    <div style="display:flex; justify-content:space-between; font-size:1.1rem; color:#ccc; font-weight:500; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:15px; margin-bottom:15px;">
+                <div style="text-align:left; background:rgba(0,0,0,0.5); padding:30px; border-radius:12px; border:1px solid rgba(255,255,255,0.1);">
+                    ${log.playerNames ? `<div style="color:#fff; font-size:1.15rem; margin-bottom:18px; font-weight:700; letter-spacing:1px;">Players: ${log.playerNames}</div>` : ''}
+                    <div style="display:flex; justify-content:space-between; font-size:1.15rem; color:#ccc; font-weight:600; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:18px; margin-bottom:18px;">
                         <span>Play Time (${log.duration} Mins)</span><span style="color:#fff;">₹${log.statements.playCost.toFixed(2)}</span>
                     </div>
-                    <div style="margin-top:20px; margin-bottom:10px; font-weight:600; color:#888; text-transform:uppercase; font-size:0.85rem; letter-spacing: 1px;">Food & Inventory</div>
-                    ${itemsHtml || '<div style="color:#555; font-size:0.85rem; font-style:italic;">No items ordered.</div>'}
-                    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px; margin-top:25px;">
-                        <span style="color:#aaa; font-weight:600; font-size:1.1rem; text-transform:uppercase; letter-spacing:1px;">Grand Total</span><span style="font-size:2.2rem; color:#fff; font-weight:700;">₹${log.statements.grandTotal.toFixed(2)}</span>
+                    <div style="margin-top:20px; margin-bottom:12px; font-weight:700; color:#888; text-transform:uppercase; font-size:0.9rem; letter-spacing: 1.5px;">Food & Inventory</div>
+                    ${itemsHtml || '<div style="color:#666; font-size:0.9rem; font-style:italic;">No items ordered.</div>'}
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.2); padding-top:25px; margin-top:25px;">
+                        <span style="color:#aaa; font-weight:700; font-size:1.2rem; text-transform:uppercase; letter-spacing:1.5px;">Grand Total</span><span style="font-size:2.4rem; color:#fff; font-weight:800;">₹${log.statements.grandTotal.toFixed(2)}</span>
                     </div>
-                    <div style="margin-top: 30px;">${actionBtn}</div>
+                    <div style="margin-top: 35px;">${actionBtn}</div>
                 </div>`;
             document.getElementById('modal-overlay').classList.add('active');
         }
@@ -996,7 +1008,7 @@
                 const n = document.getElementById(`inv_name_${i}`);
                 if (n) { item.name = n.value; item.category = document.getElementById(`inv_cat_${i}`).value||'Misc'; item.price = parseFloat(document.getElementById(`inv_price_${i}`).value)||0; item.isShortcut = document.getElementById(`inv_short_${i}`).checked; }
             });
-            saveSystemData(); document.getElementById('global-save-bar').classList.remove('active'); alert('Configurations saved!');
+            saveSystemData(); document.getElementById('global-save-bar').classList.remove('active');
         }
 
         function renderAdminView() {
@@ -1008,16 +1020,16 @@
                 <div class="finance-tracker">
                     <div class="finance-card"><div class="finance-label">Gross Revenue</div><div class="finance-amt">₹${totalRev.toFixed(2)}</div></div>
                     <div class="finance-card"><div class="finance-label">Expenses</div><div class="finance-amt" style="color:#ff7777;">₹${totalExp.toFixed(2)}</div></div>
-                    <div class="finance-card ${profitClass}"><div class="finance-label">Net Profit</div><div class="finance-amt" style="color:${netProfit>=0?'#88ff88':'#ff7777'};">₹${netProfit.toFixed(2)}</div></div>
+                    <div class="finance-card ${profitClass}"><div class="finance-label">Net Profit</div><div class="finance-amt" style="color:${netProfit>=0?'#00ff88':'#ff7777'};">₹${netProfit.toFixed(2)}</div></div>
                 </div>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
-                    <div style="color:#888; font-size:0.85rem;">Download complete transaction ledger.</div>
-                    <button class="action-button ghost-btn small-btn" style="width:auto; padding:10px 20px;" onclick="exportLedgerCSV()">Extract (.CSV)</button>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:30px;">
+                    <div style="color:#aaa; font-size:0.95rem; font-weight:500;">Download complete transaction ledger.</div>
+                    <button class="action-button ghost-btn small-btn" style="width:auto; padding:12px 25px;" onclick="exportLedgerCSV()">Extract (.CSV)</button>
                 </div>`;
 
             document.getElementById('admin-rates-list').innerHTML = stationsData.map(st => `
                 <div class="admin-row" style="grid-template-columns: 50px 1fr 1fr 1fr 1fr;">
-                    <div style="color:#fff; font-weight:700; font-size:1.1rem; font-family:'Orbitron';">P${st.id}</div>
+                    <div style="color:#fff; font-weight:800; font-size:1.2rem; font-family:'Orbitron';">P${st.id}</div>
                     <input type="number" value="${st.rate1Player||15}" id="r1_${st.id}" class="themed-input" oninput="triggerGlobalSave()">
                     <input type="number" value="${st.rate2Player||20}" id="r2_${st.id}" class="themed-input" oninput="triggerGlobalSave()">
                     <input type="number" value="${st.rate3Player||25}" id="r3_${st.id}" class="themed-input" oninput="triggerGlobalSave()">
@@ -1029,7 +1041,7 @@
                     <input type="text" value="${item.name}" id="inv_name_${i}" class="themed-input" oninput="triggerGlobalSave()">
                     <input type="text" value="${item.category||'Food'}" id="inv_cat_${i}" class="themed-input" oninput="triggerGlobalSave()">
                     <input type="number" value="${item.price}" id="inv_price_${i}" class="themed-input" step="1" oninput="triggerGlobalSave()">
-                    <div style="text-align:center;"><input type="checkbox" id="inv_short_${i}" ${item.isShortcut ? 'checked' : ''} style="transform:scale(1.4);" onchange="triggerGlobalSave()"></div>
+                    <div style="text-align:center;"><input type="checkbox" id="inv_short_${i}" ${item.isShortcut ? 'checked' : ''} style="transform:scale(1.5);" onchange="triggerGlobalSave()"></div>
                 </div>`).join('');
         }
 
@@ -1046,13 +1058,13 @@
 
         function renderLogsView() {
             const tableBox = document.getElementById('logs-full-table');
-            if (systemAuditLogs.length === 0) tableBox.innerHTML = `<p style="text-align:center; padding:40px; color:#888; font-size:1rem;">No session records extracted.</p>`;
+            if (systemAuditLogs.length === 0) tableBox.innerHTML = `<p style="text-align:center; padding:50px; color:#888; font-size:1.1rem;">No session records extracted.</p>`;
             else {
                 let rows = systemAuditLogs.map(log => {
                     let totalItems = log.foodHistory ? log.foodHistory.reduce((s, f) => s + f.qty, 0) : 0; let grandTotal = log.statements?.grandTotal || 0;
-                    return `<tr><td style="font-weight:700; color:#fff;">P${log.stationId}</td><td>${log.dateStr}</td><td style="color:#aaa;">${log.duration}m</td><td style="font-weight:500;">${log.playerNames||log.players}</td><td>${totalItems} Items</td><td style="color:#fff; font-weight:700;">₹${grandTotal.toFixed(2)}</td><td><button class="action-button ghost-btn small-btn" style="padding: 6px 12px; margin:0; width:auto;" onclick="renderBillReceipt('${log.id}', false)">Receipt</button></td></tr>`;
+                    return `<tr><td style="font-weight:700; color:#fff;">P${log.stationId}</td><td>${log.dateStr}</td><td style="color:#aaa;">${log.duration}m</td><td style="font-weight:600;">${log.playerNames||log.players}</td><td>${totalItems} Items</td><td style="color:#fff; font-weight:800;">₹${grandTotal.toFixed(2)}</td><td><button class="action-button ghost-btn small-btn" style="padding: 8px 15px; margin:0; width:auto;" onclick="renderBillReceipt('${log.id}', false)">Receipt</button></td></tr>`;
                 }).join('');
-                tableBox.innerHTML = `<div style="background:rgba(0,0,0,0.3); border-radius:12px; border:1px solid rgba(255,255,255,0.05); overflow:hidden; backdrop-filter:blur(5px);"><table class="log-table" style="margin-top:0;"><thead><tr><th>Station</th><th>Date</th><th>Duration</th><th>Names</th><th>Items</th><th>Total</th><th>Action</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+                tableBox.innerHTML = `<div style="background:rgba(0,0,0,0.5); border-radius:12px; border:1px solid rgba(255,255,255,0.1); overflow:hidden;"><table class="log-table" style="margin-top:0;"><thead><tr><th>Station</th><th>Date</th><th>Duration</th><th>Names</th><th>Items</th><th>Total</th><th>Action</th></tr></thead><tbody>${rows}</tbody></table></div>`;
             }
         }
 
@@ -1076,15 +1088,15 @@
             const userSnap = await db.collection('users').get();
             let usersHtml = userSnap.docs.map(doc => {
                 const data = doc.data();
-                const statusColor = data.isLocked ? '#ff5555' : '#88ff88';
+                const statusColor = data.isLocked ? '#ff5555' : '#00ff88';
                 const statusText = data.isLocked ? 'LOCKED' : 'Active';
                 
                 return `
                 <div class="admin-row" style="grid-template-columns: 1fr 1fr 1fr 100px 40px; align-items:center;">
-                    <div style="color:#fff; font-weight:600;">${data.username}</div>
-                    <div style="color:#aaa; font-size:0.75rem; text-transform:uppercase;">${data.role}</div>
-                    <div style="color:#aaa; font-size:0.75rem;">${data.location_id}</div>
-                    <div style="color:${statusColor}; font-weight:600; font-size:0.75rem;">${statusText}</div>
+                    <div style="color:#fff; font-weight:700; font-size:1rem;">${data.username}</div>
+                    <div style="color:#aaa; font-size:0.85rem; text-transform:uppercase; font-weight:600;">${data.role}</div>
+                    <div style="color:#aaa; font-size:0.85rem; font-weight:600;">${data.location_id}</div>
+                    <div style="color:${statusColor}; font-weight:700; font-size:0.85rem;">${statusText}</div>
                     <div class="dropdown-container">
                         <button class="action-dots-btn" onclick="toggleActionMenu(event, 'menu-${doc.id}')">⋮</button>
                         <div class="action-menu" id="menu-${doc.id}">
@@ -1100,22 +1112,22 @@
 
             // 2. Render Locations
             document.getElementById('master-locations-list').innerHTML = systemLocations.map(loc => `
-                <div class="admin-row" style="grid-template-columns: 1fr 1.5fr auto auto; padding: 12px 15px;">
-                    <div style="color:#aaa; font-weight:600;">${loc.id}</div>
-                    <div style="color:#fff; font-weight:600;">${loc.name}</div>
-                    <button class="action-button ghost-btn small-btn" style="padding:6px 15px; width:auto;" onclick="editLocationPrompt('${loc.id}')">Edit</button>
-                    <button class="action-button release-button small-btn" style="padding:6px 15px; width:auto;" onclick="attemptDeleteLocation('${loc.id}')">Delete</button>
+                <div class="admin-row" style="grid-template-columns: 1fr 1.5fr auto auto; padding: 15px 20px;">
+                    <div style="color:#aaa; font-weight:700;">${loc.id}</div>
+                    <div style="color:#fff; font-weight:700; font-size:1.05rem;">${loc.name}</div>
+                    <button class="action-button ghost-btn small-btn" style="padding:8px 18px; width:auto;" onclick="editLocationPrompt('${loc.id}')">Edit</button>
+                    <button class="action-button release-button small-btn" style="padding:8px 18px; width:auto;" onclick="attemptDeleteLocation('${loc.id}')">Delete</button>
                 </div>
             `).join('');
 
             // 3. Render Roles
             document.getElementById('master-roles-list').innerHTML = systemRoles.map(r => `
-                <div class="admin-row" style="grid-template-columns: 1fr auto auto; padding: 12px 15px;">
+                <div class="admin-row" style="grid-template-columns: 1fr auto auto; padding: 15px 20px;">
                     <div>
-                        <div style="color:#fff; font-weight:600; text-transform:uppercase;">${r.name}</div>
+                        <div style="color:#fff; font-weight:700; font-size:1.05rem; text-transform:uppercase;">${r.name}</div>
                     </div>
-                    <button class="action-button ghost-btn small-btn" style="padding:6px 15px; width:auto;" onclick="editRolePrompt('${r.name}')">Edit Policy</button>
-                    <button class="action-button release-button small-btn" style="padding:6px 15px; width:auto;" onclick="deleteRole('${r.name}')">Delete</button>
+                    <button class="action-button ghost-btn small-btn" style="padding:8px 18px; width:auto;" onclick="editRolePrompt('${r.name}')">Edit Policy</button>
+                    <button class="action-button release-button small-btn" style="padding:8px 18px; width:auto;" onclick="deleteRole('${r.name}')">Delete</button>
                 </div>
             `).join('');
         }
@@ -1140,7 +1152,7 @@
                 <div class="form-group"><label>Username</label><input type="text" id="edit_u_name" class="themed-input" value="${data.username}"></div>
                 <div class="form-group"><label>Role</label><select id="edit_u_role" class="themed-input">${roleOptions}</select></div>
                 <div class="form-group"><label>Location</label><select id="edit_u_loc" class="themed-input">${locOptions}</select></div>
-                <button class="action-button success-btn" style="margin-top:15px;" onclick="submitEditUser('${docId}')">Save Changes</button>
+                <button class="action-button success-btn" style="margin-top:20px;" onclick="submitEditUser('${docId}')">Save Changes</button>
             `;
             document.getElementById('modal-overlay').classList.add('active');
         }
@@ -1172,14 +1184,14 @@
             const bodyField = document.getElementById('modal-injected-body');
             document.getElementById('modal-title-field').textContent = `Edit Policy: ${name}`;
             bodyField.innerHTML = `
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-top:10px; background:rgba(0,0,0,0.3); padding:15px; border-radius:6px; border:1px solid rgba(255,255,255,0.05);">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:18px; margin-top:15px; background:rgba(0,0,0,0.4); padding:20px; border-radius:10px; border:1px solid rgba(255,255,255,0.05);">
                     <label class="checkbox-label"><input type="checkbox" id="edit_perm_live_manage" ${role.perms.live_manage?'checked':''}> Live Station: Make Entry & Manage</label>
                     <label class="checkbox-label"><input type="checkbox" id="edit_perm_live_end" ${role.perms.live_end?'checked':''}> Live Station: End Session</label>
                     <label class="checkbox-label"><input type="checkbox" id="edit_perm_ledger" ${role.perms.ledger?'checked':''}> Overview: Financial Ledger</label>
                     <label class="checkbox-label"><input type="checkbox" id="edit_perm_station_rates" ${role.perms.station_rates?'checked':''}> Station: Maintain Rates</label>
                     <label class="checkbox-label"><input type="checkbox" id="edit_perm_inventory" ${role.perms.inventory?'checked':''}> Inventory: Maintain Stock</label>
                 </div>
-                <button class="action-button success-btn" style="margin-top:15px;" onclick="submitEditRole('${name}')">Save Policy</button>
+                <button class="action-button success-btn" style="margin-top:20px;" onclick="submitEditRole('${name}')">Save Policy</button>
             `;
             document.getElementById('modal-overlay').classList.add('active');
         }
@@ -1391,7 +1403,7 @@
         // Global Logs Fetcher
         async function fetchMasterLogs() {
             if(!db) return;
-            document.getElementById('master-logs-table').innerHTML = `<p style="color:#888;">Scanning all locations...</p>`;
+            document.getElementById('master-logs-table').innerHTML = `<p style="color:#aaa;">Scanning all locations...</p>`;
             let allLogs = [];
             
             for(let loc of systemLocations) {
@@ -1407,7 +1419,7 @@
             allLogs.sort((a,b) => b.id.localeCompare(a.id));
 
             if(allLogs.length === 0) {
-                document.getElementById('master-logs-table').innerHTML = `<p style="color:#666;">No transactions recorded across locations.</p>`;
+                document.getElementById('master-logs-table').innerHTML = `<p style="color:#888;">No transactions recorded across locations.</p>`;
                 return;
             }
 
@@ -1415,17 +1427,17 @@
                 let totalItems = log.foodHistory ? log.foodHistory.reduce((s, f) => s + f.qty, 0) : 0;
                 let grandTotal = log.statements?.grandTotal || 0;
                 return `<tr>
-                    <td style="color:#fff; font-weight:600;">${log.locName}</td>
-                    <td style="font-weight:700; color:#fff;">P${log.stationId}</td>
-                    <td style="color:#aaa;">${log.dateStr}</td>
-                    <td style="color:#888;">${log.duration}m</td>
+                    <td style="color:#fff; font-weight:700;">${log.locName}</td>
+                    <td style="font-weight:700; color:#ccc;">P${log.stationId}</td>
+                    <td style="color:#888;">${log.dateStr}</td>
+                    <td style="color:#aaa;">${log.duration}m</td>
                     <td style="color:#aaa;">${totalItems} Items</td>
-                    <td style="color:#fff; font-weight:700;">₹${grandTotal.toFixed(2)}</td>
+                    <td style="color:#fff; font-weight:800;">₹${grandTotal.toFixed(2)}</td>
                 </tr>`;
             }).join('');
 
             document.getElementById('master-logs-table').innerHTML = `
-                <div style="background:rgba(0,0,0,0.3); border-radius:12px; border:1px solid rgba(255,255,255,0.05); overflow:hidden; backdrop-filter:blur(5px);">
+                <div style="background:rgba(0,0,0,0.5); border-radius:12px; border:1px solid rgba(255,255,255,0.1); overflow:hidden; backdrop-filter:blur(5px);">
                     <table class="log-table" style="margin-top:0;">
                         <thead><tr><th>Location</th><th>Station</th><th>Date</th><th>Dur.</th><th>Loot</th><th>Bounty</th></tr></thead>
                         <tbody>${rows}</tbody>
