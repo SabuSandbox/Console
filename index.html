@@ -1006,7 +1006,7 @@
         // 6. ADMIN COCKPIT
         // ==========================================
         function switchAdminTab(tabId) {
-            ['finances', 'rates', 'inventory'].forEach(id => {
+            ['finance', 'rates', 'inventory'].forEach(id => {
                 document.getElementById(`btn-tab-${id}`).classList.remove('active');
                 document.getElementById(`tab-${id}`).classList.remove('active');
             });
