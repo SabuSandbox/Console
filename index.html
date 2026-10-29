@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wonder Gamezone - Administration</title>
     
     <meta name="theme-color" content="#070212">
@@ -19,6 +19,8 @@
     <!-- === FIREBASE SDKs === -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-functions.js"></script>
 
     <style>
         /* --- GLOBAL RESET & TYPOGRAPHY --- */
@@ -232,6 +234,51 @@
         
         .view-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
 
+        /* --- RESPONSIVE & ACCESSIBLE POLISH --- */
+        :focus-visible { outline: 3px solid #00e5ff; outline-offset: 3px; }
+        button, select, input { min-height: 44px; }
+        .pwd-toggle-btn { min-width: 44px; min-height: 44px; justify-content: center; }
+        .log-table { min-width: 650px; }
+        .rates-scroll-wrapper, #master-logs-table { overflow-x: auto; }
+
+        @media (max-width: 800px) {
+            body { padding: 12px; }
+            .dashboard-wrapper { gap: 16px; padding-bottom: 24px; }
+            .header-panel { padding: 16px; gap: 16px; flex-wrap: wrap; }
+            .header-brand { gap: 10px; min-width: 0; }
+            .header-logo-small { width: 42px; }
+            .header-title { font-size: clamp(1.1rem, 5vw, 1.6rem); letter-spacing: .5px; }
+            .header-subtitle { font-size: .78rem; letter-spacing: 1px; }
+            .header-panel > div:last-child { width: 100%; justify-content: space-between !important; gap: 12px !important; }
+            .location-switcher { max-width: 65%; padding: 10px 12px; }
+            .menu-btn { padding: 9px 14px; }
+            .finance-tracker { grid-template-columns: 1fr; gap: 12px; margin-bottom: 22px; }
+            .finance-card { padding: 20px; }
+            .finance-amt { font-size: clamp(1.8rem, 8vw, 2.5rem); }
+            .view-header { gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+            .modal-container { width: 100%; padding: 24px 18px; max-height: 94dvh; }
+            .login-box { padding: 32px 22px; }
+            .login-logo { width: 120px; }
+            .admin-nav { gap: 8px; }
+            .admin-tab-btn { padding: 10px 12px; font-size: .9rem; }
+            .dropdown-content { min-width: min(280px, calc(100vw - 24px)); }
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 8px; }
+            .header-panel { padding: 12px; }
+            .header-panel > div:last-child { flex-wrap: wrap; }
+            .location-switcher { max-width: 100%; width: 100%; }
+            .menu-btn { margin-left: auto; }
+            .section-title { font-size: 1.05rem; gap: 8px; }
+            .log-table th, .log-table td { padding: 12px 14px; }
+            .action-button { letter-spacing: .7px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+        }
+
         /* Print Media for PDF Export simulation */
         @media print {
             body * { visibility: hidden; }
@@ -282,6 +329,7 @@
         <div class="login-box glass-panel">
             <h2 class="login-title" style="font-size: 1.5rem;">Update Passcode</h2>
             <p style="color: #ddd; font-size: 1rem; text-align: center; margin-bottom: 10px;">Security dictates you must establish a new passcode.</p>
+            <input type="password" id="current-pwd" class="themed-input" style="text-align:center;" placeholder="Current Passcode">
             <div class="pwd-wrapper">
                 <input type="password" id="new-pwd-1" class="themed-input" style="text-align:center;" placeholder="New Passcode">
                 <span class="pwd-toggle-btn" onmousedown="showPwd('new-pwd-1')" onmouseup="hidePwd('new-pwd-1')" onmouseleave="hidePwd('new-pwd-1')" ontouchstart="showPwd('new-pwd-1')" ontouchend="hidePwd('new-pwd-1')"><svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg></span>
@@ -314,8 +362,8 @@
     <div id="wipe-prompt-screen" class="fullscreen-overlay hidden">
         <div class="login-box glass-panel" style="max-width: 460px; border-color:rgba(255,85,85,0.7); background:rgba(30,5,10,0.85);">
             <h2 class="login-title" style="font-size: 1.8rem; color: #ff5555;">Factory Reset</h2>
-            <p style="color: #fff; font-size: 1.05rem; text-align: center; font-weight:700;">WARNING: This will obliterate ALL locations, logs, roles, and user accounts. This is permanent.</p>
-            <div class="pwd-wrapper">
+            <p style="color: #fff; font-size: 1.05rem; text-align: center; font-weight:700;">WARNING: This will obliterate ALL locations, logs, roles, and user accounts. This is permanent. You must type PURGE ALL DATA to confirm.</p>
+            <div class="pwd-wrapper" style="display:none">
                 <input type="password" id="wipe-master-pwd" class="themed-input" style="text-align:center; border-color:rgba(255,85,85,0.6);" placeholder="Master Passcode Required">
                 <span class="pwd-toggle-btn" onmousedown="showPwd('wipe-master-pwd')" onmouseup="hidePwd('wipe-master-pwd')" onmouseleave="hidePwd('wipe-master-pwd')" ontouchstart="showPwd('wipe-master-pwd')" ontouchend="hidePwd('wipe-master-pwd')"><svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg></span>
             </div>
@@ -489,7 +537,7 @@
                     <select id="new_user_loc" class="themed-input"></select>
                     <button class="action-button ghost-btn small-btn" style="width:auto; padding:0 35px;" onclick="createNewUser()">Create</button>
                 </div>
-                <p style="color:#bbb; font-size:0.95rem; margin-top:-5px; margin-bottom:30px; font-weight:500;">*New accounts are created with default passcode: <strong style="color:#fff;">admin123</strong>. Force changed on first login.</p>
+                <p style="color:#bbb; font-size:0.95rem; margin-top:-5px; margin-bottom:30px; font-weight:500;">Each new account receives a unique temporary passcode that must be changed after first sign in.</p>
 
                 <div class="section-title" style="font-size:1.2rem;">System Roster</div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 100px 40px; gap:20px; padding:0 25px; margin-bottom:15px;">
@@ -576,10 +624,14 @@ const firebaseConfig = {
 };
 
         let db;
+        let auth;
+        let functions;
         try {
             if (firebaseConfig.apiKey !== "") {
                 firebase.initializeApp(firebaseConfig);
                 db = firebase.firestore();
+                auth = firebase.auth();
+                functions = firebase.app().functions('us-central1');
             }
         } catch(e) { console.error("Firebase init error:", e); }
 
@@ -647,13 +699,13 @@ const firebaseConfig = {
             localStorage.setItem(`wgz_logs_${currentLocationId}`, JSON.stringify(systemAuditLogs));
         }
 
-        function bootCloudListeners() {
+        function bootCloudListeners({ stations = false, members = false } = {}) {
             if (!db || currentLocationId === 'ALL') return;
             if(unsubscribeStations) unsubscribeStations();
             if(unsubscribeMembers) unsubscribeMembers();
             
             // Stations Listener
-            unsubscribeStations = getLocDb().collection('stations').onSnapshot(snap => {
+            if (stations) unsubscribeStations = getLocDb().collection('stations').onSnapshot(snap => {
                 snap.forEach(doc => {
                     const data = doc.data();
                     const idx = stationsData.findIndex(s => s.id === parseInt(doc.id));
@@ -674,7 +726,7 @@ const firebaseConfig = {
             });
             
             // Members Listener
-            unsubscribeMembers = getLocDb().collection('members_doc').doc('data').onSnapshot(doc => {
+            if (members) unsubscribeMembers = getLocDb().collection('members_doc').doc('data').onSnapshot(doc => {
                 if(doc.exists) systemMembers = doc.data().list || [];
                 else systemMembers = [];
                 
@@ -721,7 +773,6 @@ const firebaseConfig = {
                 }
                 if(systemRoles.length === 0) {
                     systemRoles = [{name: 'manager', perms: { live_manage: true, live_end: true, ledger: true, station_rates: true, inventory: true, members: true }}];
-                    await db.collection('system_config').doc('roles').set({ list: systemRoles });
                 }
                 
                 populateMasterDropdowns();
@@ -783,18 +834,32 @@ const firebaseConfig = {
             }
         }
 
-        function checkLoginState() {
-            const isLoggedIn = sessionStorage.getItem('wgz_isLoggedIn');
-            if (isLoggedIn === 'true') {
-                currentLocationId = sessionStorage.getItem('wgz_locId') || 'loc_default';
-                currentUserRole = sessionStorage.getItem('wgz_role') || 'manager';
-                loggedInUserId = sessionStorage.getItem('wgz_docId');
+        async function checkLoginState() {
+            const firebaseUser = auth && auth.currentUser;
+            if (firebaseUser) {
+                const profileSnap = await db.collection('users').doc(firebaseUser.uid).get();
+                if (!profileSnap.exists || profileSnap.data().isLocked) { await auth.signOut(); return; }
+                const profile = profileSnap.data();
+                const token = await firebaseUser.getIdTokenResult();
+                if (token.claims.roleVersion !== profile.roleVersion) await firebaseUser.getIdToken(true);
+                loggedInUserId = firebaseUser.uid;
+                currentLocationId = profile.location_id || 'ALL';
+                currentUserRole = profile.role || 'manager';
+                sessionStorage.setItem('wgz_isLoggedIn', 'true');
+                sessionStorage.setItem('wgz_docId', loggedInUserId);
+                sessionStorage.setItem('wgz_locId', currentLocationId);
+                sessionStorage.setItem('wgz_role', currentUserRole);
+
+                if (profile.requiresPasswordChange) {
+                    showChangePasswordScreen(true);
+                    return;
+                }
 
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('change-password-screen').classList.add('hidden');
                 document.getElementById('main-app').classList.remove('hidden');
                 
-                fetchSystemConfig();
+                await fetchSystemConfig();
 
                 if (currentUserRole === 'master') {
                     document.getElementById('master-location-switcher').classList.add('hidden'); 
@@ -803,10 +868,20 @@ const firebaseConfig = {
                 } else {
                     document.getElementById('master-location-switcher').classList.add('hidden');
                     document.getElementById('header-loc-title').textContent = `Branch: ${currentLocationId.replace('loc_', '').toUpperCase()}`;
-                    loadLocalFallback(); bootCloudListeners(); 
-                    navigateTo('stations');
+                    const canSeeStations = userPermissions.live_manage || userPermissions.live_end || userPermissions.station_rates;
+                    if (canSeeStations) {
+                        loadLocalFallback();
+                        bootCloudListeners({ stations: true, members: userPermissions.members });
+                        navigateTo('stations');
+                    } else if (userPermissions.members) {
+                        bootCloudListeners({ members: true });
+                        navigateTo('members');
+                    } else if (userPermissions.ledger) navigateTo('logs');
+                    else if (userPermissions.inventory) navigateTo('admin');
+                    else document.getElementById('header-loc-title').textContent += ' · No features assigned';
                 }
             } else {
+                sessionStorage.clear();
                 document.getElementById('login-screen').classList.remove('hidden');
                 document.getElementById('change-password-screen').classList.add('hidden');
                 document.getElementById('main-app').classList.add('hidden');
@@ -820,33 +895,16 @@ const firebaseConfig = {
 
             if (!username || !pass) { errLabel.textContent = "Please fill all fields."; errLabel.style.display = 'block'; return; }
 
-            if (db) {
-                try {
-                    const userQuery = await db.collection('users').where('username', '==', username).get();
-                    if (!userQuery.empty) {
-                        const userDoc = userQuery.docs[0];
-                        const data = userDoc.data();
-                        const docId = userDoc.id;
-
-                        if (data.isLocked) throw new Error("Account Locked. Contact Master Admin.");
-
-                        if (data.password === pass) {
-                            if(data.failedAttempts > 0) await db.collection('users').doc(docId).update({ failedAttempts: 0 });
-                            sessionStorage.setItem('wgz_isLoggedIn', 'true');
-                            sessionStorage.setItem('wgz_docId', docId);
-                            sessionStorage.setItem('wgz_locId', data.location_id || 'ALL'); 
-                            sessionStorage.setItem('wgz_role', data.role || 'manager');
-                            if (data.requiresPasswordChange) showChangePasswordScreen(true);
-                            else checkLoginState();
-                        } else {
-                            let attempts = (data.failedAttempts || 0) + 1;
-                            let locked = attempts >= 5;
-                            await db.collection('users').doc(docId).update({ failedAttempts: attempts, isLocked: locked });
-                            if (locked) throw new Error("Account Locked due to 5 failed attempts.");
-                            else throw new Error(`Invalid passcode. ${5 - attempts} attempts remaining.`);
-                        }
-                    } else throw new Error("Username not found in system.");
-                } catch(err) { errLabel.textContent = err.message; errLabel.style.display = 'block'; }
+            try {
+                if (!auth) throw new Error('Authentication service is not configured.');
+                const email = `${username.toLowerCase()}@accounts.wondergamezone.invalid`;
+                await auth.signInWithEmailAndPassword(email, pass);
+                await checkLoginState();
+            } catch(err) {
+                errLabel.textContent = err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential'
+                    ? 'Invalid username or passcode.'
+                    : (err.message || 'Unable to sign in.');
+                errLabel.style.display = 'block';
             }
         }
 
@@ -858,6 +916,8 @@ const firebaseConfig = {
             document.getElementById('change-password-screen').classList.remove('hidden');
             document.getElementById('mainMenu').classList.remove('show');
             const err = document.getElementById('pwd-error');
+            document.getElementById('current-pwd').classList.toggle('hidden', forced);
+            document.getElementById('current-pwd').value = '';
             err.style.display = 'block'; err.style.color = '#ccc';
             err.textContent = forced ? "Mandatory Update: Set a new passcode." : "Enter a new secure passcode.";
         }
@@ -870,14 +930,25 @@ const firebaseConfig = {
 
             if(!p1 || !p2) { errLabel.textContent = "Fill both fields."; errLabel.style.color='#ff5555'; return; }
             if(p1 !== p2) { errLabel.textContent = "Passcodes do not match."; errLabel.style.color='#ff5555'; return; }
-            if(p1.length < 6) { errLabel.textContent = "Passcode must be at least 6 characters."; errLabel.style.color='#ff5555'; return; }
+            if(p1.length < 12) { errLabel.textContent = "Passcode must be at least 12 characters."; errLabel.style.color='#ff5555'; return; }
 
             try {
-                await db.collection('users').doc(docId).update({ password: p1, requiresPasswordChange: false });
-                alert("Passcode updated securely.");
+                if (isForcedChange) {
+                    await functions.httpsCallable('completePasswordChange')({ password: p1 });
+                } else {
+                    const oldPassword = document.getElementById('current-pwd').value;
+                    if (!oldPassword) { errLabel.textContent = 'Enter your current passcode.'; errLabel.style.color='#ff5555'; return; }
+                    const credential = firebase.auth.EmailAuthProvider.credential(auth.currentUser.email, oldPassword);
+                    await auth.currentUser.reauthenticateWithCredential(credential);
+                    await auth.currentUser.updatePassword(p1);
+                }
                 document.getElementById('new-pwd-1').value = ''; document.getElementById('new-pwd-2').value = '';
                 checkLoginState();
             } catch (e) { errLabel.textContent = "System Error updating passcode."; errLabel.style.color='#ff5555'; }
+        }
+
+        async function refreshCurrentClaims() {
+            if (auth && auth.currentUser) await auth.currentUser.getIdToken(true);
         }
 
         function cancelPasswordChange() {
@@ -887,6 +958,7 @@ const firebaseConfig = {
 
         function handleLogout() {
             sessionStorage.clear();
+            if (auth) auth.signOut();
             if(unsubscribeStations) unsubscribeStations();
             if(unsubscribeMembers) unsubscribeMembers();
             document.getElementById('mainMenu').classList.remove('show');
@@ -1507,7 +1579,8 @@ const firebaseConfig = {
             const l = document.getElementById('edit_u_loc').value;
             if(!u) return alert("Username required");
             try {
-                await db.collection('users').doc(docId).update({username: u, role: r, location_id: l});
+                await functions.httpsCallable('updateUser')({ uid: docId, username: u, role: r, location_id: l });
+                await refreshCurrentClaims();
                 closeTopModal(); renderMasterView();
             } catch(e) { alert("Error updating user."); }
         }
@@ -1541,7 +1614,7 @@ const firebaseConfig = {
             document.getElementById('modal-overlay').classList.add('active');
         }
 
-        function submitEditRole(name) {
+        async function submitEditRole(name) {
             const role = systemRoles.find(r => r.name === name);
             role.perms = {
                 live_manage: document.getElementById('edit_perm_live_manage').checked,
@@ -1551,15 +1624,17 @@ const firebaseConfig = {
                 inventory: document.getElementById('edit_perm_inventory').checked,
                 members: document.getElementById('edit_perm_members').checked
             };
-            db.collection('system_config').doc('roles').set({ list: systemRoles }).then(() => {
+            try {
+                await functions.httpsCallable('updateRolePolicies')({ roles: systemRoles });
+                await refreshCurrentClaims();
                 closeTopModal(); renderMasterView();
-            });
+            } catch(error) { alert(error.message); }
         }
 
         async function deleteUser(docId, role) {
             if(docId === loggedInUserId) return alert("You cannot delete your own active master account.");
             if(!confirm("Are you sure you want to permanently delete this user?")) return;
-            try { await db.collection('users').doc(docId).delete(); renderMasterView(); } catch(e) {}
+            try { await functions.httpsCallable('deleteUser')({ uid: docId }); renderMasterView(); } catch(e) { alert(e.message); }
         }
 
         async function deleteRole(roleName) {
@@ -1570,7 +1645,8 @@ const firebaseConfig = {
                 if(!confirm(`Delete role policy: ${roleName}?`)) return;
                 
                 systemRoles = systemRoles.filter(r => r.name !== roleName);
-                await db.collection('system_config').doc('roles').set({ list: systemRoles });
+                await functions.httpsCallable('updateRolePolicies')({ roles: systemRoles });
+                await refreshCurrentClaims();
                 populateMasterDropdowns(); renderMasterView();
             } catch(e) {}
         }
@@ -1605,49 +1681,24 @@ const firebaseConfig = {
 
         function promptWipeData() {
             document.getElementById('mainMenu').classList.remove('show');
-            document.getElementById('wipe-master-pwd').value = '';
             document.getElementById('wipe-prompt-screen').classList.remove('hidden');
         }
 
         function closeWipePrompt() { document.getElementById('wipe-prompt-screen').classList.add('hidden'); }
 
         async function confirmWipeData() {
-            const pwd = document.getElementById('wipe-master-pwd').value;
-            if(!pwd) return;
-            
             try {
                 if (!loggedInUserId) { closeWipePrompt(); return alert("Session data missing. Please Disconnect and log back in."); }
-                const userDoc = await db.collection('users').doc(loggedInUserId).get();
-                if (!userDoc.exists || !userDoc.data() || userDoc.data().password !== pwd) return alert("Incorrect Master Passcode.");
-
-                if(!confirm("FINAL WARNING: This action is irreversible. All locations, users, and logs will be destroyed. Proceed?")) return;
+                if(prompt("Type PURGE ALL DATA to confirm. This action is irreversible.") !== 'PURGE ALL DATA') return;
+                await functions.httpsCallable('wipeSystem')({ confirmation: 'PURGE ALL DATA' });
                 closeWipePrompt();
-                
-                const batch = db.batch();
-                const usersSnap = await db.collection('users').get();
-                usersSnap.forEach(doc => { if(doc.id !== loggedInUserId) batch.delete(doc.ref); });
-
-                for(let loc of systemLocations) {
-                    const lSnap = await db.collection('locations').doc(loc.id).collection('logs').get();
-                    lSnap.forEach(d => batch.delete(d.ref));
-                    const sSnap = await db.collection('locations').doc(loc.id).collection('stations').get();
-                    sSnap.forEach(d => batch.delete(d.ref));
-                }
-
-                await batch.commit();
-
-                systemLocations = [{id: 'loc_base_01', name: 'Base Location'}];
-                systemRoles = [{name: 'manager', perms: { live_manage: true, live_end: true, ledger: true, station_rates: true, inventory: true, members: true }}];
-                await db.collection('system_config').doc('locations').set({ list: systemLocations });
-                await db.collection('system_config').doc('roles').set({ list: systemRoles });
-
                 localStorage.clear();
                 window.location.reload(); 
             } catch(e) { alert("Error wiping data: " + e.message); }
         }
 
         async function toggleLockUser(docId, isCurrentlyLocked) {
-            try { await db.collection('users').doc(docId).update({ isLocked: !isCurrentlyLocked, failedAttempts: 0 }); renderMasterView(); } catch(e) {}
+            try { await functions.httpsCallable('setUserLocked')({ uid: docId, locked: !isCurrentlyLocked }); renderMasterView(); } catch(e) { alert(e.message); }
         }
 
         function promptResetPassword(docId) {
@@ -1661,10 +1712,10 @@ const firebaseConfig = {
         async function confirmMasterReset() {
             if(!forceResetTargetUser) return;
             const newPwd = document.getElementById('master-temp-pwd').value;
-            if(!newPwd || newPwd.length < 6) return alert("Temp passcode must be at least 6 characters.");
+            if(!newPwd || newPwd.length < 12) return alert("Temp passcode must be at least 12 characters.");
 
             try {
-                await db.collection('users').doc(forceResetTargetUser).update({ password: newPwd, requiresPasswordChange: true, isLocked: false, failedAttempts: 0 });
+                await functions.httpsCallable('resetUserPassword')({ uid: forceResetTargetUser, password: newPwd });
                 closeResetPrompt(); renderMasterView();
             } catch(e) {}
         }
@@ -1677,13 +1728,8 @@ const firebaseConfig = {
             if(!username) return alert("Enter a username.");
             
             try {
-                const existing = await db.collection('users').where('username', '==', username).get();
-                if(!existing.empty) return alert("Username already exists.");
-
-                await db.collection('users').add({
-                    username: username, password: 'admin123', role: role, location_id: loc,
-                    failedAttempts: 0, isLocked: false, requiresPasswordChange: true
-                });
+                const result = await functions.httpsCallable('provisionUser')({ username, role, location_id: loc });
+                alert(`Temporary passcode for ${username}:\n${result.data.temporaryPassword}\n\nShare it securely. The user must change it after signing in.`);
                 document.getElementById('new_user_name').value = ''; renderMasterView();
             } catch(e) {}
         }
@@ -1719,7 +1765,8 @@ const firebaseConfig = {
 
             systemRoles.push({ name: name, perms: perms });
             try {
-                await db.collection('system_config').doc('roles').set({ list: systemRoles });
+                await functions.httpsCallable('updateRolePolicies')({ roles: systemRoles });
+                await refreshCurrentClaims();
                 populateMasterDropdowns(); 
                 document.getElementById('new_role_name').value = '';
                 document.querySelectorAll('#tab-roles input[type="checkbox"]').forEach(c => c.checked = false);
@@ -1795,7 +1842,13 @@ const firebaseConfig = {
             });
         }, 1000);
 
-        window.onload = checkLoginState;
+        window.onload = () => {
+            if (!auth) return checkLoginState();
+            auth.onAuthStateChanged(() => checkLoginState().catch(error => {
+                console.error('Unable to restore Firebase session:', error);
+                auth.signOut();
+            }));
+        };
     </script>
 </body>
 </html>

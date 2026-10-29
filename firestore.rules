@@ -1,0 +1,54 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function profile() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    function active() {
+      return signedIn() && profile().requiresPasswordChange != true && profile().isLocked != true &&
+        request.auth.token.roleVersion == profile().roleVersion;
+    }
+    function master() { return active() && request.auth.token.master == true; }
+    function inBranch(locId) {
+      return active() && (request.auth.token.master == true || request.auth.token.location_id == locId);
+    }
+    function rolePerm(permission) {
+      return active() && (request.auth.token.master == true || request.auth.token.perms[permission] == true);
+    }
+
+    match /users/{uid} {
+      allow get: if signedIn() && (request.auth.uid == uid || master());
+      allow list: if active() && request.auth.token.master == true;
+      allow create, update, delete: if false;
+    }
+    match /system_config/{docId} {
+      allow read: if active();
+      allow write: if master();
+    }
+    match /locations/{locId}/stations/{stationId} {
+      allow read: if inBranch(locId) && (rolePerm('live_manage') || rolePerm('live_end') || rolePerm('station_rates'));
+      allow create, delete: if inBranch(locId) && rolePerm('live_manage');
+      allow update: if inBranch(locId) && (
+        (rolePerm('live_manage') && !(resource.data.status == 'IN_USE' && request.resource.data.status == 'AVAILABLE')) ||
+        (rolePerm('live_end') && resource.data.status == 'IN_USE' && request.resource.data.status == 'AVAILABLE' &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'status', 'timeRemaining', 'startTimestamp', 'endTimestamp', 'foodHistory', 'lastSessionLogId', 'assignedMemberId'
+          ])) ||
+        (rolePerm('station_rates') && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'rate1Player', 'rate2Player', 'rate3Player', 'rate4Player',
+          'memRate1Player', 'memRate2Player', 'memRate3Player', 'memRate4Player'
+        ]))
+      );
+    }
+    match /locations/{locId}/logs/{logId} {
+      allow read: if inBranch(locId) && rolePerm('ledger');
+      allow create: if inBranch(locId) && (rolePerm('live_manage') || rolePerm('live_end'));
+      allow update, delete: if false;
+    }
+    match /locations/{locId}/members_doc/{docId} {
+      allow read, write: if inBranch(locId) && rolePerm('members');
+    }
+    match /{path=**} { allow read, write: if false; }
+  }
+}
